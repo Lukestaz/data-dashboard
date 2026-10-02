@@ -114,14 +114,14 @@
           </button>
         </div>
 
-        <!-- City / Town Select with Clear Button -->
-        <div class="relative min-w-[220px]">
+        <!-- City / Town Grouped Select with Clear Button -->
+        <div class="relative min-w-[240px]">
           <select
             id="town-select"
             onchange="handleTownChange(this.value)"
             class="w-full bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg pl-3 pr-16 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
           >
-            <option value="All">All Cities / Towns (NZ-wide)</option>
+            <option value="All">All Cities & Towns (NZ-wide)</option>
           </select>
           <div class="absolute inset-y-0 right-0 flex items-center pr-2 gap-1">
             <button id="clear-town-btn" onclick="clearTown()" class="hidden p-1 text-slate-500 hover:text-slate-300 rounded-full hover:bg-slate-800 transition" title="Clear city/town">
@@ -214,42 +214,144 @@
       setupInfiniteScroll();
     }
 
-    // Clean Column E data: removes postcodes, & and weird chars
     function cleanCityTownField() {
+      const aucklandSuburbs = new Set([
+        'albany', 'alfriston', 'arch hill', 'ardmore', 'auckland central', 'auckland 1010', 'auckland 1060',
+        'avondale', 'balmoral', 'beach haven', 'beachlands', 'belmont', 'birkdale', 'birkenhead', 'blockhouse bay',
+        'bombay', 'botany downs', 'brookby', 'browns bay', 'bucklands beach', 'castor bay', 'cbd', 'cheltenham',
+        'clarks beach', 'clevedon', 'coatesville', 'cockle bay', 'dannemora', 'devonport', 'drury', 'east tamaki',
+        'east tāmaki', 'eastern beach', 'eden terrace', 'ellerslie', 'epsom', 'flat bush', 'forrest hill', 'freemans bay',
+        'glen eden', 'glen innes', 'glenbrook', 'glenfield', 'glendene', 'glendowie', 'golflands', 'grafton', 'greenbay',
+        'greenhithe', 'greenlane', 'grey lynn', 'half moon bay', 'helensville', 'henderson', 'herald island', 'herne bay',
+        'highbrook', 'highland park', 'hillsborough', 'hobsonville', 'hobsonville point', 'howick', 'huapai', 'huia',
+        'karaka', 'karekare', 'kaukapakapa', 'kelston', 'kingsland', 'kingseat', 'kohimarama', 'kumeu', 'kumeū',
+        'laneway', 'lynfield', 'mairangi bay', 'mangere', 'māngere', 'mangere bridge', 'manukau', 'manukau city centre',
+        'manurewa', 'maraetai', 'meadowbank', 'mellons bay', 'middlemore', 'milford', 'mission bay',
+        'morningside', 'mount albert', 'mount eden', 'mount roskill', 'mount wellington', 'mt albert', 'mt eden',
+        'mt roskill', 'mt wellington', 'murrays bay', 'new lynn', 'newmarket', 'newton', 'northcote', 'one tree hill',
+        'onehunga', 'oneroa', 'onetangi', 'orewa', 'ōrewa', 'orakei', 'ōrākei', 'otahuhu', 'ōtāhuhu', 'otara',
+        'ōtara', 'pakuranga', 'panmure', 'papakura', 'papatoetoe', 'parakai', 'parnell', 'patumahoe', 'penrose',
+        'piha', 'point chevalier', 'point england', 'ponsonby', 'puhinui', 'red beach', 'red hill',
+        'remuera', 'riverhead', 'rosedale', 'royal oak', 'saint heliers', 'saint johns', 'saint marys bay', 'sandringham',
+        'silverdale', 'snells beach', 'st heliers', 'st johns', 'st marys bay', 'stanmore bay', 'sunnyvale', 'swanson',
+        'takapuna', 'te atatu', 'te atatū', 'te atatu peninsula', 'te atatu south', 'te papapa', 'three kings', 'titirangi',
+        'torbay', 'tuakau', 'waimauku', 'wairau valley', 'waitakere', 'waitoki', 'waiwera',
+        'waterview', 'west harbour', 'western springs', 'westfield', 'westgate', 'westmere', 'weiti', 'weiti crossing',
+        'whangaparaoa', 'whangaparāoa', 'whenuapai', 'whitford'
+      ]);
+
+      const chchSuburbs = new Set([
+        'addington', 'aranui', 'avondale', 'avonhead', 'avonside', 'beckenham', 'belfast', 'bexley', 'bishopdale',
+        'bromley', 'bryndwr', 'burnside', 'casebrook', 'cashmere', 'clifton', 'edgeware', 'fenalton', 'ferrymead',
+        'fendalton', 'halswell', 'harewood', 'heathcote valley', 'hei hei', 'hornby', 'hoon hay', 'ilam', 'islington',
+        'kennedys bush', 'linwood', 'mairehau', 'merivale', 'moncks bay', 'mount pleasant', 'new regent street',
+        'new brighton', 'opawa', 'papanui', 'parklands', 'phillipstown', 'redcliffs', 'riccarton', 'richmond',
+        'saint albans', 'saint martins', 'shirley', 'sockburn', 'somerfield', 'southshore', 'spencerville', 'spreydon',
+        'st albans', 'st martins', 'strowan', 'sumner', 'sydenham', 'templeton', 'upper riccarton', 'waimairi beach',
+        'wainoni', 'waltham', 'woolston', 'yaldhurst'
+      ]);
+
+      const wellingtonSuburbs = new Set([
+        'aro valley', 'berhampore', 'breaker bay', 'broadmeadows', 'brooklyn', 'churton park', 'crofton downs',
+        'glenside', 'grenada north', 'grenada village', 'hataitai', 'horokiwi', 'houghton bay', 'island bay',
+        'johnsonville', 'kaiwharawhara', 'karori', 'kelburn', 'khandallah', 'kilbirnie', 'lyall bay', 'makara',
+        'maupuia', 'miramar', 'mornington', 'mount cook', 'mount victoria', 'newtown', 'ngaio', 'ngauranga',
+        'oriental bay', 'owhiro bay', 'pipitea', 'roseneath', 'seatoun', 'shelly bay', 'strathmore park',
+        'tawa', 'te aro', 'thorndon', 'voges town', 'wadestown', 'wellington central', 'wellington 6011',
+        'wellington north', 'wilton', 'woodridge'
+      ]);
+
+      const hamiltonSuburbs = new Set([
+        'bader', 'beerescourt', 'chartwell', 'claudelands', 'dinadale', 'enderley', 'fairfield', 'fairview downs',
+        'fitzroy', 'flagstaff', 'frankton', 'glenview', 'hamilton central', 'hamilton east', 'hamilton north',
+        'harrowfield', 'hillcrest', 'maeroa', 'melville', 'nawton', 'netherby', 'peacocke', 'pukete', 'queenwood',
+        'riverlea', 'rotokauri', 'rototuna', 'ruakura', 'silverdale', 'st andrews', 'te rapa', 'whitiora'
+      ]);
+
+      const taurangaSuburbs = new Set([
+        'bethlehem', 'brookfield', 'gate pa', 'greerton', 'hairini', 'judea', 'matua', 'maungatapu', 'mount maunganui',
+        'mt maunganui', 'otumoetai', 'pāpāmoa', 'papamoa', 'papamoa beach', 'pyes pa', 'tauriko', 'welcome bay'
+      ]);
+
+      const dunedinSuburbs = new Set([
+        'andersons bay', 'belleknowes', 'caversham', 'dunedin central', 'forbury', 'halfway bush', 'hillsborough',
+        'kew', 'mornington', 'mosgiel', 'north east valley', 'opaho', 'oupo', 'port chalmers', 'roslyn',
+        'saint clair', 'saint kilda', 'st clair', 'st kilda', 'south dunedin', 'waikouaiti'
+      ]);
+
       for (const m of merchants) {
-        let t = m.town || m.city || m['City / Town'] || '';
-        t = t.replace(/\s+\d{4}$/, '').trim();
-        if (t === '&' || t === ':' || !t || /^\d+$/.test(t)) {
-          const parts = (m.address || '').split(',').map(p => p.trim()).filter(p => p && p !== '&' && p !== ':' && p !== 'New Zealand');
-          const cleanParts = parts.filter(p => !/^\d{4}$/.test(p) && !/^\d+[\w\s]*$/.test(p));
-          t = cleanParts.length >= 2 ? cleanParts[cleanParts.length - 1] : (cleanParts[0] || 'Auckland');
+        const raw = (m.cleanTown || m.town || m.city || m['City / Town'] || '').replace(/\s+\d{4}$/, '').trim();
+        const low = raw.toLowerCase();
+        const addr = (m.address || '').toLowerCase();
+        const reg = (m.region || '').toLowerCase();
+
+        let canonical = raw;
+
+        if (['&', ':', 'beach', 'central', 'city', 'hw', 'junction', 'laneway', 'off', 'south', 'north', 'west', 'east', ''].includes(low) || /^\d+$/.test(low)) {
+          if (addr.includes('auckland') || reg.includes('auckland')) canonical = 'Auckland';
+          else if (addr.includes('christchurch') || reg.includes('canterbury')) canonical = 'Christchurch';
+          else if (addr.includes('wellington')) canonical = 'Wellington';
+          else if (addr.includes('hamilton') || reg.includes('waikato')) canonical = 'Hamilton';
+          else if (addr.includes('tauranga') || reg.includes('bay of plenty')) canonical = 'Tauranga';
+          else if (addr.includes('queenstown') || reg.includes('otago')) canonical = 'Queenstown';
+          else canonical = 'Other';
+        } else if (aucklandSuburbs.has(low) || addr.includes('auckland')) {
+          canonical = 'Auckland';
+        } else if (chchSuburbs.has(low) || low === 'canterbury') {
+          canonical = 'Christchurch';
+        } else if (wellingtonSuburbs.has(low) || low === 'wellington') {
+          canonical = 'Wellington';
+        } else if (hamiltonSuburbs.has(low) || low === 'hamilton') {
+          canonical = 'Hamilton';
+        } else if (taurangaSuburbs.has(low) || low === 'tauranga') {
+          canonical = 'Tauranga';
+        } else if (dunedinSuburbs.has(low) || low === 'dunedin') {
+          canonical = 'Dunedin';
+        } else if (low.includes('queenstown') || low.includes('arrowtown')) {
+          canonical = 'Queenstown';
+        } else if (low.includes('wanaka') || low.includes('wānaka')) {
+          canonical = 'Wānaka';
+        } else {
+          canonical = raw.charAt(0).toUpperCase() + raw.slice(1);
         }
-        m.cleanTown = t;
+
+        m.canonicalCity = canonical;
+        m.localArea = raw && raw !== canonical && raw !== '&' && raw !== ':' && !/^\d+$/.test(raw) ? raw : '';
       }
     }
 
     function populateTownFilter() {
       const townCounts = {};
       for (const m of merchants) {
-        const t = m.cleanTown || 'Other';
+        const t = m.canonicalCity || 'Other';
         townCounts[t] = (townCounts[t] || 0) + 1;
       }
 
-      // Sort major NZ cities first, then alphabetical
-      const priority = ['Auckland', 'Christchurch', 'Wellington', 'Hamilton', 'Tauranga', 'Lower Hutt', 'Dunedin', 'Palmerston North', 'Napier', 'Rotorua', 'New Plymouth', 'Whangārei', 'Nelson', 'Queenstown', 'Invercargill', 'Hastings', 'Upper Hutt', 'Porirua', 'Gisborne', 'Blenheim', 'Timaru', 'Taupō'];
-      
-      const sortedTowns = Object.keys(townCounts).sort((a, b) => {
-        const idxA = priority.indexOf(a);
-        const idxB = priority.indexOf(b);
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-        if (idxA !== -1) return -1;
-        if (idxB !== -1) return 1;
-        return a.localeCompare(b);
-      });
+      const major = [];
+      const regional = [];
+      const local = [];
+
+      for (const [t, count] of Object.entries(townCounts)) {
+        if (count >= 30) major.push({ name: t, count });
+        else if (count >= 6) regional.push({ name: t, count });
+        else local.push({ name: t, count });
+      }
+
+      major.sort((a, b) => b.count - a.count);
+      regional.sort((a, b) => a.name.localeCompare(b.name));
+      local.sort((a, b) => a.name.localeCompare(b.name));
 
       const townSelect = document.getElementById('town-select');
-      townSelect.innerHTML = '<option value="All">All Cities / Towns (NZ-wide)</option>' +
-        sortedTowns.map(t => `<option value="${t}">${t} (${townCounts[t].toLocaleString()})</option>`).join('');
+      townSelect.innerHTML = '<option value="All">All Cities & Towns (NZ-wide)</option>' +
+        '<optgroup label="🌟 Major Cities & Metros">' +
+        major.map(item => `<option value="${item.name}">${item.name} (${item.count.toLocaleString()})</option>`).join('') +
+        '</optgroup>' +
+        '<optgroup label="📍 Regional Towns & Districts">' +
+        regional.map(item => `<option value="${item.name}">${item.name} (${item.count})</option>`).join('') +
+        '</optgroup>' +
+        '<optgroup label="🏡 Local Communities">' +
+        local.map(item => `<option value="${item.name}">${item.name} (${item.count})</option>`).join('') +
+        '</optgroup>';
     }
 
     function handleTownChange(val) {
@@ -433,7 +535,7 @@
 
       filteredList = merchants.filter(m => {
         const cat = m.category || m.Type || '';
-        const town = m.cleanTown || '';
+        const town = m.canonicalCity || '';
         const isSaved = savedIds.has(m.id);
 
         if (showSavedOnly && !isSaved) return false;
@@ -444,8 +546,9 @@
           const matchTitle = (m.title || m.Name || '').toLowerCase().includes(query);
           const matchAddr = (m.address || m.Address || '').toLowerCase().includes(query);
           const matchTown = town.toLowerCase().includes(query);
+          const matchLocal = (m.localArea || '').toLowerCase().includes(query);
           const matchType = (m.subType || m['Sub-type (original)'] || '').toLowerCase().includes(query);
-          if (!matchTitle && !matchAddr && !matchTown && !matchType) return false;
+          if (!matchTitle && !matchAddr && !matchTown && !matchLocal && !matchType) return false;
         }
         return true;
       });
@@ -486,7 +589,8 @@
         const title = item.title || item.Name || 'Merchant';
         const cat = item.category || item.Type || 'Retail';
         const subType = item.subType || item['Sub-type (original)'] || '';
-        const town = item.cleanTown || item.city || '';
+        const town = item.canonicalCity || '';
+        const local = item.localArea || '';
         const address = item.address || item.Address || '';
         const lat = item.lat || item.Latitude;
         const lng = item.lng || item.Longitude;
@@ -496,7 +600,7 @@
           ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
           : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(title + ' ' + address)}`;
 
-        const reviewsUrl = `https://www.google.com/search?q=${encodeURIComponent(title + ' ' + town + ' New Zealand reviews')}`;
+        const reviewsUrl = `https://www.google.com/search?q=${encodeURIComponent(title + ' ' + (local || town) + ' New Zealand reviews')}`;
 
         let distanceBadge = '';
         if (item._dist !== undefined && item._dist !== Infinity) {
@@ -504,6 +608,8 @@
             ? `<span class="bg-rose-950/80 text-rose-300 border border-rose-800/50 px-2 py-0.5 rounded text-[11px] font-bold">${Math.round(item._dist * 1000)}m away</span>`
             : `<span class="bg-rose-950/80 text-rose-300 border border-rose-800/50 px-2 py-0.5 rounded text-[11px] font-bold">${item._dist.toFixed(1)} km</span>`;
         }
+
+        const locationLabel = [local, town && town !== local ? town : ''].filter(Boolean).join(', ');
 
         return `
           <div class="bg-slate-900 border border-slate-800/90 hover:border-slate-700 rounded-xl p-5 transition shadow-sm flex flex-col justify-between relative group">
@@ -521,7 +627,7 @@
               </div>
               <h3 class="text-base font-bold text-white mb-1 leading-snug">${title}</h3>
               ${subType ? `<p class="text-xs text-blue-400/90 mb-1.5 font-medium">${subType}</p>` : ''}
-              ${town ? `<p class="text-xs font-semibold text-slate-400 mb-1 flex items-center gap-1"><svg class="w-3.5 h-3.5 text-slate-500 inline shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>${town}</p>` : ''}
+              ${locationLabel ? `<p class="text-xs font-semibold text-slate-400 mb-1 flex items-center gap-1"><svg class="w-3.5 h-3.5 text-slate-500 inline shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>${locationLabel}</p>` : ''}
               ${address ? `<p class="text-xs text-slate-400 line-clamp-2 mb-3">${address}</p>` : ''}
             </div>
             <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs gap-2">
@@ -617,9 +723,10 @@
         const title = item.title || item.Name || 'Merchant';
         const cat = item.category || item.Type || '';
         const address = item.address || '';
-        const town = item.cleanTown || '';
+        const town = item.canonicalCity || '';
+        const local = item.localArea || '';
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`;
-        const reviewsUrl = `https://www.google.com/search?q=${encodeURIComponent(title + ' ' + town + ' New Zealand reviews')}`;
+        const reviewsUrl = `https://www.google.com/search?q=${encodeURIComponent(title + ' ' + (local || town) + ' New Zealand reviews')}`;
 
         const marker = L.marker([item.lat, item.lng]);
         marker.bindPopup(`
