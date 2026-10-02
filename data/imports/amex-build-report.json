@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "source": "Amex Shop Small NZ campaigndata.json",
+    "capturedAt": "2026-10-02T18:47:39.561Z",
+    "inStoreCount": 12102,
+    "onlineCount": 4462,
+    "records": 15589
+  },
+  "stats": {
+    "loc_exact": 8332,
+    "loc_none": 186,
+    "loc_approx": 3584,
+    "instore_also_online": 1782,
+    "online_only": 3487
+  }
+}
