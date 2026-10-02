@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Amex Shop Small NZ Directory</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -17,36 +23,79 @@
       }
     };
   </script>
+  <style>
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+      background: #0f172a !important;
+      color: #f8fafc !important;
+      border: 1px solid #1e293b;
+      border-radius: 0.75rem;
+    }
+    .leaflet-popup-content {
+      margin: 14px 16px;
+      line-height: 1.4;
+    }
+    .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+      background-color: rgba(0, 111, 207, 0.4) !important;
+    }
+    .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+      background-color: #006fcf !important;
+      color: white !important;
+      font-weight: 700;
+      font-family: inherit;
+    }
+  </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased">
-  <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-800 gap-4">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    
+    <!-- Header -->
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-5 border-b border-slate-800 gap-4">
       <div>
         <div class="flex items-center gap-2">
           <span class="px-2.5 py-0.5 rounded text-xs font-bold bg-blue-600 text-white tracking-wide">AMEX</span>
           <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Shop Small NZ Directory</h1>
         </div>
-        <p class="text-sm text-slate-400 mt-1">Interactive merchant finder for participating American Express businesses in New Zealand</p>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">10,839 participating American Express merchants across New Zealand</p>
       </div>
-      <div class="flex flex-wrap items-center gap-3 text-sm">
-        <label class="cursor-pointer bg-slate-900 hover:bg-slate-800 text-slate-300 px-3.5 py-1.5 rounded-lg border border-slate-700 text-xs font-medium transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-          <span>Load Full Dataset (JSON/CSV)</span>
-          <input type="file" id="file-uploader" accept=".json,.csv" class="hidden" />
-        </label>
-        <span class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-xs text-slate-300">
-          Showing: <strong id="total-count" class="text-emerald-400">0</strong>
+      <div class="flex flex-wrap items-center gap-2.5">
+        <!-- View Toggle -->
+        <div class="bg-slate-900 p-1 rounded-lg border border-slate-800 flex items-center text-xs font-semibold">
+          <button id="view-cards-btn" onclick="setViewMode('cards')" class="px-3 py-1.5 rounded-md transition bg-blue-600 text-white flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+            <span>Cards</span>
+          </button>
+          <button id="view-map-btn" onclick="setViewMode('map')" class="px-3 py-1.5 rounded-md transition text-slate-400 hover:text-white flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+            <span>Map</span>
+          </button>
+        </div>
+
+        <!-- Near Me Button -->
+        <button id="near-me-btn" onclick="toggleNearMe()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg border border-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-rose-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
+          <span id="near-me-label">Near Me</span>
+        </button>
+
+        <!-- Saved Filter Button -->
+        <button id="saved-filter-btn" onclick="toggleSavedFilter()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg border border-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+          <span>Saved (<span id="saved-count">0</span>)</span>
+        </button>
+
+        <span class="bg-slate-900 px-3 py-2 rounded-lg border border-slate-800 text-xs text-slate-300">
+          Total: <strong id="total-count" class="text-emerald-400">0</strong>
         </span>
       </div>
     </header>
 
-    <section class="mt-6 space-y-4">
+    <!-- Controls -->
+    <section class="mt-5 space-y-3">
       <div class="flex flex-col sm:flex-row gap-3">
         <div class="relative flex-1">
           <input
             id="search-input"
             type="text"
-            placeholder="Search by merchant name, street, suburb, or keyword..."
+            placeholder="Search by merchant name, suburb, street, or category..."
             class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <svg class="w-5 h-5 absolute left-3 top-2.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,17 +104,39 @@
         </div>
         <select
           id="city-select"
-          class="bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[160px]"
+          class="bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[170px]"
         >
           <option value="All">All Cities / Towns</option>
         </select>
+        <select
+          id="sort-select"
+          onchange="changeSort(this.value)"
+          class="bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="default">Default Sort</option>
+          <option value="distance">Distance (Nearest)</option>
+          <option value="name">Name (A-Z)</option>
+        </select>
       </div>
 
+      <!-- Categories Pills -->
       <div class="flex items-center gap-2 overflow-x-auto pb-1" id="category-pills"></div>
     </section>
 
-    <main class="mt-8">
+    <!-- Map Container -->
+    <div id="map-wrapper" class="mt-6 hidden relative rounded-2xl overflow-hidden border border-slate-800 h-[650px] shadow-2xl">
+      <div id="map" class="w-full h-full"></div>
+    </div>
+
+    <!-- Cards Grid -->
+    <main id="cards-wrapper" class="mt-6">
       <div id="card-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      
+      <!-- Infinite Scroll Trigger Sentinel -->
+      <div id="sentinel" class="py-8 text-center">
+        <p id="sentinel-text" class="text-xs text-slate-500">Showing top results</p>
+      </div>
+
       <div id="empty-state" class="hidden text-center py-20">
         <p class="text-slate-400 text-base">No merchants found matching your query or filters.</p>
       </div>
@@ -74,10 +145,25 @@
 
   <script>
     let merchants = [];
+    let filteredList = [];
+    let displayedCount = 60;
+    const PAGE_CHUNK = 60;
+
     let activeCategory = 'All';
     let activeCity = 'All';
+    let currentSort = 'default';
+    let showSavedOnly = false;
+    let viewMode = 'cards';
+
+    let userLat = null;
+    let userLng = null;
+    let savedIds = new Set(JSON.parse(localStorage.getItem('amex_saved_merchants') || '[]'));
+
+    let map = null;
+    let markerCluster = null;
 
     async function init() {
+      updateSavedCount();
       try {
         const res = await fetch('./data.json');
         if (res.ok) {
@@ -86,12 +172,110 @@
       } catch (err) {
         console.error('Failed to load data.json', err);
       }
+
       populateFilters();
-      render();
+      applyFilters();
+      setupInfiniteScroll();
+    }
+
+    function updateSavedCount() {
+      document.getElementById('saved-count').textContent = savedIds.size;
+    }
+
+    function toggleSave(id, e) {
+      if (e) e.stopPropagation();
+      if (savedIds.has(id)) {
+        savedIds.delete(id);
+      } else {
+        savedIds.add(id);
+      }
+      localStorage.setItem('amex_saved_merchants', JSON.stringify([...savedIds]));
+      updateSavedCount();
+      if (showSavedOnly) {
+        applyFilters();
+      } else {
+        renderCardsChunk();
+      }
+    }
+
+    function toggleSavedFilter() {
+      showSavedOnly = !showSavedOnly;
+      const btn = document.getElementById('saved-filter-btn');
+      if (showSavedOnly) {
+        btn.classList.add('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
+      } else {
+        btn.classList.remove('bg-amber-500/20', 'border-amber-500/50', 'text-amber-300');
+      }
+      applyFilters();
+    }
+
+    function toggleNearMe() {
+      if (userLat !== null) {
+        userLat = null;
+        userLng = null;
+        document.getElementById('near-me-label').textContent = 'Near Me';
+        document.getElementById('near-me-btn').classList.remove('bg-rose-500/20', 'border-rose-500/50', 'text-rose-300');
+        document.getElementById('sort-select').value = 'default';
+        currentSort = 'default';
+        applyFilters();
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        return;
+      }
+
+      const label = document.getElementById('near-me-label');
+      label.textContent = 'Locating...';
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userLat = pos.coords.latitude;
+          userLng = pos.coords.longitude;
+          label.textContent = 'Nearby Active';
+          document.getElementById('near-me-btn').classList.add('bg-rose-500/20', 'border-rose-500/50', 'text-rose-300');
+          document.getElementById('sort-select').value = 'distance';
+          currentSort = 'distance';
+          calculateDistances();
+          applyFilters();
+          if (map && viewMode === 'map') {
+            map.setView([userLat, userLng], 13);
+          }
+        },
+        (err) => {
+          alert('Location access denied or unavailable: ' + err.message);
+          label.textContent = 'Near Me';
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
+    function calculateDistances() {
+      if (userLat === null) return;
+      for (const m of merchants) {
+        if (m.lat && m.lng) {
+          m._dist = haversine(userLat, userLng, m.lat, m.lng);
+        } else {
+          m._dist = Infinity;
+        }
+      }
+    }
+
+    function haversine(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
     }
 
     function populateFilters() {
-      const categories = ['All', ...new Set(merchants.map(m => m.category || m.Category || m.Type).filter(Boolean))].sort();
+      const categories = ['All', ...new Set(merchants.map(m => m.category || m.Type).filter(Boolean))].sort();
       const catContainer = document.getElementById('category-pills');
       catContainer.innerHTML = categories.map(cat => `
         <button
@@ -106,7 +290,7 @@
         </button>
       `).join('');
 
-      const cities = ['All', ...new Set(merchants.map(m => m.city || m['City / Town'] || m.City).filter(Boolean))].sort();
+      const cities = ['All', ...new Set(merchants.map(m => m.city || m['City / Town']).filter(Boolean))].sort();
       const citySelect = document.getElementById('city-select');
       citySelect.innerHTML = cities.map(c => `<option value="${c}" ${activeCity === c ? 'selected' : ''}>${c}</option>`).join('');
     }
@@ -114,39 +298,80 @@
     function selectCategory(cat) {
       activeCategory = cat;
       populateFilters();
-      render();
+      applyFilters();
     }
 
     document.getElementById('city-select').addEventListener('change', (e) => {
       activeCity = e.target.value;
-      render();
+      applyFilters();
     });
 
-    document.getElementById('search-input').addEventListener('input', render);
+    document.getElementById('search-input').addEventListener('input', () => {
+      applyFilters();
+    });
 
-    function render() {
+    function changeSort(val) {
+      currentSort = val;
+      if (val === 'distance' && userLat === null) {
+        toggleNearMe();
+        return;
+      }
+      applyFilters();
+    }
+
+    function applyFilters() {
       const query = document.getElementById('search-input').value.toLowerCase().trim();
-      const filtered = merchants.filter(m => {
-        const cat = m.category || m.Category || m.Type || '';
-        const city = m.city || m['City / Town'] || m.City || '';
-        const matchesCategory = activeCategory === 'All' || cat === activeCategory;
-        const matchesCity = activeCity === 'All' || city === activeCity;
-        const matchesQuery = !query || Object.values(m).some(v => String(v).toLowerCase().includes(query));
-        return matchesCategory && matchesCity && matchesQuery;
+
+      filteredList = merchants.filter(m => {
+        const cat = m.category || m.Type || '';
+        const city = m.city || m['City / Town'] || '';
+        const isSaved = savedIds.has(m.id);
+
+        if (showSavedOnly && !isSaved) return false;
+        if (activeCategory !== 'All' && cat !== activeCategory) return false;
+        if (activeCity !== 'All' && city !== activeCity) return false;
+
+        if (query) {
+          const matchTitle = (m.title || m.Name || '').toLowerCase().includes(query);
+          const matchAddr = (m.address || m.Address || '').toLowerCase().includes(query);
+          const matchSub = (m.subType || m['Sub-type (original)'] || '').toLowerCase().includes(query);
+          if (!matchTitle && !matchAddr && !matchSub) return false;
+        }
+        return true;
       });
 
-      document.getElementById('total-count').textContent = filtered.length.toLocaleString();
+      if (currentSort === 'distance') {
+        calculateDistances();
+        filteredList.sort((a, b) => (a._dist || Infinity) - (b._dist || Infinity));
+      } else if (currentSort === 'name') {
+        filteredList.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+      }
+
+      document.getElementById('total-count').textContent = filteredList.length.toLocaleString();
+      displayedCount = PAGE_CHUNK;
+
+      renderCardsChunk();
+
+      if (viewMode === 'map') {
+        updateMapMarkers();
+      }
+    }
+
+    function renderCardsChunk() {
       const grid = document.getElementById('card-grid');
       const empty = document.getElementById('empty-state');
+      const sentinelText = document.getElementById('sentinel-text');
 
-      if (filtered.length === 0) {
+      if (filteredList.length === 0) {
         grid.innerHTML = '';
         empty.classList.remove('hidden');
+        sentinelText.textContent = '';
         return;
       }
 
       empty.classList.add('hidden');
-      const slice = filtered.slice(0, 120);
+      const slice = filteredList.slice(0, displayedCount);
+
       grid.innerHTML = slice.map(item => {
         const title = item.title || item.Name || 'Merchant';
         const cat = item.category || item.Type || 'Retail';
@@ -155,14 +380,32 @@
         const address = item.address || item.Address || '';
         const lat = item.lat || item.Latitude;
         const lng = item.lng || item.Longitude;
-        const mapsUrl = lat && lng ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(title + ' ' + address)}`;
+        const isSaved = savedIds.has(item.id);
+
+        const mapsUrl = lat && lng
+          ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+          : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(title + ' ' + address)}`;
+
+        let distanceBadge = '';
+        if (item._dist !== undefined && item._dist !== Infinity) {
+          distanceBadge = item._dist < 1
+            ? `<span class="bg-rose-950/80 text-rose-300 border border-rose-800/50 px-2 py-0.5 rounded text-[11px] font-bold">${Math.round(item._dist * 1000)}m away</span>`
+            : `<span class="bg-rose-950/80 text-rose-300 border border-rose-800/50 px-2 py-0.5 rounded text-[11px] font-bold">${item._dist.toFixed(1)} km</span>`;
+        }
 
         return `
-          <div class="bg-slate-900 border border-slate-800/90 hover:border-slate-700 rounded-xl p-5 transition shadow-sm flex flex-col justify-between">
+          <div class="bg-slate-900 border border-slate-800/90 hover:border-slate-700 rounded-xl p-5 transition shadow-sm flex flex-col justify-between relative group">
             <div>
-              <div class="flex items-center justify-between text-xs mb-3">
-                <span class="px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-300 font-medium border border-blue-900/40">${cat}</span>
-                ${city ? `<span class="text-slate-400 font-medium">${city}</span>` : ''}
+              <div class="flex items-center justify-between text-xs mb-3 gap-2">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-300 font-medium border border-blue-900/40">${cat}</span>
+                  ${distanceBadge}
+                </div>
+                <button onclick="toggleSave(${item.id}, event)" class="p-1 rounded-md text-slate-500 hover:text-amber-400 transition" title="Save to Favorites">
+                  <svg class="w-5 h-5 ${isSaved ? 'text-amber-400 fill-current' : 'fill-none stroke-current'}" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                  </svg>
+                </button>
               </div>
               <h3 class="text-base font-bold text-white mb-1 leading-snug">${title}</h3>
               ${subType ? `<p class="text-xs text-blue-400/90 mb-2 font-medium">${subType}</p>` : ''}
@@ -173,47 +416,116 @@
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Shop Small
               </span>
               <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 font-semibold inline-flex items-center gap-1">
-                Open Map &rarr;
+                Open Directions &rarr;
               </a>
             </div>
           </div>
         `;
       }).join('');
+
+      sentinelText.textContent = displayedCount >= filteredList.length
+        ? `Showing all ${filteredList.length.toLocaleString()} matches`
+        : `Showing ${displayedCount} of ${filteredList.length.toLocaleString()} (scroll down for more)`;
     }
 
-    document.getElementById('file-uploader').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const text = evt.target.result;
-        if (file.name.endsWith('.json')) {
-          try {
-            merchants = JSON.parse(text);
-            populateFilters();
-            render();
-          } catch (err) {
-            alert('Invalid JSON');
+    function setupInfiniteScroll() {
+      const sentinel = document.getElementById('sentinel');
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          if (displayedCount < filteredList.length) {
+            displayedCount += PAGE_CHUNK;
+            renderCardsChunk();
           }
-        } else if (file.name.endsWith('.csv')) {
-          merchants = parseCSV(text);
-          populateFilters();
-          render();
         }
-      };
-      reader.readAsText(file);
-    });
+      }, { rootMargin: '300px' });
+      observer.observe(sentinel);
+    }
 
-    function parseCSV(text) {
-      const lines = text.trim().split(/\r?\n/);
-      if (lines.length < 2) return [];
-      const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-      return lines.slice(1).map(line => {
-        const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
-        const obj = {};
-        headers.forEach((h, idx) => { obj[h] = values[idx] || ''; });
-        return obj;
+    function setViewMode(mode) {
+      viewMode = mode;
+      const cardsWrapper = document.getElementById('cards-wrapper');
+      const mapWrapper = document.getElementById('map-wrapper');
+      const cardsBtn = document.getElementById('view-cards-btn');
+      const mapBtn = document.getElementById('view-map-btn');
+
+      if (mode === 'map') {
+        cardsWrapper.classList.add('hidden');
+        mapWrapper.classList.remove('hidden');
+        mapBtn.classList.add('bg-blue-600', 'text-white');
+        mapBtn.classList.remove('text-slate-400');
+        cardsBtn.classList.remove('bg-blue-600', 'text-white');
+        cardsBtn.classList.add('text-slate-400');
+
+        initMapIfNeeded();
+        setTimeout(() => {
+          if (map) {
+            map.invalidateSize();
+            updateMapMarkers();
+          }
+        }, 150);
+      } else {
+        mapWrapper.classList.add('hidden');
+        cardsWrapper.classList.remove('hidden');
+        cardsBtn.classList.add('bg-blue-600', 'text-white');
+        cardsBtn.classList.remove('text-slate-400');
+        mapBtn.classList.remove('bg-blue-600', 'text-white');
+        mapBtn.classList.add('text-slate-400');
+      }
+    }
+
+    function initMapIfNeeded() {
+      if (map) return;
+      map = L.map('map', {
+        center: userLat && userLng ? [userLat, userLng] : [-36.85, 174.76],
+        zoom: 12
       });
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        maxZoom: 19
+      }).addTo(map);
+
+      markerCluster = L.markerClusterGroup({
+        chunkedLoading: true,
+        maxClusterRadius: 50
+      });
+      map.addLayer(markerCluster);
+    }
+
+    function updateMapMarkers() {
+      if (!map || !markerCluster) return;
+      markerCluster.clearLayers();
+
+      const markers = [];
+      const matches = filteredList.filter(m => m.lat && m.lng).slice(0, 1500);
+
+      for (const item of matches) {
+        const title = item.title || item.Name || 'Merchant';
+        const cat = item.category || item.Type || '';
+        const address = item.address || '';
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`;
+
+        const marker = L.marker([item.lat, item.lng]);
+        marker.bindPopup(`
+          <div class="text-slate-100 font-sans">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-900/60 text-blue-300 border border-blue-700/40">${cat}</span>
+            <h4 class="text-sm font-bold text-white mt-1.5">${title}</h4>
+            <p class="text-xs text-slate-400 mt-1">${address}</p>
+            <div class="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+              <span class="text-emerald-400 font-semibold">&bull; Shop Small</span>
+              <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-400 font-bold hover:underline">Directions &rarr;</a>
+            </div>
+          </div>
+        `);
+        markers.push(marker);
+      }
+
+      markerCluster.addLayers(markers);
+
+      if (matches.length > 0 && !userLat) {
+        const bounds = L.latLngBounds(matches.map(m => [m.lat, m.lng]));
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+      }
     }
 
     window.addEventListener('DOMContentLoaded', init);
