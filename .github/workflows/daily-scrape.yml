@@ -1,22 +1,14 @@
-name: Daily Amex Shop Small Scrape & Deploy
+name: Manual Amex Scrape — Review Before Publishing
 
 on:
-  schedule:
-    # Daily at 18:00 UTC (07:00 NZDT / 06:00 NZST)
-    - cron: '0 18 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
-  scrape-and-publish:
+  scrape-to-staging:
+    name: Scrape Amex data to staging only
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -34,29 +26,28 @@ jobs:
           npm ci || npm install
           npx playwright install --with-deps chromium
 
-      - name: Run Scraper
-        run: node scripts/scrape.mjs
+      - name: Run scraper to timestamped staging file
+        env:
+          AMEX_OUTPUT_DIR: data/imports
+        run: |
+          mkdir -p "$AMEX_OUTPUT_DIR"
+          node scripts/scrape.mjs
 
-      - name: Commit updated data if changed
+      - name: Commit staged raw output only
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          if [[ -n $(git status --porcelain data.json) ]]; then
-            git add data.json
-            git commit -m "Auto-update Amex Shop Small data [skip ci]"
+          if [[ -n $(git status --porcelain data/imports) ]]; then
+            git add data/imports
+            git commit -m "Stage Amex scrape output for review [skip ci]"
             git push origin main
           else
-            echo "No changes detected in data.json"
+            echo "No new staged data was produced"
           fi
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Safety check
+        run: |
+          if [[ -n $(git status --porcelain data.json) ]]; then
+            echo "ERROR: Live data.json was modified. This workflow must never publish live data."
+            exit 1
+          fi
