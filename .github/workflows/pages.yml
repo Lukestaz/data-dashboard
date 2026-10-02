@@ -3,6 +3,9 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: ["main"]
+  workflow_run:
+    workflows: ["Refresh Amex dataset (twice weekly)"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
