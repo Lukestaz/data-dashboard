@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#3b82f6', 600: '#2563eb' }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased">
+  <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-800 gap-4">
+      <div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-white">Project Dashboard</h1>
+        <p class="text-sm text-slate-400 mt-1">Responsive dataset viewer &bull; Deployed on GitHub Pages</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3 text-sm">
+        <label class="cursor-pointer bg-slate-900 hover:bg-slate-800 text-slate-300 px-3.5 py-1.5 rounded-lg border border-slate-700 text-xs font-medium transition">
+          <span>Upload CSV/JSON</span>
+          <input type="file" id="file-uploader" accept=".json,.csv" class="hidden" />
+        </label>
+        <span class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-xs text-slate-300">
+          Showing: <strong id="total-count" class="text-emerald-400">0</strong>
+        </span>
+      </div>
+    </header>
+
+    <section class="mt-6 flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+      <div class="relative flex-1">
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Search items, titles, categories, notes..."
+          class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+        />
+        <svg class="w-5 h-5 absolute left-3 top-2.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0" id="filter-container"></div>
+    </section>
+
+    <main class="mt-8">
+      <div id="card-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      <div id="empty-state" class="hidden text-center py-20">
+        <p class="text-slate-400 text-base">No items match your search or filter.</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let rawDataset = [];
+    let activeFilter = 'All';
+
+    async function loadData() {
+      try {
+        const res = await fetch('./data.json');
+        if (res.ok) {
+          rawDataset = await res.json();
+        } else {
+          loadFallback();
+        }
+      } catch (err) {
+        loadFallback();
+      }
+      setupFilters();
+      render();
+    }
+
+    function loadFallback() {
+      rawDataset = [
+        { id: 1, title: 'LG OLED 65-Inch C3', category: 'Audio-Visual', status: 'Tracked', price: '$1,650 NZD', notes: 'Excellent condition with original remote' },
+        { id: 2, title: 'Anker 737 Power Bank (24k)', category: 'Power & Battery', status: 'Target Met', price: '$140 NZD', notes: '140W fast-charging compatible' },
+        { id: 3, title: 'Radiomaster TX16S Transmitter', category: 'RC Equipment', status: 'Reviewing', price: '$320 NZD', notes: 'EdgeTX with 4-in-1 multi-module' },
+        { id: 4, title: 'Baseus Blade 100W Power Bank', category: 'Power & Battery', status: 'Tracked', price: '$85 NZD', notes: 'Ultra-slim laptop charger' },
+        { id: 5, title: 'Sony WH-1000XM5 Headphones', category: 'Audio-Visual', status: 'Watching', price: '$350 NZD', notes: 'Silver edition with carry case' }
+      ];
+    }
+
+    function setupFilters() {
+      const categories = ['All', ...new Set(rawDataset.map(i => i.category || i.Category).filter(Boolean))];
+      const container = document.getElementById('filter-container');
+      container.innerHTML = categories.map(cat => `
+        <button
+          onclick="setCategory('${cat}')"
+          class="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+            activeFilter === cat
+              ? 'bg-blue-600 text-white shadow-sm'
+              : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+          }"
+        >
+          ${cat}
+        </button>
+      `).join('');
+    }
+
+    function setCategory(cat) {
+      activeFilter = cat;
+      setupFilters();
+      render();
+    }
+
+    function render() {
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      const filtered = rawDataset.filter(item => {
+        const cat = item.category || item.Category || 'General';
+        const matchesCat = activeFilter === 'All' || cat === activeFilter;
+        const matchesText = Object.values(item).some(val =>
+          String(val).toLowerCase().includes(query)
+        );
+        return matchesCat && matchesText;
+      });
+
+      document.getElementById('total-count').textContent = filtered.length;
+      const grid = document.getElementById('card-grid');
+      const empty = document.getElementById('empty-state');
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      empty.classList.add('hidden');
+      grid.innerHTML = filtered.map(item => {
+        const title = item.title || item.Title || item.name || item.Name || 'Untitled Item';
+        const cat = item.category || item.Category || 'General';
+        const status = item.status || item.Status || 'Active';
+        const price = item.price || item.Price || item.value || item.Value || '';
+        const notes = item.notes || item.Notes || item.description || item.Description || '';
+
+        return `
+          <div class="bg-slate-900 border border-slate-800/90 hover:border-slate-700 rounded-xl p-5 transition shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs mb-3">
+                <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 font-medium">${cat}</span>
+                <span class="font-semibold text-blue-400 bg-blue-950/60 border border-blue-900/40 px-2 py-0.5 rounded">${status}</span>
+              </div>
+              <h3 class="text-base font-bold text-white mb-2 leading-snug">${title}</h3>
+              ${notes ? `<p class="text-xs text-slate-400 line-clamp-3 mb-4">${notes}</p>` : ''}
+            </div>
+            ${price ? `
+              <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-sm">
+                <span class="text-xs text-slate-500 font-medium">Target / Value</span>
+                <span class="font-bold text-emerald-400">${price}</span>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('search-input').addEventListener('input', render);
+
+    document.getElementById('file-uploader').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const content = evt.target.result;
+        if (file.name.endsWith('.json')) {
+          try {
+            rawDataset = JSON.parse(content);
+            setupFilters();
+            render();
+          } catch(err) {
+            alert('Invalid JSON file format');
+          }
+        } else if (file.name.endsWith('.csv')) {
+          rawDataset = parseCSV(content);
+          setupFilters();
+          render();
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      if (lines.length < 2) return [];
+      const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+      return lines.slice(1).map(line => {
+        const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+        const obj = {};
+        headers.forEach((h, idx) => { obj[h] = values[idx] || ''; });
+        return obj;
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', loadData);
+  </script>
+</body>
+</html>
