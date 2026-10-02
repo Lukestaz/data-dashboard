@@ -138,38 +138,40 @@
           </div>
         </div>
 
+        <div class="flex gap-2 sm:contents">
         <!-- Availability Select -->
-        <div class="relative">
+        <div class="relative flex-1 sm:flex-none">
           <select
             id="avail-select"
             onchange="changeAvailability(this.value)"
-            class="w-full sm:w-auto bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg pl-3 pr-8 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            class="w-full sm:w-auto bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-lg pl-2.5 pr-7 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
           >
-            <option value="all">All merchants</option>
+            <option value="all">All</option>
             <option value="instore">In-store</option>
-            <option value="online">Available Online</option>
+            <option value="online">Online</option>
           </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
           </div>
         </div>
 
         <!-- Sort Select -->
-        <div class="relative">
+        <div class="relative flex-1 sm:flex-none">
           <select
             id="sort-select"
             onchange="changeSort(this.value)"
-            class="w-full sm:w-auto bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg pl-3 pr-8 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            class="w-full sm:w-auto bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-lg pl-2.5 pr-7 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
           >
-            <option value="default">Default Order</option>
-            <option value="distance">Distance (Nearest)</option>
-            <option value="name">Name (A-Z)</option>
+            <option value="default">Default order</option>
+            <option value="distance">Nearest</option>
+            <option value="name">A–Z</option>
           </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
           </div>
         </div>
       </div>
+        </div>
 
       <!-- Categories Pills -->
       <div class="flex items-center gap-2 overflow-x-auto pb-1" id="category-pills"></div>
@@ -240,7 +242,7 @@
           }
           if (activeDataset === 'legacy') {
             const opt = document.querySelector('#avail-select option[value="online"]');
-            if (opt) { opt.disabled = true; opt.textContent = 'Available Online (Amex source only)'; }
+            if (opt) { opt.disabled = true; opt.textContent = 'Online (Amex only)'; }
           }
           cleanCityTownField();
         }
