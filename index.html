@@ -46,8 +46,36 @@
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased">
+  <!-- Amex Offer Reminder Modal -->
+  <div
+    id="offer-notice"
+    class="hidden fixed inset-0 z-[1000] bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="offer-notice-title"
+  >
+    <div class="w-full max-w-md rounded-2xl border border-blue-500/30 bg-slate-900 p-6 shadow-2xl">
+      <div class="mb-4 flex items-center gap-2">
+        <span class="rounded bg-blue-600 px-2.5 py-0.5 text-xs font-bold tracking-wide text-white">AMEX</span>
+        <span class="text-xs font-semibold text-blue-300">Shop Small reminder</span>
+      </div>
+      <h2 id="offer-notice-title" class="text-xl font-extrabold text-white">
+        Activate your Amex offer first
+      </h2>
+      <p class="mt-2 text-sm leading-6 text-slate-300">
+        Add it in the Amex app before paying to receive cashback.
+      </p>
+      <button
+        type="button"
+        onclick="dismissOfferNotice()"
+        class="mt-6 w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900"
+      >
+        Got it
+      </button>
+    </div>
+  </div>
   <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-    
+
     <!-- Header -->
     <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-5 border-b border-slate-800 gap-4">
       <div>
@@ -164,7 +192,7 @@
           >
             <option value="default">Default order</option>
             <option value="distance">Nearest</option>
-            <option value="name">A–Z</option>
+            <option value="name">AâZ</option>
           </select>
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
@@ -185,7 +213,7 @@
     <!-- Cards Grid -->
     <main id="cards-wrapper" class="mt-6">
       <div id="card-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-      
+
       <!-- Infinite Scroll Sentinel -->
       <div id="sentinel" class="py-8 text-center">
         <p id="sentinel-text" class="text-xs text-slate-500">Showing top results</p>
@@ -205,6 +233,24 @@
     let filteredList = [];
     let displayedCount = 60;
     const PAGE_CHUNK = 60;
+    const offerNoticeKey = 'shop_small_offer_notice_2026';
+
+    function showOfferNotice() {
+      const el = document.getElementById('offer-notice');
+      if (el) {
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+      }
+    }
+
+    function dismissOfferNotice() {
+      localStorage.setItem(offerNoticeKey, 'dismissed');
+      const el = document.getElementById('offer-notice');
+      if (el) {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      }
+    }
 
     let activeCategory = 'All';
     let activeTown = 'All';
@@ -230,6 +276,9 @@
     let markerCluster = null;
 
     async function init() {
+      if (!localStorage.getItem(offerNoticeKey)) {
+        showOfferNotice();
+      }
       updateSavedCount();
       try {
         document.getElementById('dataset-select').value = activeDataset;
@@ -262,24 +311,24 @@
         'avondale', 'balmoral', 'beach haven', 'beachlands', 'belmont', 'birkdale', 'birkenhead', 'blockhouse bay',
         'bombay', 'botany downs', 'brookby', 'browns bay', 'bucklands beach', 'castor bay', 'cbd', 'cheltenham',
         'clarks beach', 'clevedon', 'coatesville', 'cockle bay', 'dannemora', 'devonport', 'drury', 'east tamaki',
-        'east tāmaki', 'eastern beach', 'eden terrace', 'ellerslie', 'epsom', 'flat bush', 'forrest hill', 'freemans bay',
+        'east tÄmaki', 'eastern beach', 'eden terrace', 'ellerslie', 'epsom', 'flat bush', 'forrest hill', 'freemans bay',
         'glen eden', 'glen innes', 'glenbrook', 'glenfield', 'glendene', 'glendowie', 'golflands', 'grafton', 'greenbay',
         'greenhithe', 'greenlane', 'grey lynn', 'half moon bay', 'helensville', 'henderson', 'herald island', 'herne bay',
         'highbrook', 'highland park', 'hillsborough', 'hobsonville', 'hobsonville point', 'howick', 'huapai', 'huia',
-        'karaka', 'karekare', 'kaukapakapa', 'kelston', 'kingsland', 'kingseat', 'kohimarama', 'kumeu', 'kumeū',
-        'laneway', 'lynfield', 'mairangi bay', 'mangere', 'māngere', 'mangere bridge', 'manukau', 'manukau city centre',
+        'karaka', 'karekare', 'kaukapakapa', 'kelston', 'kingsland', 'kingseat', 'kohimarama', 'kumeu', 'kumeÅ«',
+        'laneway', 'lynfield', 'mairangi bay', 'mangere', 'mÄngere', 'mangere bridge', 'manukau', 'manukau city centre',
         'manurewa', 'maraetai', 'meadowbank', 'mellons bay', 'middlemore', 'milford', 'mission bay',
         'morningside', 'mount albert', 'mount eden', 'mount roskill', 'mount wellington', 'mt albert', 'mt eden',
         'mt roskill', 'mt wellington', 'murrays bay', 'new lynn', 'newmarket', 'newton', 'northcote', 'one tree hill',
-        'onehunga', 'oneroa', 'onetangi', 'orewa', 'ōrewa', 'orakei', 'ōrākei', 'otahuhu', 'ōtāhuhu', 'otara',
-        'ōtara', 'pakuranga', 'panmure', 'papakura', 'papatoetoe', 'parakai', 'parnell', 'patumahoe', 'penrose',
+        'onehunga', 'oneroa', 'onetangi', 'orewa', 'Årewa', 'orakei', 'ÅrÄkei', 'otahuhu', 'ÅtÄhuhu', 'otara',
+        'Åtara', 'pakuranga', 'panmure', 'papakura', 'papatoetoe', 'parakai', 'parnell', 'patumahoe', 'penrose',
         'piha', 'point chevalier', 'point england', 'ponsonby', 'puhinui', 'red beach', 'red hill',
         'remuera', 'riverhead', 'rosedale', 'royal oak', 'saint heliers', 'saint johns', 'saint marys bay', 'sandringham',
         'silverdale', 'snells beach', 'st heliers', 'st johns', 'st marys bay', 'stanmore bay', 'sunnyvale', 'swanson',
-        'takapuna', 'te atatu', 'te atatū', 'te atatu peninsula', 'te atatu south', 'te papapa', 'three kings', 'titirangi',
+        'takapuna', 'te atatu', 'te atatÅ«', 'te atatu peninsula', 'te atatu south', 'te papapa', 'three kings', 'titirangi',
         'torbay', 'tuakau', 'waimauku', 'wairau valley', 'waitakere', 'waitoki', 'waiwera',
         'waterview', 'west harbour', 'western springs', 'westfield', 'westgate', 'westmere', 'weiti', 'weiti crossing',
-        'whangaparaoa', 'whangaparāoa', 'whenuapai', 'whitford'
+        'whangaparaoa', 'whangaparÄoa', 'whenuapai', 'whitford'
       ]);
 
       const chchSuburbs = new Set([
@@ -312,7 +361,7 @@
 
       const taurangaSuburbs = new Set([
         'bethlehem', 'brookfield', 'gate pa', 'greerton', 'hairini', 'judea', 'matua', 'maungatapu', 'mount maunganui',
-        'mt maunganui', 'otumoetai', 'pāpāmoa', 'papamoa', 'papamoa beach', 'pyes pa', 'tauriko', 'welcome bay'
+        'mt maunganui', 'otumoetai', 'pÄpÄmoa', 'papamoa', 'papamoa beach', 'pyes pa', 'tauriko', 'welcome bay'
       ]);
 
       const dunedinSuburbs = new Set([
@@ -352,8 +401,8 @@
           canonical = 'Dunedin';
         } else if (low.includes('queenstown') || low.includes('arrowtown')) {
           canonical = 'Queenstown';
-        } else if (low.includes('wanaka') || low.includes('wānaka')) {
-          canonical = 'Wānaka';
+        } else if (low.includes('wanaka') || low.includes('wÄnaka')) {
+          canonical = 'WÄnaka';
         } else {
           canonical = raw.charAt(0).toUpperCase() + raw.slice(1);
         }
@@ -387,13 +436,13 @@
 
       const townSelect = document.getElementById('town-select');
       townSelect.innerHTML = '<option value="All">All Cities & Towns (NZ-wide)</option>' +
-        '<optgroup label="🌟 Major Cities & Metros">' +
+        '<optgroup label="ð Major Cities & Metros">' +
         major.map(item => `<option value="${item.name}">${item.name} (${item.count.toLocaleString()})</option>`).join('') +
         '</optgroup>' +
-        '<optgroup label="📍 Regional Towns & Districts">' +
+        '<optgroup label="ð Regional Towns & Districts">' +
         regional.map(item => `<option value="${item.name}">${item.name} (${item.count})</option>`).join('') +
         '</optgroup>' +
-        '<optgroup label="🏡 Local Communities">' +
+        '<optgroup label="ð¡ Local Communities">' +
         local.map(item => `<option value="${item.name}">${item.name} (${item.count})</option>`).join('') +
         '</optgroup>';
     }
@@ -787,7 +836,7 @@
             ${item.loc === 'approx' ? '<p class="text-[10px] text-slate-500 mt-1">Approximate (postcode centre)</p>' : ''}
             <div class="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
               <a href="${reviewsUrl}" target="_blank" rel="noopener noreferrer" class="text-amber-400 font-bold hover:underline flex items-center gap-1">
-                ⭐ Reviews
+                â Reviews
               </a>
               ${item.website ? `<a href="${item.website}" target="_blank" rel="noopener noreferrer" class="text-emerald-400 font-bold hover:underline">Website</a>` : ''}
               <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-400 font-bold hover:underline">Directions &rarr;</a>
