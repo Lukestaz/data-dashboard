@@ -15,6 +15,7 @@ OUT = 'data/amex.json'
 CACHE = 'data/geocache.json'
 LEGACY = 'data.json'
 REPORT = 'data/imports/amex-build-report.json'
+HISTORY = 'data/history.json'
 
 def fix_mojibake(s):
     try: return s.encode('latin-1').decode('utf-8')
@@ -73,8 +74,8 @@ def main():
     for r in instore:
         r['name'] = fix_mojibake(r['name']); r['address'] = fix_mojibake(r['address'])
 
-    # Safety: schema + count guard vs previous build
     assert instore and all('SENumber' in r and 'address' in r for r in instore), 'Unexpected Amex schema'
+    prev = None
     if os.path.exists(OUT):
         prev = json.load(open(OUT, encoding='utf-8'))
         prev_n = prev['meta']['inStoreCount']
@@ -115,7 +116,6 @@ def main():
                 cache[k] = {'lat': hit['lat'], 'lng': hit['lng'], 'src': 'cheapies', 'how': how}
                 stats['seeded_' + how] += 1
 
-    # Postcode centroids (fallback, approximate)
     pcs = collections.defaultdict(list)
     for r in instore:
         g = cache.get(cache_key(r['SENumber'], r['address']))
@@ -155,12 +155,42 @@ def main():
                     'inStore': False, 'isOnline': True, 'website': clean_url(o['url'])})
         nid += 1; stats['online_only'] += 1
 
+    added_count = len(out)
+    removed_count = 0
+    if prev and 'merchants' in prev:
+        prev_ses = set(m.get('seNumber') for m in prev.get('merchants', []) if m.get('seNumber'))
+        curr_ses = set(m.get('seNumber') for m in out if m.get('seNumber'))
+        added_count = len(curr_ses - prev_ses)
+        removed_count = len(prev_ses - curr_ses)
+
     meta = {'source': 'Amex Shop Small NZ campaigndata.json', 'capturedAt': raw.get('timestamp'),
-            'inStoreCount': len(instore), 'onlineCount': len(online), 'records': len(out)}
+            'inStoreCount': len(instore), 'onlineCount': len(online), 'records': len(out),
+            'exactCount': stats['loc_exact'], 'approxCount': stats['loc_approx']}
     json.dump({'meta': meta, 'merchants': out}, open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     json.dump(cache, open(CACHE, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     json.dump({'meta': meta, 'stats': dict(stats)}, open(REPORT, 'w'), indent=2)
-    print(json.dumps({'meta': meta, 'stats': dict(stats)}, indent=2))
+
+    history = []
+    if os.path.exists(HISTORY):
+        try: history = json.load(open(HISTORY, encoding='utf-8'))
+        except Exception: history = []
+    run_entry = {
+        'capturedAt': raw.get('timestamp'),
+        'date': (raw.get('timestamp') or '')[:10],
+        'records': len(out),
+        'inStore': len(instore),
+        'online': len(online),
+        'exactLocations': stats['loc_exact'],
+        'approxLocations': stats['loc_approx'],
+        'noLocation': stats['loc_none'],
+        'added': added_count,
+        'removed': removed_count
+    }
+    history = [h for h in history if h.get('capturedAt') != run_entry['capturedAt']]
+    history.insert(0, run_entry)
+    json.dump(history[:50], open(HISTORY, 'w', encoding='utf-8'), indent=2)
+
+    print(json.dumps({'meta': meta, 'stats': dict(stats), 'diff': {'added': added_count, 'removed': removed_count}}, indent=2))
 
 if __name__ == '__main__':
     main()
