@@ -28,9 +28,7 @@ jobs:
           node-version: 20
 
       - name: Install Playwright
-        run: |
-          npm ci || npm install
-          npx playwright install --with-deps chromium
+        run: |\n          npm ci || npm install\n          npx playwright install --with-deps chromium
 
       - name: Capture Amex campaign data
         env:
@@ -47,16 +45,7 @@ jobs:
         run: python3 scripts/build_amex.py --min-ratio 0.95
 
       - name: Protect legacy dataset
-        run: |
-          if [[ -n $(git status --porcelain data.json) ]]; then
-            echo "ERROR: legacy data.json must not change"; exit 1
-          fi
+        run: |\n          if [[ -n $(git status --porcelain data.json) ]]; then\n            echo \"ERROR: legacy data.json must not change\"; exit 1\n          fi
 
       - name: Commit
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/amex.json data/geocache.json data/imports
-          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
-          git commit -m "Refresh Amex dataset $(date -u +%Y-%m-%d)"
-          git push
+        run: |\n          git config user.name \"github-actions[bot]\"\n          git config user.email \"github-actions[bot]@users.noreply.github.com\"\n          git add data/amex.json data/geocache.json data/imports data/history.json\n          if git diff --cached --quiet; then echo \"No changes\"; exit 0; fi\n          git commit -m \"Refresh Amex dataset $(date -u +%Y-%m-%d)\"\n          git push

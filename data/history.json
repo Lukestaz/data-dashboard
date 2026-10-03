@@ -1,0 +1,14 @@
+[
+  {
+    "capturedAt": "2026-10-02T18:47:39.561Z",
+    "date": "2026-10-02",
+    "records": 15589,
+    "inStore": 12102,
+    "online": 4462,
+    "exactLocations": 8332,
+    "approxLocations": 3584,
+    "noLocation": 186,
+    "added": 15589,
+    "removed": 0
+  }
+]
