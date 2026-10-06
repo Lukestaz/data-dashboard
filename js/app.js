@@ -170,20 +170,44 @@ async function loadActiveDataset() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const rawData = await res.json();
     
-    // Amex data is structured as { merchants: [...] }
-    state.merchants = Array.isArray(rawData) ? rawData : (rawData.merchants || []);
+    // Support direct array, .merchants, or .data
+    const items = Array.isArray(rawData) ? rawData : (rawData.merchants || rawData.data || []);
     
-    // Normalize coordinates and canonical town
-    state.merchants.forEach((m, idx) => {
-      m.id = m.id || m.SENumber || idx;
-      m.title = m.title || m.name || m.Name || 'Merchant';
-      m.category = m.category || m.type || m.Type || 'Retail';
-      m.city = normalizeCityTown(m.city || m['City / Town'] || '', m.address || '');
-    });
+    state.merchants = items.map((m, idx) => ({
+      id: m.id || m.SENumber || idx,
+      SENumber: m.SENumber || m.id || '',
+      title: m.title || m.name || m.Name || 'Merchant',
+      category: m.category || m.Category || m.type || m.Type || 'Retail',
+      subType: m.subType || m['Sub-type (original)'] || '',
+      city: normalizeCityTown(m.city || m['City / Town'] || m.City || '', m.address || m.Address || ''),
+      address: m.address || m.Address || '',
+      lat: parseFloat(m.lat || m.Latitude),
+      lng: parseFloat(m.lng || m.Longitude),
+      website: m.website || m.url || m.GoogleMapsUrl || '',
+      online: Boolean(m.online || m.availableOnline)
+    }));
   } catch (err) {
     console.warn('Dataset load failed, falling back to data.json', err);
-    const fallback = await fetch('./data.json');
-    state.merchants = await fallback.json();
+    try {
+      const fallback = await fetch('./data.json');
+      const rawFallback = await fallback.json();
+      const fallbackItems = Array.isArray(rawFallback) ? rawFallback : (rawFallback.merchants || []);
+      state.merchants = fallbackItems.map((m, idx) => ({
+        id: m.id || m.SENumber || idx,
+        SENumber: m.SENumber || m.id || '',
+        title: m.title || m.name || m.Name || 'Merchant',
+        category: m.category || m.Category || m.type || m.Type || 'Retail',
+        subType: m.subType || m['Sub-type (original)'] || '',
+        city: normalizeCityTown(m.city || m['City / Town'] || m.City || '', m.address || m.Address || ''),
+        address: m.address || m.Address || '',
+        lat: parseFloat(m.lat || m.Latitude),
+        lng: parseFloat(m.lng || m.Longitude),
+        website: m.website || m.url || m.GoogleMapsUrl || '',
+        online: Boolean(m.online || m.availableOnline)
+      }));
+    } catch (e) {
+      console.error('All dataset loads failed', e);
+    }
   }
 
   populateFilters();
