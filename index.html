@@ -66,6 +66,34 @@
     </div>
   </div>
 
+  <!-- Cross-Device Sync Modal -->
+  <div id="sync-modal" class="hidden fixed inset-0 z-[1000] bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4" role="dialog" aria-modal="true">
+    <div class="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl relative">
+      <button onclick="window.closeSyncModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg">✕</button>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="rounded bg-blue-600 px-2.5 py-0.5 text-xs font-bold text-white">SYNC</span>
+        <h3 class="text-lg font-bold text-white">Cross-Device Saved List</h3>
+      </div>
+      <p class="text-xs text-slate-400 mb-4">Transfer your saved merchants across devices with zero accounts.</p>
+      <div class="mb-4 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Share Link / Sync Code</label>
+        <div class="flex items-center gap-2">
+          <input id="sync-export-input" readonly class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg px-3 py-2 font-mono select-all" />
+          <button onclick="window.copySyncLink()" class="shrink-0 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-2 rounded-lg">Copy</button>
+        </div>
+        <p id="copy-status" class="text-[11px] text-emerald-400 mt-1 hidden">Copied link to clipboard!</p>
+      </div>
+      <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Import on this Device</label>
+        <div class="flex items-center gap-2">
+          <input id="sync-import-input" placeholder="Paste link or code..." class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg px-3 py-2 font-mono" />
+          <button onclick="window.importSyncCode()" class="shrink-0 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-3 py-2 rounded-lg border border-slate-700">Import</button>
+        </div>
+        <p id="import-status" class="text-[11px] mt-1 hidden"></p>
+      </div>
+    </div>
+  </div>
+
   <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
     <!-- Header -->
     <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-5 border-b border-slate-800 gap-4">
@@ -77,10 +105,30 @@
         <p class="text-xs sm:text-sm text-slate-400 mt-1">10,839 participating American Express merchants across New Zealand</p>
       </div>
       <div class="flex flex-wrap items-center gap-2.5">
+        <!-- View Toggle -->
         <div class="bg-slate-900 p-1 rounded-lg border border-slate-800 flex items-center text-xs font-semibold">
-          <button id="view-cards-btn" onclick="setViewMode('cards')" class="px-3 py-1.5 rounded-md transition bg-blue-600 text-white flex items-center gap-1.5"><span>Cards</span></button>
-          <button id="view-map-btn" onclick="setViewMode('map')" class="px-3 py-1.5 rounded-md transition text-slate-400 hover:text-white flex items-center gap-1.5"><span>Map</span></button>
+          <button id="view-cards-btn" onclick="window.setViewMode('cards')" class="px-3 py-1.5 rounded-md transition bg-blue-600 text-white flex items-center gap-1.5"><span>Cards</span></button>
+          <button id="view-map-btn" onclick="window.setViewMode('map')" class="px-3 py-1.5 rounded-md transition text-slate-400 hover:text-white flex items-center gap-1.5"><span>Map</span></button>
         </div>
+
+        <!-- Near Me Button -->
+        <button id="near-me-btn" onclick="window.toggleNearMe()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg border border-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
+          <span class="text-rose-500">📍</span>
+          <span id="near-me-label">Near Me</span>
+        </button>
+
+        <!-- Saved Filter Button -->
+        <button id="saved-filter-btn" onclick="window.toggleSavedFilter()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg border border-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
+          <span class="text-amber-400">★</span>
+          <span>Saved (<span id="saved-count">0</span>)</span>
+        </button>
+
+        <!-- Sync Button -->
+        <button id="sync-btn" onclick="window.openSyncModal()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3 py-2 rounded-lg border border-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
+          <span class="text-blue-400">🔄</span>
+          <span>Sync</span>
+        </button>
+
         <span class="bg-slate-900 px-3 py-2 rounded-lg border border-slate-800 text-xs text-slate-300">Total: <strong id="total-count" class="text-emerald-400">0</strong></span>
       </div>
     </header>
@@ -89,8 +137,16 @@
     <section class="mt-5 space-y-3">
       <div class="flex flex-col sm:flex-row gap-3">
         <div class="relative flex-1">
-          <input id="search-input" type="text" placeholder="Search by merchant name, suburb, street, or category..." class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input id="search-input" type="text" placeholder="Search by merchant name, suburb, street, or category..." class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-4 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
+        <select id="town-select" class="bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]">
+          <option value="All">All Cities & Towns</option>
+        </select>
+        <select id="sort-select" onchange="window.changeSort(this.value)" class="bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="default">Default order</option>
+          <option value="distance">Nearest</option>
+          <option value="name">A–Z</option>
+        </select>
       </div>
       <div class="flex items-center gap-2 overflow-x-auto pb-1" id="category-pills"></div>
     </section>
