@@ -101,6 +101,72 @@ window.toggleNearMe = () => {
   );
 };
 
+// Cross-device sync modal handlers
+window.openSyncModal = () => {
+  const modal = document.getElementById('sync-modal');
+  const exportInput = document.getElementById('sync-export-input');
+  const importInput = document.getElementById('sync-import-input');
+  const copyStatus = document.getElementById('copy-status');
+  const importStatus = document.getElementById('import-status');
+
+  if (exportInput) exportInput.value = getSyncUrl(state.savedIds);
+  if (importInput) importInput.value = '';
+  if (copyStatus) copyStatus.classList.add('hidden');
+  if (importStatus) importStatus.classList.add('hidden');
+
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+};
+
+window.closeSyncModal = () => {
+  const modal = document.getElementById('sync-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+};
+
+window.copySyncLink = () => {
+  const input = document.getElementById('sync-export-input');
+  if (!input) return;
+  input.select();
+  navigator.clipboard.writeText(input.value).then(() => {
+    const status = document.getElementById('copy-status');
+    if (status) {
+      status.classList.remove('hidden');
+      setTimeout(() => status.classList.add('hidden'), 3000);
+    }
+  });
+};
+
+window.importSyncCode = () => {
+  const input = document.getElementById('sync-import-input');
+  const status = document.getElementById('import-status');
+  if (!input || !status) return;
+  const ids = parseSyncCode(input.value);
+  if (ids && ids.length > 0) {
+    let count = 0;
+    ids.forEach(id => {
+      if (!state.savedIds.has(id)) {
+        state.savedIds.add(id);
+        count++;
+      }
+    });
+    localStorage.setItem(savedKey(), JSON.stringify([...state.savedIds]));
+    loadSavedIds();
+    applyFilters();
+    status.textContent = `✓ Successfully merged ${count} new merchants (${state.savedIds.size} total saved)!`;
+    status.className = 'text-[11px] mt-1 text-emerald-400';
+    status.classList.remove('hidden');
+  } else {
+    status.textContent = '✗ Invalid sync link or code format.';
+    status.className = 'text-[11px] mt-1 text-rose-400';
+    status.classList.remove('hidden');
+  }
+};
+
 function calculateDistances() {
   if (state.userLat === null) return;
   for (const m of state.merchants) {
