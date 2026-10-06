@@ -1,6 +1,7 @@
-// Upstash Redis Community Verification Client
+// Upstash Redis Community Verification Client & Cloudflare Worker Vote Proxy
 const UPSTASH_URL = "https://faithful-marlin-205810.upstash.io";
 const UPSTASH_READ_TOKEN = "ggAAAAAAAyPyAAIgcDKreOL4mFK0Fst4zyF92_N92aPi9A8fc4JPTz5k_x0ztQ";
+const VOTE_WORKER_URL = "https://amexss-voter.lucas-stone.workers.dev";
 
 export const communityVotes = {};
 const userVotesKey = 'amex_user_votes_v1';
@@ -43,12 +44,14 @@ export function getVoteBadge(id, title) {
   return '';
 }
 
-export function recordUserVote(id, title, type, onUpdate) {
+export async function submitVote(id, title, type, onUpdate) {
   const key = String(id || title);
   if (userVotes[key]) {
-    alert('You have already recorded a response for this merchant.');
+    alert('You have already submitted feedback for this merchant.');
     return;
   }
+
+  // Optimistic UI update
   userVotes[key] = type;
   localStorage.setItem(userVotesKey, JSON.stringify(userVotes));
 
@@ -56,4 +59,16 @@ export function recordUserVote(id, title, type, onUpdate) {
   communityVotes[key][type] = (communityVotes[key][type] || 0) + 1;
 
   if (typeof onUpdate === 'function') onUpdate();
+
+  // Transmit through Cloudflare Worker proxy to increment Upstash Redis
+  try {
+    const res = await fetch(`${VOTE_WORKER_URL}/?id=${encodeURIComponent(key)}&type=${type}`, {
+      method: 'POST'
+    });
+    if (!res.ok) {
+      console.warn('Vote proxy error:', await res.text());
+    }
+  } catch (err) {
+    console.warn('Could not sync vote to edge worker:', err);
+  }
 }
