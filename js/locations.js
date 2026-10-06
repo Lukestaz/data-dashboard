@@ -65,3 +65,45 @@ export function areaOptions(merchants, city) {
   }
   return [...counts].sort(([a],[b]) => a.localeCompare(b,'en-NZ')).map(([value,count]) => ({value,count}));
 }
+
+function fitDesktopFilters() {
+  const search = document.getElementById('search-input');
+  const city = document.getElementById('town-select');
+  const area = document.getElementById('area-select');
+  const sort = document.getElementById('sort-select');
+  if (!search || !city || !area || !sort) return false;
+  let row = search.parentElement;
+  while (row && !(row.contains(city) && row.contains(sort))) row = row.parentElement;
+  if (!row || row === document.body || row === document.documentElement) return false;
+  const directChild = node => { while (node.parentElement !== row) node = node.parentElement; return node; };
+  const cityWrapper = directChild(city);
+  let areaWrapper = area.parentElement;
+  if (areaWrapper === row || areaWrapper.contains(city)) return false;
+  if (areaWrapper.parentElement !== row) cityWrapper.after(areaWrapper);
+  row.classList.add('merchant-filter-row');
+  const wrappers = [directChild(search), cityWrapper, directChild(area), directChild(sort)];
+  if (new Set(wrappers).size !== 4) return false;
+  wrappers.forEach((wrapper, index) => wrapper.classList.add('merchant-filter-' + index));
+  if (!document.getElementById('merchant-filter-layout')) {
+    const style = document.createElement('style');
+    style.id = 'merchant-filter-layout';
+    style.textContent = `@media (min-width:1024px) {
+      .merchant-filter-row { display:grid !important; grid-template-columns:minmax(180px,1fr) minmax(0,200px) minmax(0,220px) minmax(0,150px); gap:10px !important; align-items:center; }
+      .merchant-filter-row > .merchant-filter-0, .merchant-filter-row > .merchant-filter-1, .merchant-filter-row > .merchant-filter-2, .merchant-filter-row > .merchant-filter-3 { min-width:0 !important; width:100% !important; }
+      .merchant-filter-row input, .merchant-filter-row select { min-width:0 !important; width:100% !important; max-width:100%; }
+      .merchant-filter-row select { padding-left:10px; font-size:12px; text-overflow:ellipsis; }
+    }`;
+    document.head.append(style);
+  }
+  return true;
+}
+if (typeof document !== 'undefined') {
+  const install = () => {
+    if (fitDesktopFilters()) return;
+    const observer = new MutationObserver(() => { if (fitDesktopFilters()) observer.disconnect(); });
+    observer.observe(document.body, {childList:true, subtree:true});
+    setTimeout(() => observer.disconnect(), 15000);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, {once:true});
+  else install();
+}
