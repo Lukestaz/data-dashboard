@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
   "repository": "Lukestaz/data-dashboard",
-  "checkedAt": "2026-10-06T22:51:47.498Z",
+  "checkedAt": "2026-10-06T23:39:39.701Z",
   "latest": {
     "pages.yml": {
-      "id": 37543108253,
+      "id": 37547719523,
       "attempt": 1,
       "workflow": "pages.yml",
       "name": "Deploy GitHub Pages",
       "event": "push",
       "status": "completed",
       "conclusion": "success",
-      "sha": "d1c3113b5ca7321ef03a366af7be59f919e2ab19",
-      "createdAt": "2026-10-06T22:50:37Z",
-      "updatedAt": "2026-10-06T22:50:58Z",
-      "startedAt": "2026-10-06T22:50:37Z",
-      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/37543108253",
+      "sha": "0998d2da81bef22459348309274927c095626148",
+      "createdAt": "2026-10-06T23:39:06Z",
+      "updatedAt": "2026-10-06T23:39:24Z",
+      "startedAt": "2026-10-06T23:39:06Z",
+      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/37547719523",
       "failedJobs": []
     },
     "refresh-amex.yml": {
@@ -36,6 +36,21 @@
     }
   },
   "runs": [
+    {
+      "id": 37547719523,
+      "attempt": 1,
+      "workflow": "pages.yml",
+      "name": "Deploy GitHub Pages",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "0998d2da81bef22459348309274927c095626148",
+      "createdAt": "2026-10-06T23:39:06Z",
+      "updatedAt": "2026-10-06T23:39:24Z",
+      "startedAt": "2026-10-06T23:39:06Z",
+      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/37547719523",
+      "failedJobs": []
+    },
     {
       "id": 37543108253,
       "attempt": 1,
@@ -918,21 +933,6 @@
       "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/37111358675",
       "failedJobs": [],
       "note": "No jobs returned. Inspect the run link for workflow validation errors."
-    },
-    {
-      "id": 37074280150,
-      "attempt": 1,
-      "workflow": "pages.yml",
-      "name": "Deploy GitHub Pages",
-      "event": "push",
-      "status": "completed",
-      "conclusion": "success",
-      "sha": "43c0a1efcec750d7bbae901f559366715edc29dc",
-      "createdAt": "2026-10-02T22:46:39Z",
-      "updatedAt": "2026-10-02T22:51:41Z",
-      "startedAt": "2026-10-02T22:46:39Z",
-      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/37074280150",
-      "failedJobs": []
     }
   ]
 }
