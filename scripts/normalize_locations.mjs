@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 
 execFileSync('python3', ['scripts/stable_ids.py', '--test-only'], {stdio:'inherit'});
 execFileSync('python3', ['scripts/finalize_history.py', '--test-only'], {stdio:'inherit'});
+execFileSync('python3', ['scripts/normalize_categories.py', '--test-only'], {stdio:'inherit'});
 // Load the exact browser rules as ES modules without changing package.json.
 const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'amex-locations-'));
 try {
@@ -47,6 +48,7 @@ try {
     await fs.writeFile(file + '.tmp', JSON.stringify(body));
     await fs.rename(file + '.tmp', file);
     execFileSync('python3', ['scripts/finalize_history.py'], {stdio:'inherit'});
+    execFileSync('python3', ['scripts/normalize_categories.py'], {stdio:'inherit'});
     execFileSync('python3', ['-c', `
 import json, pathlib
 results = []
