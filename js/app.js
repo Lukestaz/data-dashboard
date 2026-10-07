@@ -5,10 +5,14 @@ import { getSyncUrl, parseSyncCode, checkUrlSyncOnLoad } from './sync.js';
 import { fetchCommunityVotes, submitVote } from './votes.js';
 import { initMap, updateMapMarkers } from './map.js';
 import { renderCardsChunk } from './cards.js';
-import { subtypeLabel, subtypeOptions, subtypeMatches } from './subtype-filters.js';
+import { subtypeLabel, subtypeMatches } from './subtype-filters.js';
+import { availabilityMatches, createFilterControls } from './filter-controls.js';
 const el = id => document.getElementById(id);
+let filterControls;
 state.activeArea = 'All';
 state.activeSubtype = 'All';
+state.activeAvailability = 'all';
+state.availabilitySupported = false;
 window.submitVote = submitVote;
 window.toggleSave = id => { toggleSave(id); if (state.showSavedOnly) applyFilters(); else renderCardsChunk(); };
 window.toggleSaveFromMap = (id, button) => { toggleSave(id); if(button){ const saved = state.savedIds.has(id); button.textContent = saved ? '★ Saved' : '☆ Save'; button.className = 'text-xs px-2 py-0.5 rounded border transition ' + (saved ? 'bg-amber-400/20 text-amber-300 border-amber-400/50 font-bold' : 'bg-slate-800 text-slate-400 hover:text-white border-slate-700'); } };
@@ -29,46 +33,28 @@ window.importSyncCode = () => {const input=el('sync-import-input'),status=el('im
 function calculateDistances(){if(state.userLat===null)return;for(const m of state.merchants){if(m.lat&&m.lng){const radians=value=>value*Math.PI/180;const a=Math.sin(radians(m.lat-state.userLat)/2)**2+Math.cos(radians(state.userLat))*Math.cos(radians(m.lat))*Math.sin(radians(m.lng-state.userLng)/2)**2;m._dist=6371*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}else m._dist=Infinity;}}
 function fillOptions(select,first,options,value){if(!select)return;select.replaceChildren(new Option(first,'All'));for(const item of options)select.add(new Option(`${item.value} (${item.count.toLocaleString()})`,item.value));select.value=[...select.options].some(option=>option.value===value)?value:'All';}
 function populateAreas(){const select=el('area-select');if(!select)return;select.disabled=state.activeTown==='All';fillOptions(select,select.disabled?'Select a city / other areas first':'All suburbs / local areas',select.disabled?[]:areaOptions(state.merchants,state.activeTown),state.activeArea);state.activeArea=select.value;}
-function populateSubtypes(){const select=el('subtype-select');if(!select)return;select.disabled=state.activeCategory==='All';fillOptions(select,select.disabled?'Select a category first':'All subtypes',select.disabled?[]:subtypeOptions(state.merchants,state.activeCategory),state.activeSubtype);state.activeSubtype=select.value;}
 function populateFilters(){
-  const container=el('category-pills');if(container){container.replaceChildren();const categories=['All',...[...new Set(state.merchants.map(m=>m.category).filter(Boolean))].sort()];for(const category of categories){const button=document.createElement('button');button.type='button';button.textContent=category;button.className='px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition border '+(state.activeCategory===category?'bg-blue-600 text-white border-blue-500 shadow-sm':'bg-slate-900 text-slate-400 hover:text-white border-slate-800');button.addEventListener('click',()=>window.selectCategory(category));container.append(button);}}
-  fillOptions(el('town-select'),'All cities / towns (NZ-wide)',cityOptions(state.merchants),state.activeTown);if(el('town-select'))state.activeTown=el('town-select').value;populateAreas();populateSubtypes();
+  const container=el('category-pills');if(container){container.replaceChildren();const categories=['All',...[...new Set(state.merchants.map(m=>m.category).filter(Boolean))].sort()];for(const category of categories){const button=document.createElement('button');button.type='button';button.textContent=category;button.setAttribute('aria-pressed',String(state.activeCategory===category));button.className='px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition border focus:outline-none focus:ring-2 focus:ring-blue-500 '+(state.activeCategory===category?'bg-blue-600 text-white border-blue-500 shadow-sm':'bg-slate-900 text-slate-400 hover:text-white border-slate-800');button.addEventListener('click',()=>window.selectCategory(category));container.append(button);}}
+  fillOptions(el('town-select'),'All cities / towns (NZ-wide)',cityOptions(state.merchants),state.activeTown);if(el('town-select'))state.activeTown=el('town-select').value;populateAreas();filterControls?.refresh();
 }
 window.selectCategory = category => {state.activeCategory=category;state.activeSubtype='All';populateFilters();applyFilters();};
 window.handleTownChange = value => {state.activeTown=value;state.activeArea='All';populateAreas();el('clear-town-btn')?.classList.toggle('hidden',value==='All');applyFilters();};
 window.clearTown = () => {if(el('town-select'))el('town-select').value='All';window.handleTownChange('All');};
 window.clearSearch = () => {if(el('search-input'))el('search-input').value='';el('clear-search-btn')?.classList.add('hidden');applyFilters();};
-window.resetAllFilters = () => {state.activeTown='All';state.activeArea='All';state.activeCategory='All';state.activeSubtype='All';state.showSavedOnly=false;state.currentSort='default';if(el('search-input'))el('search-input').value='';if(el('sort-select'))el('sort-select').value='default';el('clear-town-btn')?.classList.add('hidden');el('clear-search-btn')?.classList.add('hidden');el('saved-filter-btn')?.classList.remove('bg-amber-500/20','border-amber-500/50','text-amber-300');populateFilters();applyFilters();};
-export async function switchDataset(name){state.activeDataset=name;localStorage.setItem('amex_active_dataset',name);state.activeTown='All';state.activeArea='All';state.activeCategory='All';state.activeSubtype='All';loadSavedIds();await loadActiveDataset();}
+window.resetAllFilters = () => {state.activeTown='All';state.activeArea='All';state.activeCategory='All';state.activeSubtype='All';state.activeAvailability='all';state.showSavedOnly=false;state.currentSort='default';if(el('search-input'))el('search-input').value='';if(el('sort-select'))el('sort-select').value='default';el('clear-town-btn')?.classList.add('hidden');el('clear-search-btn')?.classList.add('hidden');el('saved-filter-btn')?.classList.remove('bg-amber-500/20','border-amber-500/50','text-amber-300');populateFilters();applyFilters();};
+export async function switchDataset(name){state.activeDataset=name;localStorage.setItem('amex_active_dataset',name);state.activeTown='All';state.activeArea='All';state.activeCategory='All';state.activeSubtype='All';state.activeAvailability='all';state.availabilitySupported=false;loadSavedIds();await loadActiveDataset();}
 window.switchDataset=switchDataset;
 window.changeDataset=switchDataset;
 async function loadActiveDataset(){
-  let data;try{const response=await fetch(state.activeDataset==='amex'?'./data/amex.json':'./data.json');if(!response.ok)throw new Error(`HTTP ${response.status}`);data=await response.json();}catch(error){console.warn('Dataset load failed, falling back to data.json',error);const fallback=await fetch('./data.json');if(!fallback.ok)throw new Error(`HTTP ${fallback.status}`);data=await fallback.json();}
+  let data;let onlineSupported=state.activeDataset==='amex';try{const response=await fetch(onlineSupported?'./data/amex.json':'./data.json');if(!response.ok)throw new Error(`HTTP ${response.status}`);data=await response.json();}catch(error){console.warn('Dataset load failed, falling back to data.json',error);onlineSupported=false;const fallback=await fetch('./data.json');if(!fallback.ok)throw new Error(`HTTP ${fallback.status}`);data=await fallback.json();}
+  state.availabilitySupported=onlineSupported;
   state.merchants=Array.isArray(data)?data:(data.merchants||[]);
   normalizeLocations(state.merchants);
   state.merchants.forEach((m,index)=>{m.id=m.id||m.SENumber||index;m.title=m.title||m.name||m.Name||'Merchant';m.category=m.category||m.type||m.Type||'Retail';m.address=m.address||m.Address||'';m.city=normalizeCityTown(m.rawLocation,m.address);if(m.displaySubType){m.sourceSubType=m.sourceSubType??m.subType??'';m.subType=m.displaySubType;}});
   populateFilters();applyFilters();
 }
-export function applyFilters(){const query=(el('search-input')?.value||'').toLowerCase().trim();state.filteredList=state.merchants.filter(m=>{if(state.showSavedOnly&&!state.savedIds.has(m.id))return false;if(state.activeCategory!=='All'&&m.category!==state.activeCategory)return false;if(!subtypeMatches(m,state.activeSubtype))return false;if(!locationMatches(m,state.activeTown,state.activeArea))return false;if(query&&![m.title,m.address,m.city,m.canonicalCity,m.localArea,m.category,subtypeLabel(m),m.sourceSubType].some(value=>String(value||'').toLowerCase().includes(query)))return false;return true;});if(state.currentSort==='distance'){calculateDistances();state.filteredList.sort((a,b)=>(a._dist??Infinity)-(b._dist??Infinity));}else if(state.currentSort==='name')state.filteredList.sort((a,b)=>a.title.localeCompare(b.title));if(el('total-count'))el('total-count').textContent=state.filteredList.length.toLocaleString();state.displayedCount=state.PAGE_CHUNK;renderCardsChunk();if(state.viewMode==='map')updateMapMarkers();}
+export function applyFilters(){const query=(el('search-input')?.value||'').toLowerCase().trim();state.filteredList=state.merchants.filter(m=>{if(!availabilityMatches(m,state.activeAvailability))return false;if(state.showSavedOnly&&!state.savedIds.has(m.id))return false;if(state.activeCategory!=='All'&&m.category!==state.activeCategory)return false;if(!subtypeMatches(m,state.activeSubtype))return false;if(!locationMatches(m,state.activeTown,state.activeArea))return false;if(query&&![m.title,m.address,m.city,m.canonicalCity,m.localArea,m.category,subtypeLabel(m),m.sourceSubType].some(value=>String(value||'').toLowerCase().includes(query)))return false;return true;});if(state.currentSort==='distance'){calculateDistances();state.filteredList.sort((a,b)=>(a._dist??Infinity)-(b._dist??Infinity));}else if(state.currentSort==='name')state.filteredList.sort((a,b)=>a.title.localeCompare(b.title));if(el('total-count'))el('total-count').textContent=state.filteredList.length.toLocaleString();state.displayedCount=state.PAGE_CHUNK;renderCardsChunk();if(state.viewMode==='map')updateMapMarkers();}
 function setupLocationControls(){const town=el('town-select');if(!town)return;town.setAttribute('aria-label','City or other towns and areas');town.removeAttribute('onchange');town.addEventListener('change',event=>window.handleTownChange(event.target.value));let area=el('area-select');if(!area){const wrapper=document.createElement('div');wrapper.className='relative min-w-[220px]';area=document.createElement('select');area.id='area-select';area.className=town.className;area.setAttribute('aria-label','Suburb or local area');wrapper.append(area);town.parentElement.after(wrapper);}area.addEventListener('change',event=>{state.activeArea=event.target.value;applyFilters();});}
-function setupSubtypeControl(){
-  const categories=el('category-pills'),reference=el('sort-select')||el('town-select');
-  if(!categories||!reference)return;
-  let select=el('subtype-select');
-  if(!select){select=document.createElement('select');select.id='subtype-select';}
-  let wrapper=el('subtype-filter-row');
-  if(!wrapper){wrapper=document.createElement('div');wrapper.id='subtype-filter-row';}
-  const oldWrapper=select.parentElement;
-  wrapper.className='w-full sm:w-56 mt-2';
-  select.className=reference.className;
-  select.classList.add('w-full');
-  select.setAttribute('aria-label','Merchant subtype');
-  select.title='Subtype counts cover the selected category, before location and search filters';
-  wrapper.append(select);
-  categories.after(wrapper);
-  if(oldWrapper&&oldWrapper!==wrapper&&!oldWrapper.children.length)oldWrapper.remove();
-  select.addEventListener('change',event=>{state.activeSubtype=event.target.value;applyFilters();});
-}
 function setupInfiniteScroll(){const sentinel=el('sentinel');if(!sentinel)return;new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&state.displayedCount<state.filteredList.length){state.displayedCount+=state.PAGE_CHUNK;renderCardsChunk();}},{rootMargin:'300px'}).observe(sentinel);}
-async function init(){checkUrlSyncOnLoad(ids=>{ids.forEach(id=>state.savedIds.add(id));localStorage.setItem(savedKey(),JSON.stringify([...state.savedIds]));loadSavedIds();});if(!localStorage.getItem(state.offerNoticeKey)){el('offer-notice')?.classList.remove('hidden');el('offer-notice')?.classList.add('flex');}loadSavedIds();setupLocationControls();setupSubtypeControl();fetchCommunityVotes(()=>{renderCardsChunk();if(state.viewMode==='map')updateMapMarkers();});await loadActiveDataset();el('search-input')?.addEventListener('input',applyFilters);setupInfiniteScroll();}
+async function init(){checkUrlSyncOnLoad(ids=>{ids.forEach(id=>state.savedIds.add(id));localStorage.setItem(savedKey(),JSON.stringify([...state.savedIds]));loadSavedIds();});if(!localStorage.getItem(state.offerNoticeKey)){el('offer-notice')?.classList.remove('hidden');el('offer-notice')?.classList.add('flex');}loadSavedIds();setupLocationControls();filterControls=createFilterControls(state,()=>{populateFilters();applyFilters();},()=>window.setViewMode('cards'));fetchCommunityVotes(()=>{renderCardsChunk();if(state.viewMode==='map')updateMapMarkers();});await loadActiveDataset();el('search-input')?.addEventListener('input',applyFilters);setupInfiniteScroll();}
 window.addEventListener('DOMContentLoaded',init);
