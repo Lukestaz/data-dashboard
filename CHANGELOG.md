@@ -18,6 +18,7 @@ Features
 
 Fixes
 
+- remove legacy filter DOM observer and polish compact controls ([`c775a07`](https://github.com/Lukestaz/data-dashboard/commit/c775a07a77959ca27731e816a6815fb803810dda)).
 - wrap Chathams map longitudes consistently and hide legacy reset ([`ddf5df0`](https://github.com/Lukestaz/data-dashboard/commit/ddf5df0ebe8865bbd681ab20774cef6e73cac812)).
 - preserve map filter results before viewport list updates ([`05ec889`](https://github.com/Lukestaz/data-dashboard/commit/05ec889e21f6b22c22c21c4e2908dc4d65fcb428)).
 - consolidate reset and map controls in compact mobile layout ([`0e486f4`](https://github.com/Lukestaz/data-dashboard/commit/0e486f44ca0659aadb40d42f6a7f60d3980af0c7)).
@@ -37,6 +38,8 @@ Performance
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`6d2e023`](https://github.com/Lukestaz/data-dashboard/commit/6d2e0233ded8a1af98a73b4c7087178b4e532efc)).
+- record Actions run status \[skip ci\] ([`83beff8`](https://github.com/Lukestaz/data-dashboard/commit/83beff81cfa75e5870680e703ef33f2f61d1448c)).
 - record Actions run status \[skip ci\] ([`4ac0d69`](https://github.com/Lukestaz/data-dashboard/commit/4ac0d691cd75610b58974dfb061aacf43e01256c)).
 - record Actions run status \[skip ci\] ([`bd17664`](https://github.com/Lukestaz/data-dashboard/commit/bd176641b44627fbfc2cea9c1f7d5f622a71ac76)).
 - record Actions run status \[skip ci\] ([`97242d5`](https://github.com/Lukestaz/data-dashboard/commit/97242d56ab20b649f4ce52beb4d558c2bcf16d30)).
