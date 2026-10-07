@@ -9,6 +9,7 @@ Generated from commit messages; these are not release or deployment confirmation
 
 Features
 
+- match category chip dots to map pin colours ([`ab01819`](https://github.com/Lukestaz/data-dashboard/commit/ab018192a09f8acd081a3733785c89afae73b7da)).
 - compact mobile toolbar and move source selection to secondary menu ([`cc8778b`](https://github.com/Lukestaz/data-dashboard/commit/cc8778b5cb934d84e1790582a3092699b4fd418b)).
 - show online availability globe badges on merchant cards ([`602160b`](https://github.com/Lukestaz/data-dashboard/commit/602160b50c2834c11fe80fcb7c91be183c738433)).
 - add category-dependent subtype filter to cards and map ([`9561776`](https://github.com/Lukestaz/data-dashboard/commit/956177631150d338cbb842e1d7aa2e4925f80daf)).
@@ -33,6 +34,7 @@ Performance
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`8bd1ab7`](https://github.com/Lukestaz/data-dashboard/commit/8bd1ab739af132647dd018fb05f1974aed20ad79)).
 - record Actions run status \[skip ci\] ([`2828a7a`](https://github.com/Lukestaz/data-dashboard/commit/2828a7aa4c35c3fb7865efee1e1faf6a94444829)).
 - record Actions run status \[skip ci\] ([`b77b0b4`](https://github.com/Lukestaz/data-dashboard/commit/b77b0b4ada42a485bbd4a8b4913ed9cdacee57f6)).
 - record Actions run status \[skip ci\] ([`73392d6`](https://github.com/Lukestaz/data-dashboard/commit/73392d65878e25d3f1cb83ddc4d356989cee404e)).
