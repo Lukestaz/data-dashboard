@@ -1,8 +1,11 @@
+# Keep this name stable: Pages and monitoring reference it in workflow_run.
+# The schedule is daily despite the historical display name.
 name: Refresh Amex dataset (twice weekly)
 
 on:
   schedule:
-    - cron: '0 18 * * 1,4'
+    - cron: '17 7 * * *'
+      timezone: 'Pacific/Auckland'
   workflow_dispatch:
     inputs:
       geocode_max:
