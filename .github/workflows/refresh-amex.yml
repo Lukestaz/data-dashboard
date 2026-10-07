@@ -22,20 +22,15 @@ jobs:
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install Playwright
-        run: |
-          npm ci || npm install
-          npx playwright install --with-deps chromium
+      - name: Validate shared location cleanup rules
+        run: node scripts/normalize_locations.mjs --test-only
 
-      - name: Capture Amex campaign data
-        env:
-          AMEX_OUTPUT_DIR: data/imports
-        run: node scripts/scrape-online.mjs
+      - name: Download and validate Amex campaign JSON directly
+        run: python3 scripts/fetch_amex.py
 
       - name: Build (schema + count guard)
         run: python3 scripts/build_amex.py --min-ratio 0.95
@@ -46,13 +41,16 @@ jobs:
       - name: Rebuild with new coordinates
         run: python3 scripts/build_amex.py --min-ratio 0.95
 
+      - name: Apply shared location hierarchy and validate output
+        run: node scripts/normalize_locations.mjs
+
       - name: Protect legacy dataset
         run: |
           if [[ -n $(git status --porcelain data.json) ]]; then
             echo "ERROR: legacy data.json must not change"; exit 1
           fi
 
-      - name: Commit
+      - name: Commit refreshed dataset and history
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
