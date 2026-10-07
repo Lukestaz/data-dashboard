@@ -87,6 +87,7 @@ function setupSplit(){
  cards.addEventListener('scroll',()=>{if(state.viewMode==='map'&&cards.scrollTop+cards.clientHeight>=cards.scrollHeight-160&&state.displayedCount<state.filteredList.length){state.displayedCount=Math.min(state.filteredList.length,state.displayedCount+state.PAGE_CHUNK);renderCardsChunk();}});tagCards();
 }
 export function initMap(){
+ if(state.filteredList!==viewportList)baseMatches=[...state.filteredList];
  setupSplit();if(mapInstance){syncSplit();return mapInstance;}
  const start=performance.now();
  mapInstance=L.map('map',{center:state.userLat&&state.userLng?[state.userLat,state.userLng]:[-36.85,174.76],zoom:12});
