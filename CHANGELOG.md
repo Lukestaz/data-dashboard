@@ -27,8 +27,13 @@ Fixes
 - unify voting identity across cards and map with legacy compatibility ([`e6b4fd8`](https://github.com/Lukestaz/data-dashboard/commit/e6b4fd80271e3465e6b971987a311652156e04d6)).
 - safely retry refresh publication after concurrent main updates ([`833dd66`](https://github.com/Lukestaz/data-dashboard/commit/833dd66d9d01eb45d56428411082f5ce6d2ec005)).
 
+Performance
+
+- reuse map markers, lazy-load popups and colour category pins ([`34b5ba8`](https://github.com/Lukestaz/data-dashboard/commit/34b5ba829d6f05987354e46e8cb3de49af7b32bc)).
+
 Maintenance
 
+- record Actions run status \[skip ci\] ([`2828a7a`](https://github.com/Lukestaz/data-dashboard/commit/2828a7aa4c35c3fb7865efee1e1faf6a94444829)).
 - record Actions run status \[skip ci\] ([`b77b0b4`](https://github.com/Lukestaz/data-dashboard/commit/b77b0b4ada42a485bbd4a8b4913ed9cdacee57f6)).
 - record Actions run status \[skip ci\] ([`73392d6`](https://github.com/Lukestaz/data-dashboard/commit/73392d65878e25d3f1cb83ddc4d356989cee404e)).
 - record Actions run status \[skip ci\] ([`0cf8965`](https://github.com/Lukestaz/data-dashboard/commit/0cf8965ac2dd8dc68529f37e0873917fcc14d98a)).
