@@ -9,6 +9,7 @@ Generated from commit messages; these are not release or deployment confirmation
 
 Features
 
+- compact mobile toolbar and move source selection to secondary menu ([`cc8778b`](https://github.com/Lukestaz/data-dashboard/commit/cc8778b5cb934d84e1790582a3092699b4fd418b)).
 - show online availability globe badges on merchant cards ([`602160b`](https://github.com/Lukestaz/data-dashboard/commit/602160b50c2834c11fe80fcb7c91be183c738433)).
 - add category-dependent subtype filter to cards and map ([`9561776`](https://github.com/Lukestaz/data-dashboard/commit/956177631150d338cbb842e1d7aa2e4925f80daf)).
 - derive browsing categories after import with audited subtype rules ([`53b9826`](https://github.com/Lukestaz/data-dashboard/commit/53b98260313f535a987eea704ecad0132af64a9d)).
@@ -27,6 +28,7 @@ Fixes
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`73392d6`](https://github.com/Lukestaz/data-dashboard/commit/73392d65878e25d3f1cb83ddc4d356989cee404e)).
 - record Actions run status \[skip ci\] ([`0cf8965`](https://github.com/Lukestaz/data-dashboard/commit/0cf8965ac2dd8dc68529f37e0873917fcc14d98a)).
 - record Actions run status \[skip ci\] ([`8c44b35`](https://github.com/Lukestaz/data-dashboard/commit/8c44b35a87a8ff0dfda402d6c5c3c2bd2437c135)).
 - rename Amex refresh workflow and dependent triggers ([`cc12dd0`](https://github.com/Lukestaz/data-dashboard/commit/cc12dd0b6f08f5b3cd98889b0035dc70ed899f78)).
