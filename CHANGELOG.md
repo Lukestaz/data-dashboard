@@ -18,6 +18,7 @@ Features
 
 Fixes
 
+- standardise availability controls and keep dialogs above menus and map ([`74548d1`](https://github.com/Lukestaz/data-dashboard/commit/74548d1ed79eae542480daccfe6d5e9eee59ae2e)).
 - remove legacy filter DOM observer and polish compact controls ([`c775a07`](https://github.com/Lukestaz/data-dashboard/commit/c775a07a77959ca27731e816a6815fb803810dda)).
 - wrap Chathams map longitudes consistently and hide legacy reset ([`ddf5df0`](https://github.com/Lukestaz/data-dashboard/commit/ddf5df0ebe8865bbd681ab20774cef6e73cac812)).
 - preserve map filter results before viewport list updates ([`05ec889`](https://github.com/Lukestaz/data-dashboard/commit/05ec889e21f6b22c22c21c4e2908dc4d65fcb428)).
@@ -38,6 +39,7 @@ Performance
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`102b866`](https://github.com/Lukestaz/data-dashboard/commit/102b866b33596975801aa2aa41279ea36c9a1822)).
 - record Actions run status \[skip ci\] ([`6d2e023`](https://github.com/Lukestaz/data-dashboard/commit/6d2e0233ded8a1af98a73b4c7087178b4e532efc)).
 - record Actions run status \[skip ci\] ([`83beff8`](https://github.com/Lukestaz/data-dashboard/commit/83beff81cfa75e5870680e703ef33f2f61d1448c)).
 - record Actions run status \[skip ci\] ([`4ac0d69`](https://github.com/Lukestaz/data-dashboard/commit/4ac0d691cd75610b58974dfb061aacf43e01256c)).
