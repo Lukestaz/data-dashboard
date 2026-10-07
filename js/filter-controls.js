@@ -1,4 +1,5 @@
 import { subtypeOptions } from './subtype-filters.js';
+import { mountCompactUI } from './compact-ui.js';
 
 export function availabilityMatches(merchant, mode) {
   if (mode === 'instore') return merchant.inStore !== false;
@@ -39,6 +40,7 @@ export function createFilterControls(state, changed, onlineSelected) {
   chips.title = 'Subtype counts reflect availability and category, before location, search and saved filters';
   subtypes.replaceChildren(chips);
   categories.after(subtypes);
+  const layout = mountCompactUI(state, changed);
   let lastCategory, lastAvailability;
   return {
     refresh() {
@@ -51,7 +53,17 @@ export function createFilterControls(state, changed, onlineSelected) {
           if (disabled) return;
           state.activeAvailability = mode;
           state.activeSubtype = 'All';
-          if (mode === 'online') onlineSelected();
+          if (mode === 'online') {
+            state.activeTown = 'All';
+            state.activeArea = 'All';
+            state.userLat = null;
+            state.userLng = null;
+            for (const merchant of state.merchants) delete merchant._dist;
+            if (state.currentSort === 'distance') {state.currentSort = 'default';const sort=document.getElementById('sort-select');if(sort)sort.value='default';}
+            const label=document.getElementById('near-me-label');if(label)label.textContent='Near Me';
+            document.getElementById('near-me-btn')?.classList.remove('bg-rose-500/20','border-rose-500/50','text-rose-300');
+            onlineSelected();
+          }
           changed();
         }, true);
         control.disabled = disabled;
@@ -73,6 +85,7 @@ export function createFilterControls(state, changed, onlineSelected) {
       if (lastCategory !== state.activeCategory || lastAvailability !== state.activeAvailability) chips.scrollLeft = 0;
       lastCategory = state.activeCategory;
       lastAvailability = state.activeAvailability;
+      layout.refresh();
     }
   };
 }
