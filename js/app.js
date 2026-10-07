@@ -46,12 +46,29 @@ async function loadActiveDataset(){
   let data;try{const response=await fetch(state.activeDataset==='amex'?'./data/amex.json':'./data.json');if(!response.ok)throw new Error(`HTTP ${response.status}`);data=await response.json();}catch(error){console.warn('Dataset load failed, falling back to data.json',error);const fallback=await fetch('./data.json');if(!fallback.ok)throw new Error(`HTTP ${fallback.status}`);data=await fallback.json();}
   state.merchants=Array.isArray(data)?data:(data.merchants||[]);
   normalizeLocations(state.merchants);
-  state.merchants.forEach((m,index)=>{m.id=m.id||m.SENumber||index;m.title=m.title||m.name||m.Name||'Merchant';m.category=m.category||m.type||m.Type||'Retail';m.address=m.address||m.Address||'';m.city=normalizeCityTown(m.rawLocation,m.address);});
+  state.merchants.forEach((m,index)=>{m.id=m.id||m.SENumber||index;m.title=m.title||m.name||m.Name||'Merchant';m.category=m.category||m.type||m.Type||'Retail';m.address=m.address||m.Address||'';m.city=normalizeCityTown(m.rawLocation,m.address);if(m.displaySubType){m.sourceSubType=m.sourceSubType??m.subType??'';m.subType=m.displaySubType;}});
   populateFilters();applyFilters();
 }
 export function applyFilters(){const query=(el('search-input')?.value||'').toLowerCase().trim();state.filteredList=state.merchants.filter(m=>{if(state.showSavedOnly&&!state.savedIds.has(m.id))return false;if(state.activeCategory!=='All'&&m.category!==state.activeCategory)return false;if(!subtypeMatches(m,state.activeSubtype))return false;if(!locationMatches(m,state.activeTown,state.activeArea))return false;if(query&&![m.title,m.address,m.city,m.canonicalCity,m.localArea,m.category,subtypeLabel(m),m.sourceSubType].some(value=>String(value||'').toLowerCase().includes(query)))return false;return true;});if(state.currentSort==='distance'){calculateDistances();state.filteredList.sort((a,b)=>(a._dist??Infinity)-(b._dist??Infinity));}else if(state.currentSort==='name')state.filteredList.sort((a,b)=>a.title.localeCompare(b.title));if(el('total-count'))el('total-count').textContent=state.filteredList.length.toLocaleString();state.displayedCount=state.PAGE_CHUNK;renderCardsChunk();if(state.viewMode==='map')updateMapMarkers();}
 function setupLocationControls(){const town=el('town-select');if(!town)return;town.setAttribute('aria-label','City or other towns and areas');town.removeAttribute('onchange');town.addEventListener('change',event=>window.handleTownChange(event.target.value));let area=el('area-select');if(!area){const wrapper=document.createElement('div');wrapper.className='relative min-w-[220px]';area=document.createElement('select');area.id='area-select';area.className=town.className;area.setAttribute('aria-label','Suburb or local area');wrapper.append(area);town.parentElement.after(wrapper);}area.addEventListener('change',event=>{state.activeArea=event.target.value;applyFilters();});}
-function setupSubtypeControl(){const anchor=el('area-select')||el('town-select');if(!anchor)return;let select=el('subtype-select');if(!select){const wrapper=document.createElement('div');wrapper.className='relative min-w-[180px]';select=document.createElement('select');select.id='subtype-select';select.className=anchor.className;select.setAttribute('aria-label','Merchant subtype');select.title='Subtype counts cover the selected category, before location and search filters';wrapper.append(select);anchor.parentElement.after(wrapper);}select.addEventListener('change',event=>{state.activeSubtype=event.target.value;applyFilters();});}
+function setupSubtypeControl(){
+  const categories=el('category-pills'),reference=el('sort-select')||el('town-select');
+  if(!categories||!reference)return;
+  let select=el('subtype-select');
+  if(!select){select=document.createElement('select');select.id='subtype-select';}
+  let wrapper=el('subtype-filter-row');
+  if(!wrapper){wrapper=document.createElement('div');wrapper.id='subtype-filter-row';}
+  const oldWrapper=select.parentElement;
+  wrapper.className='w-full sm:w-56 mt-2';
+  select.className=reference.className;
+  select.classList.add('w-full');
+  select.setAttribute('aria-label','Merchant subtype');
+  select.title='Subtype counts cover the selected category, before location and search filters';
+  wrapper.append(select);
+  categories.after(wrapper);
+  if(oldWrapper&&oldWrapper!==wrapper&&!oldWrapper.children.length)oldWrapper.remove();
+  select.addEventListener('change',event=>{state.activeSubtype=event.target.value;applyFilters();});
+}
 function setupInfiniteScroll(){const sentinel=el('sentinel');if(!sentinel)return;new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&state.displayedCount<state.filteredList.length){state.displayedCount+=state.PAGE_CHUNK;renderCardsChunk();}},{rootMargin:'300px'}).observe(sentinel);}
 async function init(){checkUrlSyncOnLoad(ids=>{ids.forEach(id=>state.savedIds.add(id));localStorage.setItem(savedKey(),JSON.stringify([...state.savedIds]));loadSavedIds();});if(!localStorage.getItem(state.offerNoticeKey)){el('offer-notice')?.classList.remove('hidden');el('offer-notice')?.classList.add('flex');}loadSavedIds();setupLocationControls();setupSubtypeControl();fetchCommunityVotes(()=>{renderCardsChunk();if(state.viewMode==='map')updateMapMarkers();});await loadActiveDataset();el('search-input')?.addEventListener('input',applyFilters);setupInfiniteScroll();}
 window.addEventListener('DOMContentLoaded',init);
