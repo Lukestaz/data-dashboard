@@ -6,6 +6,7 @@ import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 
 execFileSync('python3', ['scripts/stable_ids.py', '--test-only'], {stdio:'inherit'});
+execFileSync('python3', ['scripts/finalize_history.py', '--test-only'], {stdio:'inherit'});
 // Load the exact browser rules as ES modules without changing package.json.
 const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'amex-locations-'));
 try {
@@ -45,6 +46,7 @@ try {
     body.meta = {...body.meta, locationNormalization:'shared-browser-rules', ingestionMethod:'direct-http'};
     await fs.writeFile(file + '.tmp', JSON.stringify(body));
     await fs.rename(file + '.tmp', file);
+    execFileSync('python3', ['scripts/finalize_history.py'], {stdio:'inherit'});
     console.log(JSON.stringify({records:count, normalization:'shared-browser-rules'}));
   }
 } finally {
