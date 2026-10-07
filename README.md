@@ -1,106 +1,160 @@
 # Amex Shop Small NZ Dashboard
 
-An interactive web dashboard for exploring small business merchant data in New Zealand.
+Explore New Zealand merchants using searchable cards, an interactive map, saved lists and community Amex-acceptance feedback. This is an independent project, not an official American Express application.
 
-[Open the dashboard](https://lukestaz.github.io/data-dashboard/) · [Changelog](CHANGELOG.md)
+[Open dashboard](https://lukestaz.github.io/data-dashboard/) · [Changelog](CHANGELOG.md) · [Actions](https://github.com/Lukestaz/data-dashboard/actions)
 
-## Features
+## Version and current state
 
-- Cards view for browsing merchants, saving favourites and submitting Amex acceptance votes.
-- Combined map view: compact scrollable cards beside the map on desktop; map above cards on smaller screens.
-- Automatic map-area filtering: zooming or panning updates the cards to merchants inside the visible map bounds. Search, city, local-area and category filters still apply.
-- Linked selection: a card opens its available map pin; a pin highlights its corresponding card. Save and vote controls remain available.
-- Hide/show merchant list control for a larger map.
-- Two-tier location filtering: city or Other towns / areas, then suburb/local area. Only top-tier places with in-store records are offered.
-- Location cleanup removes postcode-only labels and malformed punctuation, preserves macrons and uses address context where available.
-- Visible Reset filters button and contextual clear buttons for search, city and local area. Clearing a city also clears the local area.
-- Multiple datasets: current Amex-derived data and the Cheapies legacy archive.
-- Near Me geolocation and distance sorting.
-- Browser-local saved merchants and cross-device sync links without accounts.
-- Amex offer reminder and Umami analytics integration.
+- Tag v1.3.0 points to commit cde105b0eee7da38e32f8029f6bf667647439ebe.
+- That tag includes the location-filter, map/sidebar, viewport-filtering and initial monitoring changes.
+- Current main additionally contains direct campaign-JSON ingestion and the daily refresh schedule. Those later changes are not part of v1.3.0.
+- The monitor output data/ops/action-runs.json exists. Its presence proves a status snapshot was written, not that every deployment or refresh succeeded. Read checkedAt, SHA and conclusion.
+- A workflow committed to main is not proof of a successful execution, and a successful deployment is not a browser test.
 
-## Using the map
+## Browsing merchants
 
-1. Select Map view.
-2. Zoom or pan to the area you want to explore.
-3. Browse the matching cards; the toolbar distinguishes merchants in the map area from all merchants matching your filters.
-4. Click a card to open its pin, or click a pin to highlight its card.
-5. Switch to Cards view to restore the full filtered list, including records without map coordinates.
+| Feature | Behaviour |
+|---|---|
+| Cards | Full filtered merchant list with save, directions and voting controls |
+| Map | Compact cards beside the map on desktop; map above cards on smaller screens |
+| Map-area filtering | Cards automatically narrow to stored coordinates inside the visible bounds after zooming or panning |
+| Linked selection | A card opens its available pin; a pin highlights its card |
+| Hide/show list | Collapses the cards to give the map more space |
+| Search and categories | Apply alongside city/local-area filters and map bounds |
+| Near Me | Browser geolocation and distance sorting |
 
-Map-area filtering uses each merchant's stored coordinates. Approximate locations can therefore place a merchant inside or outside an area imperfectly. Merchants without coordinates are excluded from the map-area list, but remain available in Cards view. The former 1,500-pin cap has been removed; markers use clustered, chunked loading. Performance depends on the number of matching records and the device.
+Switching back to Cards restores all merchants matching the non-map filters. Map-area results exclude merchants without coordinates. Approximate coordinates can place a merchant in the wrong visible area. The 1,500-pin cap has been removed; markers use clustered, chunked loading, so performance varies by dataset and device.
 
 ## Locations and reset controls
 
-The top tier uses a snapshot of the [major and large urban areas listed on Wikipedia](https://en.wikipedia.org/wiki/Cities_in_New_Zealand), with Other towns / areas for places outside that list or not confidently mapped. The second tier lists local areas within the selected top-tier place. Hibiscus Coast is listed separately from Auckland.
+The first location tier contains a snapshot of the [major and large urban areas listed on Wikipedia](https://en.wikipedia.org/wiki/Cities_in_New_Zealand), plus Other towns / areas. Only top-tier places with in-store records are offered. Hibiscus Coast is separate from Auckland.
 
-Raw location text is preserved in rawLocation; canonicalCity and localArea support filtering. Suburb mappings are rule-based, not authoritative geographic boundaries, and need refinement as ambiguous data is found.
+The second tier lists suburbs/local areas for the selected city, or individual places in Other towns / areas. Unknown or ambiguous places are not automatically assigned to a city. These are rule-based mappings, not authoritative geographic boundaries.
 
-Reset filters clears search, both location tiers, category and saved-only filtering, and restores default sorting. It does not erase saved merchants or votes. Per-field × controls appear when their field is active. Resetting filters does not reset the map bounds.
+The shared normalizer removes postcode and punctuation-only labels, preserves macrons and uses address context where available. rawLocation preserves the supplied location label; canonicalCity and localArea support the hierarchy. Raw captures remain available separately.
 
-## Cross-device saved lists
+- Search × clears search text.
+- City × clears both location tiers.
+- Local-area × clears only the second tier.
+- Reset filters clears search, location tiers, category and saved-only filtering, and restores default sorting. It does not erase saved merchants or votes, change the dataset or reset map bounds.
 
-Saved merchants are stored locally in the browser using localStorage.
+The clear buttons appear when their field is active. Desktop controls use a compact single-row layout; smaller screens use a stacked layout.
 
-1. Open Sync in the header.
-2. Copy the sync link.
-3. Open it on another device and follow the merge prompt, or paste the link/code into the import field.
+## Sources and refresh pipeline
 
-This transfers a saved-list snapshot; it is not continuous synchronization. Clearing browser storage removes locally saved data. Treat a shared link as disclosure of the saved-list identifiers it contains.
-
-## Data sources and pipeline
-
-| Dataset | File | Purpose |
+| Selector | Repository file | Refresh behaviour |
 |---|---|---|
-| Amex-derived dataset | data/amex.json | Campaign merchant records and online availability, enriched with cached coordinates |
-| Cheapies legacy archive | data.json | Historical curated merchant dataset |
+| Amex | data/amex.json | Rebuilt from the official campaign JSON by the refresh workflow |
+| Cheapies legacy | data.json | Historical archive protected against changes by the refresh workflow |
 
-The browser loads repository JSON, not the upstream campaign feed directly. The refresh workflow captures the [Amex NZ campaign feed](https://www.americanexpress.com/content/dam/gcst/merchantmapslite/en-NZ/shop-small/campaigndata.json), builds data/amex.json, geocodes missing addresses, rebuilds and commits the results. A minimum-count guard and legacy-file safeguard protect the refresh.
+The source selector does not distinguish JSON ingestion from Playwright capture: these are acquisition methods, not separate merchant datasets. The browser continues to load repository JSON, not the upstream URL directly.
 
-Historical reference: the 2 October 2026 build contained 12,102 in-store records and 3,487 online-only records, for 15,589 combined records. The upstream online list contained 4,462 entries, some matched to in-store records. These are snapshot counts, not current totals or a count of distinct physical shops. Check dataset metadata for the latest capture time and counts.
+Current main uses this pipeline:
 
-The pipeline deliberately does not use upstream Amex coordinates. It uses the coordinate cache, seeded from legacy data and supplemented with Nominatim lookups; postcode-derived fallback positions are marked approximate. Cached or geocoded coordinates should not be treated as guaranteed address accuracy.
+```text
+Shared location regression checks
+  -> Direct HTTP download of campaigndata.json
+  -> Validate schema and capture counts
+  -> Store compatible raw-capture envelope
+  -> Build dataset with coordinate cache
+  -> Geocode missing/changed addresses
+  -> Rebuild and apply shared location hierarchy
+  -> Validate output and protect legacy file
+  -> Commit dataset, cache, capture and history
+  -> Pages deployment
+```
 
-## Deployment and run monitoring
+[Official campaign feed](https://www.americanexpress.com/content/dam/gcst/merchantmapslite/en-NZ/shop-small/campaigndata.json). scripts/fetch_amex.py downloads it with retries and atomically replaces data/imports/amex-online-raw.json only after validation. It rejects missing/empty lists, incompatible required fields and drops greater than 5% against previous in-store or online capture counts. Failure stops the workflow; it does not silently publish an old capture as new.
 
-- pages.yml: GitHub Pages deployment, configured for pushes to main and completion of the Amex refresh workflow.
-- refresh-amex.yml: twice-weekly capture/build/geocode workflow, also manually runnable. Its schedule is Monday and Thursday at 18:00 UTC; local times vary with daylight saving.
-- monitor-actions.yml: records Pages and refresh run status on completion, with a scheduled 15-minute check and manual trigger.
+Playwright installation and scripts/scrape-online.mjs execution have been removed from the active refresh workflow. Historical scraper files may remain in the repository but are not the current acquisition path.
 
-The monitor writes data/ops/action-runs.json after a successful execution. It records the latest run and up to 30 recent runs for each watched workflow: status, conclusion, commit SHA, timestamps, URLs and failed jobs/steps where available. Job lookup errors are recorded. Runs with no jobs direct readers to the run page for validation errors. Full logs and annotations are not copied into this file.
+scripts/normalize_locations.mjs loads the exact browser modules as temporary ES modules, runs regression checks and writes rawLocation, canonicalCity and localArea to the final dataset. Browser loading reapplies the same rules. This avoids maintaining a second set of location mappings.
 
-Check checkedAt before treating the monitor snapshot as current. A committed workflow is not proof that it has run successfully. This monitoring supports on-demand inspection; it does not send proactive alerts or independently verify live UI behaviour. Status commits use [skip ci]. Merchant-data turnover history remains separate in data/history.json.
+The pipeline does not use upstream Amex coordinates. Coordinates come from the cache, legacy seeds and Nominatim lookups, with approximate postcode-derived fallback positions. Geocoded or cached does not mean independently verified address accuracy.
 
-## Local development
+Historical reference only: the 2 October 2026 build had 12,102 in-store records and 3,487 online-only records, totalling 15,589 combined records. The upstream online list had 4,462 entries, some matched to in-store records. These are not current totals or counts of distinct physical shops; consult dataset metadata.
 
-No frontend build step is required. Serve the repository over HTTP so the JavaScript modules and JSON can load:
+## Daily schedule and deployment
+
+Amex refresh is scheduled daily at 07:17 in Pacific/Auckland, with the timezone explicitly configured. Scheduled execution is best-effort, not a guaranteed start time. Manual execution remains available in [the refresh workflow](https://github.com/Lukestaz/data-dashboard/actions/workflows/refresh-amex.yml).
+
+The historical display name remains Refresh Amex dataset (twice weekly) because Pages and monitoring reference it in workflow_run. Its actual schedule is daily. Rename all dependent references together if changing that name.
+
+Scheduled runs allow up to 400 new/changed-address geocoding attempts. Manual runs default to 1,000 through geocode_max. The timeout is 120 minutes. Existing cached coordinates are retained.
+
+Pages is configured for pushes to main and refresh-workflow completion. A fresh capture becomes public only after a successful publish/deployment. Already-open tabs do not automatically reload the dataset.
+
+## Monitoring and troubleshooting
+
+monitor-actions.yml checks Pages and refresh workflows after completion, with a 15-minute scheduled fallback and manual trigger. It writes data/ops/action-runs.json and an Actions job summary.
+
+The snapshot includes up to 30 recent runs per watched workflow: status, conclusion, commit SHA, timestamps, run URL and unsuccessful job/step details where available. Failed job lookups are recorded explicitly. Runs without jobs direct readers to the run page for validation errors. Full logs and validation annotations are not copied into the snapshot.
+
+1. Check checkedAt for freshness.
+2. Match the run SHA to the change being investigated.
+3. Distinguish Pages deployment failures from Amex refresh failures.
+4. Open the run URL for full logs or YAML annotations.
+5. Check data/amex.json metadata to confirm ingestionMethod is direct-http and locationNormalization is shared-browser-rules after the first successful new-pipeline refresh.
+
+Status-file commits use [skip ci]. Monitoring records are separate from merchant turnover history in data/history.json. This is on-demand inspectable status, not proactive alert delivery. The monitor currently watches Pages and refresh, not its own health or the version-tag workflow.
+
+## Saved lists and community votes
+
+Saved merchants live in browser localStorage. Open Sync, copy the link and open it on another device to merge the snapshot, or use the import field. No account is needed. This is snapshot transfer, not continuous synchronization; clearing browser storage removes local saved data. Shared links disclose the identifiers they contain.
+
+Acceptance votes are community reports, not guarantees. Directory inclusion does not establish current Amex acceptance or offer eligibility. The app also includes an offer reminder and Umami analytics integration.
+
+## Review findings and limitations
+
+The following were identified during the 7 October review and are not claimed fixed by this documentation change:
+
+- Concurrent writes: the monitor commits to main regularly, while refresh ends with a plain git push. A newer monitor commit can cause a non-fast-forward refresh push to fail. Add controlled retry/rebase or separate operational-status storage.
+- Voting identifiers: cards use SENumber or id, while map popups also prefer seNumber. Standardize the key across views and validate that votes for the same merchant agree.
+- Saved identifiers: the current builder assigns sequential record IDs. Validate favourite/sync stability when upstream records are added, removed or reordered.
+- History precision: the builder runs before and after geocoding. Review whether the second build replaces the first build's turnover counts for the same capture.
+- Location coverage: suburb dictionaries and address parsing are incomplete. Other towns / areas is intentional; investigate incorrect mappings rather than forcing a guess.
+- Browser verification: automated location assertions do not cover voting, map interaction, mobile layout or all filter combinations.
+
+## Local development and checks
+
+Serve the repository over HTTP; there is no frontend bundling step:
 
 ```bash
 python -m http.server 8000
 ```
 
-Open [localhost:8000](http://localhost:8000). External map tiles and community services require network access.
+Open [localhost:8000](http://localhost:8000). External map tiles and community services need network access.
+
+Run shared location regression checks with Node.js 20:
+
+```bash
+node scripts/normalize_locations.mjs --test-only
+```
+
+The checks cover postcode-only and punctuation-only values, macrons, ambiguous Northcote addresses, Hibiscus Coast handling and raw-field preservation. Direct downloading/building/geocoding modifies local dataset files and may contact external services; use the workflow for controlled refreshes.
 
 ## Project structure
 
 | Path | Role |
 |---|---|
-| index.html | Dashboard markup and external dependencies |
-| js/app.js | Initialization, datasets and shared filtering |
-| js/store.js | Shared state and saved merchants |
-| js/normalizer.js | Location text cleanup and city normalization |
-| js/locations.js | Location hierarchy and filter controls/layout |
-| js/map.js | Map clusters, sidebar and visible-area filtering |
-| js/cards.js | Merchant card rendering |
-| js/votes.js | Community voting integration |
-| js/sync.js | Saved-list sharing and importing |
-| scripts/build_amex.py | Dataset build, safeguards and turnover history |
-| scripts/geocode.py | Coordinate-cache enrichment |
-| .github/workflows/ | Deployment, refresh and monitoring |
+| index.html | Dashboard markup and dependencies |
+| js/app.js, js/store.js | Initialization, shared filters, state and saved merchants |
+| js/normalizer.js, js/locations.js | Shared location rules, hierarchy and filter UI |
+| js/map.js, js/cards.js | Map/sidebar, visible-area filtering and merchant cards |
+| js/votes.js, js/sync.js | Community feedback and saved-list transfer |
+| scripts/fetch_amex.py | Direct campaign download and capture validation |
+| scripts/build_amex.py, scripts/geocode.py | Build/history and coordinate enrichment |
+| scripts/normalize_locations.mjs | Shared cleanup and regression checks |
+| .github/workflows/pages.yml | Pages deployment |
+| .github/workflows/refresh-amex.yml | Daily data refresh |
+| .github/workflows/monitor-actions.yml | Operational status snapshots |
+| .github/workflows/tag-v1.3.0.yml | Version-specific tag creation |
 
 ## Attribution and license
 
-Merchant campaign data: American Express public campaign directory. Legacy merchant data: Cheapies archive. Mapping and geocoding: OpenStreetMap contributors and Nominatim. These data and services retain their respective terms. This is not an official American Express application; directory membership and community votes do not guarantee acceptance or offer eligibility.
+Campaign data: American Express public directory. Legacy data: Cheapies archive. Mapping/geocoding: OpenStreetMap contributors and Nominatim. These sources retain their respective terms.
 
 Project license: MIT; see LICENSE for details.
 
-Last updated: 7 October 2026.
+Last reviewed: 7 October 2026.
