@@ -49,8 +49,12 @@ function polishCompactUI() {
 #compact-more>summary{height:40px;min-height:40px;width:36px;display:flex;align-items:center;justify-content:center;padding:0;border-color:#263244;box-sizing:border-box}
 #compact-root{gap:8px;margin-top:10px}
 #compact-actions>button,#compact-actions summary{border-color:#263244;border-radius:8px;box-shadow:none;font-weight:500}
-#compact-root #availability-filter-row{border:1px solid #263244;background:#0f172a;border-radius:10px;padding:3px}
-#compact-root #availability-filter-row button{font-size:12px;min-height:40px;border-radius:7px}
+#compact-root #availability-filter-row{border:0;background:transparent;border-radius:0;padding:0;gap:6px}
+#compact-root #availability-filter-row button{height:40px;min-height:40px;padding:0 10px;font-size:12px;line-height:1.25;font-weight:500;border:1px solid #263244;border-radius:8px;box-shadow:none;box-sizing:border-box}
+#compact-root #availability-filter-row button[aria-pressed="false"]{background:#0f172a;color:#cbd5e1}
+#compact-root #availability-filter-row button[aria-pressed="true"]{background:#2563eb;border-color:#2563eb;color:#fff}
+#map-wrapper{position:relative;isolation:isolate;z-index:0}
+#sync-modal,#offer-notice{position:fixed;z-index:2000!important;isolation:isolate}
 #compact-root #category-pills button{font-size:12px;font-weight:500;padding:6px 11px}
 #compact-result-row{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding-top:8px}
 #compact-result-row>span{font-size:12px;line-height:1.5}
@@ -65,6 +69,14 @@ function polishCompactUI() {
 @media(max-width:359px){#compact-toolbar h1{font-size:16px}#compact-view-toggle button{padding:0 7px}}
 `;
   document.head.append(style);
+  const closeMenus = () => {for (const disclosure of document.querySelectorAll('#compact-more[open],#compact-location[open],#compact-map-info[open]')) disclosure.open = false;};
+  document.getElementById('sync-btn')?.addEventListener('click', closeMenus, {capture:true});
+  for (const id of ['sync-modal','offer-notice']) {
+    const modal = document.getElementById(id);
+    if (!modal) continue;
+    const syncLayer = () => {if (!modal.hidden && !modal.classList.contains('hidden')) closeMenus();};
+    new MutationObserver(syncLayer).observe(modal,{attributes:true,attributeFilter:['class','hidden']});syncLayer();
+  }
   const note = document.querySelector('#compact-root .compact-map-note');
   const tools = document.getElementById('compact-result-tools');
   if (note && tools) {
