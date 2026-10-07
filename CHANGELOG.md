@@ -18,6 +18,7 @@ Features
 
 Fixes
 
+- preserve map filter results before viewport list updates ([`05ec889`](https://github.com/Lukestaz/data-dashboard/commit/05ec889e21f6b22c22c21c4e2908dc4d65fcb428)).
 - consolidate reset and map controls in compact mobile layout ([`0e486f4`](https://github.com/Lukestaz/data-dashboard/commit/0e486f44ca0659aadb40d42f6a7f60d3980af0c7)).
 - simplify subtype reset and exclude type-only selections from Clear ([`dcacc07`](https://github.com/Lukestaz/data-dashboard/commit/dcacc0794eb18cd5eda992fe2e3e6a5803cf3451)).
 - restore prominent availability filters and two-tier category chips ([`7bd0f97`](https://github.com/Lukestaz/data-dashboard/commit/7bd0f97483d5f7f721cb819523ed0dd97f745dbb)).
@@ -35,6 +36,8 @@ Performance
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`bd17664`](https://github.com/Lukestaz/data-dashboard/commit/bd176641b44627fbfc2cea9c1f7d5f622a71ac76)).
+- record Actions run status \[skip ci\] ([`97242d5`](https://github.com/Lukestaz/data-dashboard/commit/97242d56ab20b649f4ce52beb4d558c2bcf16d30)).
 - record Actions run status \[skip ci\] ([`204747e`](https://github.com/Lukestaz/data-dashboard/commit/204747e614784610cb5a3ec97247e34e63abc7e0)).
 - record Actions run status \[skip ci\] ([`8bd1ab7`](https://github.com/Lukestaz/data-dashboard/commit/8bd1ab739af132647dd018fb05f1974aed20ad79)).
 - record Actions run status \[skip ci\] ([`2828a7a`](https://github.com/Lukestaz/data-dashboard/commit/2828a7aa4c35c3fb7865efee1e1faf6a94444829)).
