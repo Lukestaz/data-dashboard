@@ -47,6 +47,24 @@ try {
     await fs.writeFile(file + '.tmp', JSON.stringify(body));
     await fs.rename(file + '.tmp', file);
     execFileSync('python3', ['scripts/finalize_history.py'], {stdio:'inherit'});
+    execFileSync('python3', ['-c', `
+import json, pathlib
+results = []
+for name in ('data/amex.json', 'data/geocache.json', 'data/imports/amex-id-registry.json'):
+    destination = pathlib.Path(name)
+    if not destination.exists():
+        raise FileNotFoundError(name)
+    original = destination.read_text(encoding='utf-8')
+    value = json.loads(original)
+    compact = json.dumps(value, ensure_ascii=False, separators=(',', ':'), allow_nan=False) + chr(10)
+    assert json.loads(compact) == value, 'Compaction changed JSON values: ' + name
+    if compact != original:
+        temp = destination.with_suffix(destination.suffix + '.tmp')
+        temp.write_text(compact, encoding='utf-8')
+        temp.replace(destination)
+    results.append({'file':name, 'beforeBytes':len(original.encode('utf-8')), 'afterBytes':len(compact.encode('utf-8'))})
+print(json.dumps({'jsonCompaction':results, 'valuesPreserved':True}))
+`], {stdio:'inherit'});
     console.log(JSON.stringify({records:count, normalization:'shared-browser-rules'}));
   }
 } finally {
