@@ -6,6 +6,7 @@ let baseMatches=[],viewportList=null,initialFit=false,busy=false,pending=false;
 const markersById=new Map(),icons=new Map();
 const get=id=>document.getElementById(id);
 const hasPin=item=>item.lat!=null&&item.lng!=null&&Number.isFinite(Number(item.lat))&&Number.isFinite(Number(item.lng))&&Number(item.lat)!==0&&Number(item.lng)!==0;
+const mapPosition=item=>[Number(item.lat),Number(item.lng)<0?Number(item.lng)+360:Number(item.lng)];
 const categoryOf=item=>String(item.category||item.Type||'Other');
 const diagnostics={};
 function record(key,value){diagnostics[key]=value;window.__mapPerformance={...diagnostics};}
@@ -44,7 +45,7 @@ function popupFor(item){
 }
 function updateViewport(){
  if(!mapInstance||state.viewMode!=='map')return;
- const bounds=mapInstance.getBounds(),visible=baseMatches.filter(item=>hasPin(item)&&bounds.contains([Number(item.lat),Number(item.lng)]));
+ const bounds=mapInstance.getBounds(),visible=baseMatches.filter(item=>hasPin(item)&&bounds.contains(mapPosition(item)));
  const changed=!viewportList||visible.length!==viewportList.length||visible.some((item,index)=>item!==viewportList[index]);
  if(changed){viewportList=visible;state.filteredList=viewportList;state.displayedCount=state.PAGE_CHUNK;renderCardsChunk();get('cards-wrapper')?.scrollTo({top:0});}else state.filteredList=viewportList;
  if(get('total-count'))get('total-count').textContent=visible.length.toLocaleString();
@@ -62,6 +63,7 @@ function setupSplit(){
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent='Hide merchant list';toggle.setAttribute('aria-expanded','true');toggle.addEventListener('click',()=>{const collapsed=split.classList.toggle('map-list-collapsed');toggle.textContent=collapsed?'Show merchant list':'Hide merchant list';toggle.setAttribute('aria-expanded',String(!collapsed));mapInstance?.invalidateSize();updateViewport();});
  const status=document.createElement('span');status.id='map-list-status';toolbar.append(status,toggle);split.prepend(toolbar);
  const style=document.createElement('style');style.textContent=`
+ button[onclick*="resetAllFilters"]{display:none!important;}
  #merchant-split .map-list-toolbar{display:none;}
  #merchant-split.merchant-split-active{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;}
  .merchant-split-active .map-list-toolbar{display:flex!important;grid-column:1/-1;justify-content:space-between;align-items:center;gap:12px;color:#94a3b8;font-size:12px;}
@@ -90,7 +92,7 @@ export function initMap(){
  if(state.filteredList!==viewportList)baseMatches=[...state.filteredList];
  setupSplit();if(mapInstance){syncSplit();return mapInstance;}
  const start=performance.now();
- mapInstance=L.map('map',{center:state.userLat&&state.userLng?[state.userLat,state.userLng]:[-36.85,174.76],zoom:12});
+ mapInstance=L.map('map',{center:state.userLat&&state.userLng?mapPosition({lat:state.userLat,lng:state.userLng}):[-36.85,174.76],zoom:12});
  const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:19});
  let tileStart=start;tiles.on('loading',()=>{tileStart=performance.now();});tiles.on('load',()=>record('tilesMs',performance.now()-tileStart));tiles.addTo(mapInstance);
  clusterGroup=L.markerClusterGroup({chunkedLoading:true,chunkInterval:50,chunkDelay:20,maxClusterRadius:50,chunkProgress:(processed,total,elapsed)=>{if(processed===total){record('clusteringMs',elapsed);busy=false;if(pending){pending=false;queueMicrotask(updateMapMarkers);}}}});
@@ -105,7 +107,7 @@ export function updateMapMarkers(){
  for(const[id,marker]of markersById){if(!wanted.has(id)){remove.push(marker);markersById.delete(id);}}
  if(remove.length)clusterGroup.removeLayers(remove);
  for(const item of matches){
- const id=String(item.id),position=[Number(item.lat),Number(item.lng)],icon=pinIcon(item);
+ const id=String(item.id),position=mapPosition(item),icon=pinIcon(item);
  let marker=markersById.get(id);
  if(marker){
  reused++;marker.merchantItem=item;
@@ -120,6 +122,6 @@ export function updateMapMarkers(){
  }
  record('markerPreparationMs',performance.now()-start);record('pins',matches.length);record('created',add.length);record('reused',reused);record('removed',remove.length);
  if(add.length){busy=true;clusterGroup.addLayers(add);}else record('clusteringMs',0);
- if(!initialFit&&matches.length){initialFit=true;if(!state.userLat)mapInstance.fitBounds(L.latLngBounds(matches.map(item=>[Number(item.lat),Number(item.lng)])),{padding:[40,40],maxZoom:14});}
+ if(!initialFit&&matches.length){initialFit=true;if(!state.userLat)mapInstance.fitBounds(L.latLngBounds(matches.map(mapPosition)),{padding:[40,40],maxZoom:14});}
  syncSplit();updateViewport();record('updateSyncMs',performance.now()-start);
 }
