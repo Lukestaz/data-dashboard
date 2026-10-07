@@ -2,8 +2,10 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 
+execFileSync('python3', ['scripts/stable_ids.py', '--test-only'], {stdio:'inherit'});
 // Load the exact browser rules as ES modules without changing package.json.
 const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'amex-locations-'));
 try {
@@ -28,6 +30,7 @@ try {
   assert.equal(preserved[0].localArea, 'Wānaka');
   console.log('Shared location regression checks passed');
   if (!process.argv.includes('--test-only')) {
+    execFileSync('python3', ['scripts/stable_ids.py'], {stdio:'inherit'});
     const file = 'data/amex.json';
     const body = JSON.parse(await fs.readFile(file, 'utf8'));
     assert.ok(Array.isArray(body.merchants) && body.merchants.length, 'No merchants to normalize');
