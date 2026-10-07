@@ -1,6 +1,39 @@
 import { subtypeOptions } from './subtype-filters.js';
 import { mountCompactUI } from './compact-ui.js';
 
+function categoryColour(category) {
+  const palette = ['#f97316','#3b82f6','#22c55e','#a78bfa','#ec4899','#f59e0b','#06b6d4','#94a3b8'];
+  const key = category.toLowerCase();
+  if (/food|drink|restaurant|cafe|dining/.test(key)) return palette[0];
+  if (/retail|shop/.test(key)) return palette[1];
+  if (/health|medical|wellness/.test(key)) return palette[2];
+  if (/service/.test(key)) return palette[3];
+  if (/stay|travel|accommodation|hotel/.test(key)) return palette[4];
+  if (/club|fun|entertainment/.test(key)) return palette[5];
+  let hash = 0;
+  for (const character of key) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+  return key === 'other' ? palette[7] : palette[hash % palette.length];
+}
+
+function colourCategoryChips(categories) {
+  for (const control of categories.querySelectorAll('button')) {
+    const category = control.textContent.trim();
+    const selected = control.getAttribute('aria-pressed') === 'true';
+    if (category === 'All') {
+      control.style.color = '#e2e8f0';
+      control.style.backgroundColor = selected ? '#334155' : '#0f172a';
+      control.style.borderColor = selected ? '#94a3b8' : '#1e293b';
+      continue;
+    }
+    const colour = categoryColour(category);
+    control.classList.add('category-colour-chip');
+    control.style.setProperty('--category-colour', colour);
+    control.style.color = '#e2e8f0';
+    control.style.backgroundColor = selected ? colour + '26' : '#0f172a';
+    control.style.borderColor = selected ? colour : '#334155';
+  }
+}
+
 export function availabilityMatches(merchant, mode) {
   if (mode === 'instore') return merchant.inStore !== false;
   if (mode === 'online') return merchant.isOnline === true || merchant.online === true || merchant.availableOnline === true;
@@ -22,6 +55,12 @@ function button(label, selected, callback, prominent = false) {
 export function createFilterControls(state, changed, onlineSelected) {
   const categories = document.getElementById('category-pills');
   if (!categories) return {refresh() {}};
+  if (!document.getElementById('category-colour-style')) {
+    const style = document.createElement('style');
+    style.id = 'category-colour-style';
+    style.textContent = '#category-pills .category-colour-chip::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--category-colour);margin-right:7px;vertical-align:baseline;box-shadow:0 0 0 1px #ffffff26}';
+    document.head.append(style);
+  }
   document.getElementById('avail-select')?.remove();
   document.getElementById('subtype-select')?.remove();
   let availability = document.getElementById('availability-filter-row');
@@ -44,6 +83,7 @@ export function createFilterControls(state, changed, onlineSelected) {
   let lastCategory, lastAvailability;
   return {
     refresh() {
+      colourCategoryChips(categories);
       const merchants = state.merchants || [];
       if (!state.availabilitySupported && state.activeAvailability === 'online') state.activeAvailability = 'all';
       availability.replaceChildren();
