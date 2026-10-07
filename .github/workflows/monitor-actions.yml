@@ -2,7 +2,7 @@ name: Monitor deployment and refresh runs
 
 on:
   workflow_run:
-    workflows: ['Deploy GitHub Pages', 'Refresh Amex dataset (twice weekly)']
+    workflows: ['Deploy GitHub Pages', 'Refresh Amex directory']
     types: [completed]
   schedule:
     - cron: '*/15 * * * *'

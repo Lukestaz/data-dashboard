@@ -1,6 +1,5 @@
-# Keep this name stable: Pages and monitoring reference it in workflow_run.
-# The schedule is daily despite the historical display name.
-name: Refresh Amex dataset (twice weekly)
+# Keep this name aligned with Pages and monitoring workflow_run references.
+name: Refresh Amex directory
 
 on:
   schedule:

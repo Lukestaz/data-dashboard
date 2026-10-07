@@ -4,7 +4,7 @@ on:
   push:
     branches: ["main"]
   workflow_run:
-    workflows: ["Refresh Amex dataset (twice weekly)"]
+    workflows: ["Refresh Amex directory"]
     types: [completed]
   workflow_dispatch:
 
