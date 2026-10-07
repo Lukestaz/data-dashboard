@@ -1,16 +1,116 @@
 {
   "meta": {
     "source": "Amex Shop Small NZ campaigndata.json",
-    "capturedAt": "2026-10-02T18:47:39.561Z",
+    "capturedAt": "2026-10-07T00:53:21.711Z",
     "inStoreCount": 12102,
     "onlineCount": 4462,
-    "records": 15589
+    "records": 15589,
+    "exactCount": 8332,
+    "approxCount": 3584,
+    "idStrategy": "persistent-registry-v1",
+    "locationNormalization": "shared-browser-rules",
+    "ingestionMethod": "direct-http",
+    "coordinateGuard": "supported-nz-area-and-overseas-address-v1"
   },
   "stats": {
-    "loc_exact": 8332,
-    "loc_none": 186,
-    "loc_approx": 3584,
+    "loc_exact": 8324,
+    "loc_none": 198,
+    "loc_approx": 3580,
     "instore_also_online": 1782,
     "online_only": 3487
-  }
+  },
+  "diff": {
+    "added": 0,
+    "removed": 0,
+    "addedRecords": 0,
+    "removedRecords": 0,
+    "baselineCommit": "f5a9d9928bb9902a218d2700d802b777fc97f5c9",
+    "method": "committed-baseline-v1"
+  },
+  "coordinateRejections": [
+    {
+      "id": 231,
+      "seNumber": "27000447",
+      "title": "8 Birdies",
+      "address": "Shop 3A/26/44 Kippax St, Nsw, Surry Hills, 2010, New Zealand",
+      "reason": "suspected-overseas-address"
+    },
+    {
+      "id": 1617,
+      "seNumber": "23492853",
+      "title": "Fully Promoted Rotorua",
+      "address": "35 Te Ngae Road, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
+      "reason": "suspected-overseas-address"
+    },
+    {
+      "id": 2502,
+      "seNumber": "27046945",
+      "title": "Harlequins Rugby Club",
+      "address": "27 Power Ave, Vic, Ashwood, 3147, New Zealand",
+      "reason": "suspected-overseas-address"
+    },
+    {
+      "id": 4165,
+      "seNumber": "27065911",
+      "title": "Speedy Signs Rotorua",
+      "address": "37 Te Ngae Road, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
+      "reason": "suspected-overseas-address"
+    },
+    {
+      "id": 4575,
+      "seNumber": "9840157762",
+      "title": "Hotel Chathams",
+      "address": "Waitangi Wharf Owenga Road, Chatham Islands Territory, 0, 8016, New Zealand",
+      "reason": "outside-supported-nz-map-area-or-invalid-coordinate"
+    },
+    {
+      "id": 4921,
+      "seNumber": "9840365621",
+      "title": "Six On Union",
+      "address": "6 Union Street, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
+      "reason": "suspected-overseas-address"
+    },
+    {
+      "id": 6399,
+      "seNumber": "9841324148",
+      "title": "Adjusta Mattress New Zealand",
+      "address": "Unit 1/86 Burnside Rd, Qld, Ormeau, 4208, New Zealand",
+      "reason": "suspected-overseas-address"
+    },
+    {
+      "id": 6910,
+      "seNumber": "9845932052",
+      "title": "H H Dimond Plumbing Plus",
+      "address": "11 Ti Street, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
+      "reason": "suspected-overseas-address"
+    },
+    {
+      "id": 7239,
+      "seNumber": "9840234637",
+      "title": "Harris Technology Limited",
+      "address": "124 Abbott Rd, Vic, Hallam, 3803, New Zealand",
+      "reason": "suspected-overseas-address"
+    },
+    {
+      "id": 7314,
+      "seNumber": "9840287403",
+      "title": "Ranolf Pharmacy",
+      "address": "59 Ranolf Street, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
+      "reason": "suspected-overseas-address"
+    },
+    {
+      "id": 10448,
+      "seNumber": "9842829970",
+      "title": "Fenton Quality Produce",
+      "address": "252 Fenton Street, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
+      "reason": "suspected-overseas-address"
+    },
+    {
+      "id": 11518,
+      "seNumber": "9842815862",
+      "title": "Timezone",
+      "address": "R1/21 Victoria Street, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
+      "reason": "suspected-overseas-address"
+    }
+  ]
 }
