@@ -79,7 +79,7 @@ export function createFilterControls(state, changed, onlineSelected) {
       if (hidden || !options.some(option => option.value === state.activeSubtype)) state.activeSubtype = 'All';
       chips.replaceChildren();
       if (!hidden) {
-        chips.append(button('All subtypes', state.activeSubtype === 'All', () => {state.activeSubtype = 'All';changed();}));
+        chips.append(button('All', state.activeSubtype === 'All', () => {state.activeSubtype = 'All';changed();}));
         for (const option of options) chips.append(button(option.value + ' (' + option.count.toLocaleString() + ')', state.activeSubtype === option.value, () => {state.activeSubtype = option.value;changed();}));
       }
       if (lastCategory !== state.activeCategory || lastAvailability !== state.activeAvailability) chips.scrollLeft = 0;

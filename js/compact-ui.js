@@ -4,6 +4,9 @@ function element(tag, className = '', text = '') {
   if (text) node.textContent = text;
   return node;
 }
+export function clearFilterCount(state, query = '') {
+  return Number(state.activeAvailability !== 'all') + Number(state.activeTown !== 'All') + Number(state.activeArea !== 'All') + Number(state.showSavedOnly) + Number(Boolean(query.trim())) + Number(state.currentSort !== 'default');
+}
 export function mountCompactUI(state, changed) {
   const get = id => document.getElementById(id);
   const header = document.querySelector('header');
@@ -111,7 +114,7 @@ export function mountCompactUI(state, changed) {
     sourceHint.textContent = state.availabilitySupported ? '' : ' · legacy';
     for (const option of sort.options) if (option.value === 'distance') option.disabled = online;
     const query = search.value.trim();
-    const total = Number(state.activeAvailability !== 'all') + Number(state.activeCategory !== 'All') + Number(state.activeSubtype !== 'All') + Number(state.activeTown !== 'All') + Number(state.activeArea !== 'All') + Number(state.showSavedOnly) + Number(Boolean(query)) + Number(state.currentSort !== 'default');
+    const total = clearFilterCount(state, query);
     clear.hidden = total === 0;
     clear.textContent = 'Clear (' + total + ')';
     active.replaceChildren();
