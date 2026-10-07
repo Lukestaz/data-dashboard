@@ -1,5 +1,6 @@
 import { state, toggleSave } from './store.js';
 import { getVoteBadge, submitVote } from './votes.js';
+import { onlineBadge } from './online-badge.js';
 
 export function renderCardsChunk() {
   const grid = document.getElementById('card-grid');
@@ -45,6 +46,7 @@ export function renderCardsChunk() {
           <div class="flex items-center justify-between text-xs mb-3 gap-2">
             <div class="flex items-center gap-1.5 flex-wrap">
               <span class="px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-300 font-medium border border-blue-900/40">${cat}</span>
+              ${onlineBadge(item)}
               ${distanceBadge}
               ${voteBadge}
             </div>
