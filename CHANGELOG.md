@@ -15,6 +15,7 @@ Features
 
 Fixes
 
+- restore prominent availability filters and two-tier category chips ([`7bd0f97`](https://github.com/Lukestaz/data-dashboard/commit/7bd0f97483d5f7f721cb819523ed0dd97f745dbb)).
 - place subtype below categories and align dropdown styles and labels ([`e6660c3`](https://github.com/Lukestaz/data-dashboard/commit/e6660c3a8562843be982461a73514afbe212881e)).
 - recognise Rotorua Victoria and Chathams; recover audited NZ pins conservatively ([`5d69b50`](https://github.com/Lukestaz/data-dashboard/commit/5d69b50b1531df26e08a26d8b6bd1272cec3a35e)).
 - quarantine overseas addresses and reject invalid cached map pins ([`c1f6957`](https://github.com/Lukestaz/data-dashboard/commit/c1f6957156f7c9743082360c3edabca93fd2e115)).
@@ -25,6 +26,7 @@ Fixes
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`8c44b35`](https://github.com/Lukestaz/data-dashboard/commit/8c44b35a87a8ff0dfda402d6c5c3c2bd2437c135)).
 - rename Amex refresh workflow and dependent triggers ([`cc12dd0`](https://github.com/Lukestaz/data-dashboard/commit/cc12dd0b6f08f5b3cd98889b0035dc70ed899f78)).
 - record Actions run status \[skip ci\] ([`6b85c90`](https://github.com/Lukestaz/data-dashboard/commit/6b85c900f4980d45b5744bfaaa0150ff8a5e3eeb)).
 - record Actions run status \[skip ci\] ([`91c8f9c`](https://github.com/Lukestaz/data-dashboard/commit/91c8f9c83792e9ab377b3996969655c22d63d539)).
