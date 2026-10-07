@@ -1,21 +1,21 @@
 {
   "meta": {
     "source": "Amex Shop Small NZ campaigndata.json",
-    "capturedAt": "2026-10-07T00:53:21.711Z",
+    "capturedAt": "2026-10-07T01:12:20.167Z",
     "inStoreCount": 12102,
     "onlineCount": 4462,
     "records": 15589,
-    "exactCount": 8332,
-    "approxCount": 3584,
+    "exactCount": 8324,
+    "approxCount": 3588,
     "idStrategy": "persistent-registry-v1",
     "locationNormalization": "shared-browser-rules",
     "ingestionMethod": "direct-http",
-    "coordinateGuard": "supported-nz-area-and-overseas-address-v1"
+    "coordinateGuard": "supported-nz-area-and-contextual-address-v2"
   },
   "stats": {
     "loc_exact": 8324,
-    "loc_none": 198,
-    "loc_approx": 3580,
+    "loc_none": 190,
+    "loc_approx": 3588,
     "instore_also_online": 1782,
     "online_only": 3487
   },
@@ -24,7 +24,7 @@
     "removed": 0,
     "addedRecords": 0,
     "removedRecords": 0,
-    "baselineCommit": "f5a9d9928bb9902a218d2700d802b777fc97f5c9",
+    "baselineCommit": "cd6d93807ab97366880f3d57f7dcd12d90b07a31",
     "method": "committed-baseline-v1"
   },
   "coordinateRejections": [
@@ -36,38 +36,10 @@
       "reason": "suspected-overseas-address"
     },
     {
-      "id": 1617,
-      "seNumber": "23492853",
-      "title": "Fully Promoted Rotorua",
-      "address": "35 Te Ngae Road, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
-      "reason": "suspected-overseas-address"
-    },
-    {
       "id": 2502,
       "seNumber": "27046945",
       "title": "Harlequins Rugby Club",
       "address": "27 Power Ave, Vic, Ashwood, 3147, New Zealand",
-      "reason": "suspected-overseas-address"
-    },
-    {
-      "id": 4165,
-      "seNumber": "27065911",
-      "title": "Speedy Signs Rotorua",
-      "address": "37 Te Ngae Road, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
-      "reason": "suspected-overseas-address"
-    },
-    {
-      "id": 4575,
-      "seNumber": "9840157762",
-      "title": "Hotel Chathams",
-      "address": "Waitangi Wharf Owenga Road, Chatham Islands Territory, 0, 8016, New Zealand",
-      "reason": "outside-supported-nz-map-area-or-invalid-coordinate"
-    },
-    {
-      "id": 4921,
-      "seNumber": "9840365621",
-      "title": "Six On Union",
-      "address": "6 Union Street, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
       "reason": "suspected-overseas-address"
     },
     {
@@ -78,39 +50,81 @@
       "reason": "suspected-overseas-address"
     },
     {
-      "id": 6910,
-      "seNumber": "9845932052",
-      "title": "H H Dimond Plumbing Plus",
-      "address": "11 Ti Street, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
-      "reason": "suspected-overseas-address"
-    },
-    {
       "id": 7239,
       "seNumber": "9840234637",
       "title": "Harris Technology Limited",
       "address": "124 Abbott Rd, Vic, Hallam, 3803, New Zealand",
       "reason": "suspected-overseas-address"
-    },
-    {
-      "id": 7314,
-      "seNumber": "9840287403",
-      "title": "Ranolf Pharmacy",
-      "address": "59 Ranolf Street, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
-      "reason": "suspected-overseas-address"
-    },
-    {
-      "id": 10448,
-      "seNumber": "9842829970",
-      "title": "Fenton Quality Produce",
-      "address": "252 Fenton Street, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
-      "reason": "suspected-overseas-address"
-    },
-    {
-      "id": 11518,
-      "seNumber": "9842815862",
-      "title": "Timezone",
-      "address": "R1/21 Victoria Street, Victoria, Bay Of Plenty, Rotorua, 3010, New Zealand",
-      "reason": "suspected-overseas-address"
     }
-  ]
+  ],
+  "coordinateRecovery": {
+    "baselineCommit": "f5a9d9928bb9902a218d2700d802b777fc97f5c9",
+    "restored": [
+      {
+        "id": 1617,
+        "title": "Fully Promoted Rotorua",
+        "lat": -38.1444,
+        "lng": 176.257,
+        "previousStatus": "exact",
+        "status": "approx"
+      },
+      {
+        "id": 4165,
+        "title": "Speedy Signs Rotorua",
+        "lat": -38.1446,
+        "lng": 176.2571,
+        "previousStatus": "exact",
+        "status": "approx"
+      },
+      {
+        "id": 4575,
+        "title": "Hotel Chathams",
+        "lat": -43.951,
+        "lng": -176.5606,
+        "previousStatus": "exact",
+        "status": "approx"
+      },
+      {
+        "id": 4921,
+        "title": "Six On Union",
+        "lat": -38.143,
+        "lng": 176.2506,
+        "previousStatus": "exact",
+        "status": "approx"
+      },
+      {
+        "id": 6910,
+        "title": "H H Dimond Plumbing Plus",
+        "lat": -38.1443,
+        "lng": 176.2556,
+        "previousStatus": "exact",
+        "status": "approx"
+      },
+      {
+        "id": 7314,
+        "title": "Ranolf Pharmacy",
+        "lat": -38.1413,
+        "lng": 176.2468,
+        "previousStatus": "exact",
+        "status": "approx"
+      },
+      {
+        "id": 10448,
+        "title": "Fenton Quality Produce",
+        "lat": -38.1386,
+        "lng": 176.2517,
+        "previousStatus": "approx",
+        "status": "approx"
+      },
+      {
+        "id": 11518,
+        "title": "Timezone",
+        "lat": -38.1386,
+        "lng": 176.2517,
+        "previousStatus": "approx",
+        "status": "approx"
+      }
+    ],
+    "unresolved": []
+  }
 }
