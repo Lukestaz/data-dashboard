@@ -2,16 +2,51 @@ import { state } from './store.js';
 import { getVoteBadge } from './votes.js';
 import { renderCardsChunk } from './cards.js';
 let mapInstance=null,clusterGroup=null,split=null,selectedId=null;
-let baseMatches=[],viewportList=null,initialFit=false;
-const markersById=new Map();
+let baseMatches=[],viewportList=null,initialFit=false,busy=false,pending=false;
+const markersById=new Map(),icons=new Map();
 const get=id=>document.getElementById(id);
 const hasPin=item=>item.lat!=null&&item.lng!=null&&Number.isFinite(Number(item.lat))&&Number.isFinite(Number(item.lng))&&Number(item.lat)!==0&&Number(item.lng)!==0;
+const categoryOf=item=>String(item.category||item.Type||'Other');
+const diagnostics={};
+function record(key,value){diagnostics[key]=value;window.__mapPerformance={...diagnostics};}
+function categoryColour(category){
+ const palette=['#f97316','#3b82f6','#22c55e','#a78bfa','#ec4899','#f59e0b','#06b6d4','#94a3b8'];
+ const key=category.toLowerCase();
+ if(/food|drink|restaurant|cafe|dining/.test(key))return palette[0];
+ if(/retail|shop/.test(key))return palette[1];
+ if(/health|medical|wellness/.test(key))return palette[2];
+ if(/service/.test(key))return palette[3];
+ if(/stay|travel|accommodation|hotel/.test(key))return palette[4];
+ if(/club|fun|entertainment/.test(key))return palette[5];
+ let hash=0;for(const character of key)hash=(hash*31+character.charCodeAt(0))>>>0;
+ return key==='other'?palette[7]:palette[hash%palette.length];
+}
+function pinIcon(item){
+ const colour=categoryColour(categoryOf(item)),approx=item.loc==='approx',key=colour+':'+approx;
+ if(!icons.has(key))icons.set(key,L.divIcon({className:'merchant-category-pin',html:`<span style="display:block;width:18px;height:18px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${approx?'#0f172a':colour};border:3px solid ${approx?colour:'#fff'};box-shadow:0 1px 4px #0008;box-sizing:border-box"></span>`,iconSize:[18,18],iconAnchor:[9,18],popupAnchor:[0,-18]}));
+ return icons.get(key);
+}
+function popupFor(item){
+ const title=item.title||item.Name||'Merchant',category=categoryOf(item),address=item.address||'',voteKey=item.seNumber||item.SENumber||item.id;
+ const popup=document.createElement('div');popup.className='text-slate-100 font-sans';
+ const categoryLabel=document.createElement('p');categoryLabel.className='text-xs';categoryLabel.style.color=categoryColour(category);categoryLabel.textContent=category;
+ const heading=document.createElement('h4');heading.className='text-sm font-bold mt-1';heading.textContent=title;
+ const addressLabel=document.createElement('p');addressLabel.className='text-xs text-slate-400 mt-1';addressLabel.textContent=address;
+ const badge=document.createElement('div');badge.innerHTML=getVoteBadge(voteKey,title)||'';
+ const controls=document.createElement('div');controls.className='flex flex-wrap items-center gap-2 mt-3 text-xs';
+ const save=document.createElement('button');save.type='button';save.className='px-2 py-1 rounded bg-slate-800';save.textContent=state.savedIds.has(item.id)?'★ Saved':'☆ Save';save.addEventListener('click',()=>{window.toggleSaveFromMap(item.id,save);renderCardsChunk();});
+ const prompt=document.createElement('span');prompt.textContent='Takes Amex?';controls.append(save,prompt);
+ for(const[text,direction]of[['👍','up'],['👎','down']]){const button=document.createElement('button');button.type='button';button.textContent=text;button.className='px-2 py-1 rounded bg-slate-800';button.setAttribute('aria-label',direction==='up'?'Confirmed Amex accepted':'Amex declined / not accepted');button.addEventListener('click',()=>window.submitVote(String(voteKey),title,direction));controls.append(button);}
+ const directions=document.createElement('a');directions.textContent='Directions →';directions.className='text-blue-400';directions.target='_blank';directions.rel='noopener noreferrer';directions.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(item.loc==='approx'?title+' '+address:item.lat+','+item.lng);controls.append(directions);
+ popup.append(categoryLabel,heading,badge,addressLabel);
+ if(item.loc==='approx'){const approximate=document.createElement('p');approximate.className='text-xs text-amber-300';approximate.textContent='Approximate location';popup.append(approximate);}
+ popup.append(controls);return popup;
+}
 function updateViewport(){
  if(!mapInstance||state.viewMode!=='map')return;
- const bounds=mapInstance.getBounds();const visible=baseMatches.filter(item=>hasPin(item)&&bounds.contains([Number(item.lat),Number(item.lng)]));
+ const bounds=mapInstance.getBounds(),visible=baseMatches.filter(item=>hasPin(item)&&bounds.contains([Number(item.lat),Number(item.lng)]));
  const changed=!viewportList||visible.length!==viewportList.length||visible.some((item,index)=>item!==viewportList[index]);
- if(changed){viewportList=visible;state.filteredList=viewportList;state.displayedCount=state.PAGE_CHUNK;renderCardsChunk();get('cards-wrapper')?.scrollTo({top:0});}
- else state.filteredList=viewportList;
+ if(changed){viewportList=visible;state.filteredList=viewportList;state.displayedCount=state.PAGE_CHUNK;renderCardsChunk();get('cards-wrapper')?.scrollTo({top:0});}else state.filteredList=viewportList;
  if(get('total-count'))get('total-count').textContent=visible.length.toLocaleString();
  if(get('map-list-status'))get('map-list-status').textContent=`${visible.length.toLocaleString()} merchants in map area · ${baseMatches.length.toLocaleString()} match filters`;
  tagCards();
@@ -53,30 +88,37 @@ function setupSplit(){
 }
 export function initMap(){
  setupSplit();if(mapInstance){syncSplit();return mapInstance;}
+ const start=performance.now();
  mapInstance=L.map('map',{center:state.userLat&&state.userLng?[state.userLat,state.userLng]:[-36.85,174.76],zoom:12});
- L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:19}).addTo(mapInstance);
- clusterGroup=L.markerClusterGroup({chunkedLoading:true,maxClusterRadius:50});mapInstance.addLayer(clusterGroup);mapInstance.on('moveend',updateViewport);return mapInstance;
+ const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:19});
+ let tileStart=start;tiles.on('loading',()=>{tileStart=performance.now();});tiles.on('load',()=>record('tilesMs',performance.now()-tileStart));tiles.addTo(mapInstance);
+ clusterGroup=L.markerClusterGroup({chunkedLoading:true,chunkInterval:50,chunkDelay:20,maxClusterRadius:50,chunkProgress:(processed,total,elapsed)=>{if(processed===total){record('clusteringMs',elapsed);busy=false;if(pending){pending=false;queueMicrotask(updateMapMarkers);}}}});
+ mapInstance.addLayer(clusterGroup);mapInstance.on('moveend',updateViewport);record('mapInitMs',performance.now()-start);return mapInstance;
 }
 export function updateMapMarkers(){
  if(!mapInstance||!clusterGroup)return;
  if(state.filteredList!==viewportList)baseMatches=[...state.filteredList];
- clusterGroup.clearLayers();markersById.clear();
- const matches=baseMatches.filter(hasPin),markers=[];
+ if(busy){pending=true;return;}
+ const start=performance.now(),matches=baseMatches.filter(hasPin),wanted=new Set(matches.map(item=>String(item.id))),remove=[],add=[];
+ let reused=0;
+ for(const[id,marker]of markersById){if(!wanted.has(id)){remove.push(marker);markersById.delete(id);}}
+ if(remove.length)clusterGroup.removeLayers(remove);
  for(const item of matches){
- const title=item.title||item.Name||'Merchant',category=item.category||item.Type||'',address=item.address||'',voteKey=item.seNumber||item.SENumber||item.id;
- const marker=L.marker([Number(item.lat),Number(item.lng)]),popup=document.createElement('div');popup.className='text-slate-100 font-sans';
- const categoryLabel=document.createElement('p');categoryLabel.className='text-xs text-blue-300';categoryLabel.textContent=category;
- const heading=document.createElement('h4');heading.className='text-sm font-bold mt-1';heading.textContent=title;
- const addressLabel=document.createElement('p');addressLabel.className='text-xs text-slate-400 mt-1';addressLabel.textContent=address;
- const badge=document.createElement('div');badge.innerHTML=getVoteBadge(voteKey,title)||'';
- const controls=document.createElement('div');controls.className='flex flex-wrap items-center gap-2 mt-3 text-xs';
- const save=document.createElement('button');save.type='button';save.className='px-2 py-1 rounded bg-slate-800';save.textContent=state.savedIds.has(item.id)?'★ Saved':'☆ Save';save.addEventListener('click',()=>{window.toggleSaveFromMap(item.id,save);renderCardsChunk();});
- const prompt=document.createElement('span');prompt.textContent='Takes Amex?';controls.append(save,prompt);
- for(const[text,direction]of[['👍','up'],['👎','down']]){const button=document.createElement('button');button.type='button';button.textContent=text;button.className='px-2 py-1 rounded bg-slate-800';button.setAttribute('aria-label',direction==='up'?'Confirmed Amex accepted':'Amex declined / not accepted');button.addEventListener('click',()=>window.submitVote(String(voteKey),title,direction));controls.append(button);}
- const directions=document.createElement('a');directions.textContent='Directions →';directions.className='text-blue-400';directions.target='_blank';directions.rel='noopener noreferrer';directions.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(item.loc==='approx'?title+' '+address:item.lat+','+item.lng);controls.append(directions);
- popup.append(categoryLabel,heading,badge,addressLabel);if(item.loc==='approx'){const approximate=document.createElement('p');approximate.className='text-xs text-amber-300';approximate.textContent='Approximate location';popup.append(approximate);}popup.append(controls);marker.bindPopup(popup);marker.on('click',()=>selectCard(item.id,true));markersById.set(String(item.id),marker);markers.push(marker);
+ const id=String(item.id),position=[Number(item.lat),Number(item.lng)],icon=pinIcon(item);
+ let marker=markersById.get(id);
+ if(marker){
+ reused++;marker.merchantItem=item;
+ const previous=marker.getLatLng();if(previous.lat!==position[0]||previous.lng!==position[1])marker.setLatLng(position);
+ if(marker.options.icon!==icon)marker.setIcon(icon);
+ if(marker.isPopupOpen())marker.setPopupContent(popupFor(item));
+ }else{
+ marker=L.marker(position,{icon,title:item.title||item.Name||'Merchant'});marker.merchantItem=item;
+ marker.bindPopup(()=>popupFor(marker.merchantItem));
+ marker.on('click',()=>selectCard(marker.merchantItem.id,true));markersById.set(id,marker);add.push(marker);
  }
- clusterGroup.addLayers(markers);
+ }
+ record('markerPreparationMs',performance.now()-start);record('pins',matches.length);record('created',add.length);record('reused',reused);record('removed',remove.length);
+ if(add.length){busy=true;clusterGroup.addLayers(add);}else record('clusteringMs',0);
  if(!initialFit&&matches.length){initialFit=true;if(!state.userLat)mapInstance.fitBounds(L.latLngBounds(matches.map(item=>[Number(item.lat),Number(item.lng)])),{padding:[40,40],maxZoom:14});}
- syncSplit();updateViewport();
+ syncSplit();updateViewport();record('updateSyncMs',performance.now()-start);
 }
