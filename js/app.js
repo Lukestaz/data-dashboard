@@ -13,6 +13,8 @@ state.activeArea = 'All';
 state.activeSubtype = 'All';
 state.activeAvailability = 'all';
 state.availabilitySupported = false;
+state.loadedDataSource = null;
+state.dataCapturedAt = null;
 window.submitVote = submitVote;
 window.toggleSave = id => { toggleSave(id); if (state.showSavedOnly) applyFilters(); else renderCardsChunk(); };
 window.toggleSaveFromMap = (id, button) => { toggleSave(id); if(button){ const saved = state.savedIds.has(id); button.textContent = saved ? '★ Saved' : '☆ Save'; button.className = 'text-xs px-2 py-0.5 rounded border transition ' + (saved ? 'bg-amber-400/20 text-amber-300 border-amber-400/50 font-bold' : 'bg-slate-800 text-slate-400 hover:text-white border-slate-700'); } };
@@ -48,6 +50,9 @@ window.changeDataset=switchDataset;
 async function loadActiveDataset(){
   let data;let onlineSupported=state.activeDataset==='amex';try{const response=await fetch(onlineSupported?'./data/amex.json':'./data.json');if(!response.ok)throw new Error(`HTTP ${response.status}`);data=await response.json();}catch(error){console.warn('Dataset load failed, falling back to data.json',error);onlineSupported=false;const fallback=await fetch('./data.json');if(!fallback.ok)throw new Error(`HTTP ${fallback.status}`);data=await fallback.json();}
   state.availabilitySupported=onlineSupported;
+  state.loadedDataSource=onlineSupported?'amex':'legacy';
+  const capturedAt=onlineSupported&&!Array.isArray(data)?data.meta?.capturedAt:null;
+  state.dataCapturedAt=typeof capturedAt==='string'&&Number.isFinite(Date.parse(capturedAt))?capturedAt:null;
   state.merchants=Array.isArray(data)?data:(data.merchants||[]);
   normalizeLocations(state.merchants);
   state.merchants.forEach((m,index)=>{m.id=m.id||m.SENumber||index;m.title=m.title||m.name||m.Name||'Merchant';m.category=m.category||m.type||m.Type||'Retail';m.address=m.address||m.Address||'';m.city=normalizeCityTown(m.rawLocation,m.address);if(m.displaySubType){m.sourceSubType=m.sourceSubType??m.subType??'';m.subType=m.displaySubType;}});
