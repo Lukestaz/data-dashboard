@@ -22,6 +22,8 @@ Fixes
 
 Maintenance
 
+- retire historical v1.3.0 tagging workflow ([`2b8146e`](https://github.com/Lukestaz/data-dashboard/commit/2b8146e6d451b534cff2613311e5dcf34d8069b7)).
+- record Actions run status \[skip ci\] ([`9dc0590`](https://github.com/Lukestaz/data-dashboard/commit/9dc0590e57a60979ad146797e95406470c13f057)).
 - record Actions run status \[skip ci\] ([`9e11030`](https://github.com/Lukestaz/data-dashboard/commit/9e110308c2eb0aa08e7cf9f45f8c6b0f541e40ed)).
 - record Actions run status \[skip ci\] ([`39a5f32`](https://github.com/Lukestaz/data-dashboard/commit/39a5f3237bb0e74935f53d2314399a17ea6763b0)).
 - record Actions run status \[skip ci\] ([`d8037b9`](https://github.com/Lukestaz/data-dashboard/commit/d8037b960f310ecabca445cebd1431675d698318)).
