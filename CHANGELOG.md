@@ -5,6 +5,21 @@
 
 Generated from commit messages; these are not release or deployment confirmations.
 
+### 2026-10-08 (NZ time)
+
+Features
+
+- add protected anonymous feedback Worker for GitHub issues ([`aacf758`](https://github.com/Lukestaz/data-dashboard/commit/aacf75858a5592a94da3127ee3b022a85737700a)).
+
+Maintenance
+
+- record Actions run status \[skip ci\] ([`7a4e5d9`](https://github.com/Lukestaz/data-dashboard/commit/7a4e5d9d29a26b2d8cec1a10e5ac83594390d5d2)).
+- record Actions run status \[skip ci\] ([`6a693df`](https://github.com/Lukestaz/data-dashboard/commit/6a693df14846046f6dd8128c533f699f0d5e29e5)).
+- record Actions run status \[skip ci\] ([`591358c`](https://github.com/Lukestaz/data-dashboard/commit/591358cbe841023131bfdaec2144fe7c0bfa2904)).
+- record Actions run status \[skip ci\] ([`1a92b45`](https://github.com/Lukestaz/data-dashboard/commit/1a92b45f801b6f869e3995ee4c6d8678fba06a99)).
+- record Actions run status \[skip ci\] ([`cc9c558`](https://github.com/Lukestaz/data-dashboard/commit/cc9c558d67a6f51de1fac29858f13eaba20276fe)).
+- record Actions run status \[skip ci\] ([`20a12c8`](https://github.com/Lukestaz/data-dashboard/commit/20a12c885ebc2422f9e5771585610e2b25436e70)).
+
 ### 2026-10-07 (NZ time)
 
 Features
@@ -39,6 +54,7 @@ Performance
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`0939b3d`](https://github.com/Lukestaz/data-dashboard/commit/0939b3dee0a8844e84bcd8f62a2998a72f711bb6)).
 - record Actions run status \[skip ci\] ([`102b866`](https://github.com/Lukestaz/data-dashboard/commit/102b866b33596975801aa2aa41279ea36c9a1822)).
 - record Actions run status \[skip ci\] ([`6d2e023`](https://github.com/Lukestaz/data-dashboard/commit/6d2e0233ded8a1af98a73b4c7087178b4e532efc)).
 - record Actions run status \[skip ci\] ([`83beff8`](https://github.com/Lukestaz/data-dashboard/commit/83beff81cfa75e5870680e703ef33f2f61d1448c)).
