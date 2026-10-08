@@ -9,10 +9,12 @@ Generated from commit messages; these are not release or deployment confirmation
 
 Features
 
+- connect anonymous feedback modal to Cloudflare Worker ([`f9af659`](https://github.com/Lukestaz/data-dashboard/commit/f9af659617baa644100f35140ffd82951129b934)).
 - add protected anonymous feedback Worker for GitHub issues ([`aacf758`](https://github.com/Lukestaz/data-dashboard/commit/aacf75858a5592a94da3127ee3b022a85737700a)).
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`f37993d`](https://github.com/Lukestaz/data-dashboard/commit/f37993dbdc11e1152c91d7fca3da4ed760d1b84a)).
 - record Actions run status \[skip ci\] ([`7a4e5d9`](https://github.com/Lukestaz/data-dashboard/commit/7a4e5d9d29a26b2d8cec1a10e5ac83594390d5d2)).
 - record Actions run status \[skip ci\] ([`6a693df`](https://github.com/Lukestaz/data-dashboard/commit/6a693df14846046f6dd8128c533f699f0d5e29e5)).
 - record Actions run status \[skip ci\] ([`591358c`](https://github.com/Lukestaz/data-dashboard/commit/591358cbe841023131bfdaec2144fe7c0bfa2904)).
