@@ -9,6 +9,7 @@ Generated from commit messages; these are not release or deployment confirmation
 
 Features
 
+- retain loaded dataset source and capture timestamp ([`bfce69a`](https://github.com/Lukestaz/data-dashboard/commit/bfce69ac03afd90ef92d9be6908d3255e7e309f3)).
 - add deployed build and changelog to compact menu ([`cd64863`](https://github.com/Lukestaz/data-dashboard/commit/cd6486379baf7c130b34fe40809a9d0059496fc4)).
 - connect anonymous feedback modal to Cloudflare Worker ([`f9af659`](https://github.com/Lukestaz/data-dashboard/commit/f9af659617baa644100f35140ffd82951129b934)).
 - add protected anonymous feedback Worker for GitHub issues ([`aacf758`](https://github.com/Lukestaz/data-dashboard/commit/aacf75858a5592a94da3127ee3b022a85737700a)).
@@ -20,6 +21,7 @@ Fixes
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`d8037b9`](https://github.com/Lukestaz/data-dashboard/commit/d8037b960f310ecabca445cebd1431675d698318)).
 - record Actions run status \[skip ci\] ([`a7f4367`](https://github.com/Lukestaz/data-dashboard/commit/a7f4367f79d3d14328e3333df1cb55f45ff98c40)).
 - record Actions run status \[skip ci\] ([`71fa2a9`](https://github.com/Lukestaz/data-dashboard/commit/71fa2a95bcc87a033e487a3146af82694659bf0d)).
 - record Actions run status \[skip ci\] ([`d7781c3`](https://github.com/Lukestaz/data-dashboard/commit/d7781c3d94dfc9f09e86ccf8d5bca6cb14f5b12f)).
