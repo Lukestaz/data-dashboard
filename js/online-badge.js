@@ -1,4 +1,5 @@
 import { availabilityMatches } from './filter-controls.js';
+import './feedback.js';
 
 export function onlineBadge(merchant) {
   if (!availabilityMatches(merchant, 'online')) return '';
