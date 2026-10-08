@@ -48,6 +48,7 @@
       font-family: inherit;
     }
   </style>
+  <link rel="stylesheet" href="./css/compact.css" />
   <!-- Main ES Module Entrypoint -->
   <script type="module" src="./js/app.js"></script>
 </head>
@@ -96,66 +97,88 @@
 
   <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
     <!-- Header -->
-    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-5 border-b border-slate-800 gap-4">
-      <div>
+    <header class="pb-3 border-b border-slate-800">
+      <div id="compact-toolbar">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="shrink-0 rounded bg-blue-600 px-2 py-0.5 text-[11px] font-bold tracking-wide text-white">AMEX</span>
+          <h1 class="text-white">Shop Small NZ</h1>
+        </div>
         <div class="flex items-center gap-2">
-          <span class="px-2.5 py-0.5 rounded text-xs font-bold bg-blue-600 text-white tracking-wide">AMEX</span>
-          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Shop Small NZ Directory</h1>
+          <div id="compact-view-toggle" class="flex items-center">
+            <button id="view-cards-btn" onclick="window.setViewMode('cards')" class="px-3 py-1.5 rounded-md transition bg-blue-600 text-white flex items-center gap-1.5"><span>Cards</span></button>
+            <button id="view-map-btn" onclick="window.setViewMode('map')" class="px-3 py-1.5 rounded-md transition text-slate-400 hover:text-white flex items-center gap-1.5"><span>Map</span></button>
+          </div>
+          <details id="compact-more" class="relative">
+            <summary class="compact-control text-sm" aria-label="More options, saved-list sync, data sources and changelog">⋯</summary>
+            <div class="compact-popup space-y-3">
+              <button id="sync-btn" type="button" onclick="window.openSyncModal()" class="compact-control w-full text-xs font-semibold">Sync saved merchants</button>
+              <label for="dataset-select" class="block text-xs text-slate-400">Data source</label>
+              <select id="dataset-select" onchange="window.switchDataset(this.value)" class="compact-control w-full text-sm">
+                <option value="amex">Amex Shop Small</option>
+                <option value="legacy">Legacy Curated</option>
+              </select>
+              <p id="compact-source-status" class="text-xs text-slate-400" role="status" aria-live="polite" aria-atomic="true" title="Capture time records when the directory was downloaded and validated, not when individual merchant details were verified.">Loading source information…</p>
+              <p class="text-xs text-slate-400">Amex is the current directory. The legacy snapshot remains available with its separate saved list.</p>
+              <div id="compact-build-footer" class="compact-build-footer"></div>
+            </div>
+          </details>
         </div>
-      </div>
-      <div class="flex flex-wrap items-center gap-2.5">
-        <!-- Dataset Selector -->
-        <div class="relative min-w-[210px]">
-          <select id="dataset-select" onchange="window.switchDataset(this.value)" class="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full font-medium">
-            <option value="amex">Amex Shop Small</option>
-            <option value="legacy">Legacy Curated</option>
-          </select>
-        </div>
-
-        <!-- View Toggle -->
-        <div class="bg-slate-900 p-1 rounded-lg border border-slate-800 flex items-center text-xs font-semibold">
-          <button id="view-cards-btn" onclick="window.setViewMode('cards')" class="px-3 py-1.5 rounded-md transition bg-blue-600 text-white flex items-center gap-1.5"><span>Cards</span></button>
-          <button id="view-map-btn" onclick="window.setViewMode('map')" class="px-3 py-1.5 rounded-md transition text-slate-400 hover:text-white flex items-center gap-1.5"><span>Map</span></button>
-        </div>
-
-        <!-- Near Me Button -->
-        <button id="near-me-btn" onclick="window.toggleNearMe()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg border border-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
-          <span class="text-rose-500">📍</span>
-          <span id="near-me-label">Near Me</span>
-        </button>
-
-        <!-- Saved Filter Button -->
-        <button id="saved-filter-btn" onclick="window.toggleSavedFilter()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg border border-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
-          <span class="text-amber-400">★</span>
-          <span>Saved (<span id="saved-count">0</span>)</span>
-        </button>
-
-        <!-- Sync Button -->
-        <button id="sync-btn" onclick="window.openSyncModal()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3 py-2 rounded-lg border border-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
-          <span class="text-blue-400">🔄</span>
-          <span>Sync</span>
-        </button>
-
-        <span class="bg-slate-900 px-3 py-2 rounded-lg border border-slate-800 text-xs text-slate-300">Total: <strong id="total-count" class="text-emerald-400">0</strong></span>
       </div>
     </header>
 
     <!-- Controls -->
-    <section class="mt-5 space-y-3">
-      <div class="flex flex-col sm:flex-row gap-3">
-        <div class="relative flex-1">
-          <input id="search-input" type="text" placeholder="Search by merchant name, suburb, street, or category..." class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-4 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-        <select id="town-select" class="bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]">
-          <option value="All">All Cities & Towns</option>
-        </select>
-        <select id="sort-select" onchange="window.changeSort(this.value)" class="bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="default">Default order</option>
-          <option value="distance">Nearest</option>
-          <option value="name">A–Z</option>
-        </select>
+    <section id="compact-root">
+      <div class="relative min-w-0">
+        <input id="search-input" type="text" placeholder="Search merchants, places or categories…" class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-4 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+      <div id="availability-filter-row"></div>
+      <div id="compact-actions">
+        <button id="near-me-btn" onclick="window.toggleNearMe()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg border border-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
+          <span class="text-rose-500">📍</span>
+          <span id="near-me-label">Near Me</span>
+        </button>
+        <details id="compact-location" class="relative">
+          <summary id="compact-location-summary" class="compact-control font-semibold">Location ▾</summary>
+          <div class="compact-popup">
+            <div class="compact-location-grid">
+              <div class="space-y-1">
+                <label for="town-select" class="block text-xs text-slate-400">City / town</label>
+                <select id="town-select" class="compact-control"><option value="All">All Cities &amp; Towns</option></select>
+              </div>
+              <div id="compact-area-block" class="space-y-1" hidden>
+                <label for="area-select" class="block text-xs text-slate-400">Suburb / local area</label>
+                <select id="area-select" class="compact-control" aria-label="Suburb or local area"></select>
+              </div>
+            </div>
+          </div>
+        </details>
+        <button id="saved-filter-btn" onclick="window.toggleSavedFilter()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg border border-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
+          <span class="text-amber-400">★</span>
+          <span>Saved (<span id="saved-count">0</span>)</span>
+        </button>
       </div>
       <div class="flex items-center gap-2 overflow-x-auto pb-1" id="category-pills"></div>
+      <div id="subtype-filter-row"></div>
+      <div id="compact-filter-row" hidden>
+        <div id="compact-active-filters"></div>
+        <button id="compact-clear" type="button">Clear</button>
+      </div>
+      <div id="compact-result-row">
+        <span><span id="compact-card-count"><strong id="total-count" class="text-emerald-400">0</strong> matches</span><span id="compact-map-count" hidden></span><span id="compact-source-hint" class="text-slate-500"></span></span>
+        <div id="compact-result-tools">
+          <select id="sort-select" onchange="window.changeSort(this.value)" class="compact-control" aria-label="Sort merchants">
+            <option value="default">Default order</option>
+            <option value="distance">Nearest</option>
+            <option value="name">A–Z</option>
+          </select>
+          <button id="compact-fit" type="button" class="compact-control" aria-label="Fit map to matching New Zealand merchant pins" hidden>Fit results</button>
+          <span id="compact-list-slot" hidden></span>
+          <details id="compact-map-info" hidden>
+            <summary>Map info</summary>
+            <p class="compact-map-note">Hollow pin centre = approximate location</p>
+          </details>
+        </div>
+      </div>
     </section>
 
     <!-- Map Container -->
