@@ -1,0 +1,14 @@
+{
+  "name": "shop-small-feedback",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-08",
+  "workers_dev": true,
+  "vars": {
+    "ALLOWED_ORIGIN": "https://lukestaz.github.io",
+    "GITHUB_REPOSITORY": "Lukestaz/data-dashboard"
+  },
+  "durable_objects": {
+    "bindings": [{"name": "FEEDBACK_GATE", "class_name": "FeedbackGate"}]
+  },
+  "migrations": [{"tag": "v1", "new_sqlite_classes": ["FeedbackGate"]}]
+}
