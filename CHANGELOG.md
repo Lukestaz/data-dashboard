@@ -5,6 +5,12 @@
 
 Generated from commit messages; these are not release or deployment confirmations.
 
+### 2026-10-09 (NZ time)
+
+Fixes
+
+- restore blue AMEX badge in compact header ([`f1f874a`](https://github.com/Lukestaz/data-dashboard/commit/f1f874a390cf7b21c67db9b41b26a0161727592b)).
+
 ### 2026-10-08 (NZ time)
 
 Features
@@ -22,6 +28,7 @@ Fixes
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`ffd5f8d`](https://github.com/Lukestaz/data-dashboard/commit/ffd5f8dc120bfb5780d7866108af2f643d59138f)).
 - record Actions run status \[skip ci\] ([`7683168`](https://github.com/Lukestaz/data-dashboard/commit/7683168cc17c58065bf1182c3b96f08129d923f4)).
 - retire historical v1.3.0 tagging workflow ([`2b8146e`](https://github.com/Lukestaz/data-dashboard/commit/2b8146e6d451b534cff2613311e5dcf34d8069b7)).
 - record Actions run status \[skip ci\] ([`9dc0590`](https://github.com/Lukestaz/data-dashboard/commit/9dc0590e57a60979ad146797e95406470c13f057)).
