@@ -157,13 +157,21 @@ These links establish committed fixes, not a fresh certification of current depl
 
 ## Local development and checks
 
-Serve the repository over HTTP; there is no frontend bundling step:
+Serve the repository over HTTP; there is no JavaScript bundling step:
 
 ```bash
 python3 -m http.server 8000
 ```
 
 Open [localhost:8000](http://localhost:8000). External map tiles, votes, analytics and feedback services require network access. Local serving does not run the Pages build-stamping step, so the menu displays Local build.
+
+Styling uses a pre-built Tailwind stylesheet, `css/tailwind.css`, generated from `tailwind.config.js` and `css/tailwind.src.css` with Tailwind 3.4.17. The Pages workflow rebuilds it on every deployment, so the deployed CSS always matches the deployed markup and scripts. The committed copy lets local serving work without a build. After adding or changing Tailwind classes in `index.html` or `js/`, regenerate it with Node.js 20:
+
+```bash
+npx tailwindcss@3.4.17 -c tailwind.config.js -i css/tailwind.src.css -o css/tailwind.css --minify
+```
+
+Tailwind only generates classes it finds written in full in those files, so class names must not be assembled from fragments at runtime.
 
 Run shared location checks with Node.js 20 and changelog checks with Python 3.12, matching the workflows:
 
@@ -182,6 +190,7 @@ Downloading, building and geocoding modify local dataset files and may contact e
 |---|---|
 | `index.html` | Dashboard markup, including the compact header and filter layout, and dependencies |
 | `css/compact.css` | Compact header, filter and menu styling |
+| `css/tailwind.css`, `css/tailwind.src.css`, `tailwind.config.js` | Pre-built Tailwind utilities, source and configuration |
 | `js/app.js`, `js/store.js` | Initialization, filters, loaded-source metadata, state and saved merchants |
 | `js/compact-ui.js` | Compact control behaviour, active-filter chips, source capture status and build/changelog footer |
 | `js/filter-controls.js`, `js/subtype-filters.js` | Availability and subtype filtering |
@@ -193,7 +202,7 @@ Downloading, building and geocoding modify local dataset files and may contact e
 | `scripts/build_amex.py`, `scripts/geocode.py` | Build/history and coordinate enrichment |
 | `scripts/normalize_locations.mjs` | Shared cleanup and regression checks |
 | `scripts/update_changelog.py` | Automated changelog generation and self-tests |
-| `.github/workflows/pages.yml` | Build stamping and Pages deployment |
+| `.github/workflows/pages.yml` | Tailwind build, build stamping and Pages deployment |
 | `.github/workflows/refresh-amex.yml` | Daily data refresh and safe publication |
 | `.github/workflows/changelog.yml` | Changelog regeneration and publication |
 | `.github/workflows/monitor-actions.yml` | Operational status snapshots |
