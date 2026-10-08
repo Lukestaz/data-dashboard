@@ -12,8 +12,13 @@ Features
 - connect anonymous feedback modal to Cloudflare Worker ([`f9af659`](https://github.com/Lukestaz/data-dashboard/commit/f9af659617baa644100f35140ffd82951129b934)).
 - add protected anonymous feedback Worker for GitHub issues ([`aacf758`](https://github.com/Lukestaz/data-dashboard/commit/aacf75858a5592a94da3127ee3b022a85737700a)).
 
+Fixes
+
+- explain feedback length requirements with inline trimmed validation ([`0e0b43c`](https://github.com/Lukestaz/data-dashboard/commit/0e0b43c1f4787d85e6be6f742f60551525ca6d3a)).
+
 Maintenance
 
+- record Actions run status \[skip ci\] ([`d7781c3`](https://github.com/Lukestaz/data-dashboard/commit/d7781c3d94dfc9f09e86ccf8d5bca6cb14f5b12f)).
 - record Actions run status \[skip ci\] ([`f37993d`](https://github.com/Lukestaz/data-dashboard/commit/f37993dbdc11e1152c91d7fca3da4ed760d1b84a)).
 - record Actions run status \[skip ci\] ([`7a4e5d9`](https://github.com/Lukestaz/data-dashboard/commit/7a4e5d9d29a26b2d8cec1a10e5ac83594390d5d2)).
 - record Actions run status \[skip ci\] ([`6a693df`](https://github.com/Lukestaz/data-dashboard/commit/6a693df14846046f6dd8128c533f699f0d5e29e5)).
