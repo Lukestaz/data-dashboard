@@ -11,6 +11,11 @@ Fixes
 
 - restore blue AMEX badge in compact header ([`f1f874a`](https://github.com/Lukestaz/data-dashboard/commit/f1f874a390cf7b21c67db9b41b26a0161727592b)).
 
+Maintenance
+
+- render compact header and filters statically in index.html ([`8c4c532`](https://github.com/Lukestaz/data-dashboard/commit/8c4c5320a8b3f813356b0e5b64a4cffae01c61bd)).
+- record Actions run status \[skip ci\] ([`8f47159`](https://github.com/Lukestaz/data-dashboard/commit/8f47159aa17467566c62b8c15fe5c73984bea1ba)).
+
 ### 2026-10-08 (NZ time)
 
 Features
