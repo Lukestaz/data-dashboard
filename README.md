@@ -4,53 +4,59 @@ Explore New Zealand merchants using searchable cards, an interactive map, saved 
 
 [Open dashboard](https://lukestaz.github.io/data-dashboard/) · [Changelog](CHANGELOG.md) · [Actions](https://github.com/Lukestaz/data-dashboard/actions)
 
-## Version and current state
+## Current state and build identification
 
-- Tag v1.3.0 points to commit cde105b0eee7da38e32f8029f6bf667647439ebe.
-- That tag includes the location-filter, map/sidebar, viewport-filtering and initial monitoring changes.
-- Current main additionally contains direct campaign-JSON ingestion and the daily refresh schedule. Those later changes are not part of v1.3.0.
-- The monitor output data/ops/action-runs.json exists. Its presence proves a status snapshot was written, not that every deployment or refresh succeeded. Read checkedAt, SHA and conclusion.
-- A workflow committed to main is not proof of a successful execution, and a successful deployment is not a browser test.
+This README describes the implementation on `main`, not a guarantee that every change has deployed or passed a browser test. A committed workflow is not proof of successful execution; a successful deployment is not a browser test.
+
+The historical `v1.3.0` tag points to `cde105b0eee7da38e32f8029f6bf667647439ebe` and covers location-filter, map/sidebar, viewport-filtering and initial monitoring changes. Later ingestion, compact-UI, feedback and freshness changes are not part of that historical tag. Consult the changelog and commit history rather than treating the tag as the current site version.
+
+The compact menu shows `Build <short commit>` and a Changelog link. The Pages workflow stamps the checked-out commit into the deployment artifact's HTML, without committing generated build metadata. The link opens `CHANGELOG.md` at that same commit in a new tab. Without build metadata, the footer displays `Local build`.
+
+A build identifier describes the site's source snapshot. It is separate from the merchant-data capture time and does not certify that merchant details are current.
 
 ## Browsing merchants
 
 | Feature | Behaviour |
 |---|---|
-| Cards | Full filtered merchant list with save, directions and voting controls |
+| Cards | Filtered merchant list with save, directions and voting controls |
 | Map | Compact cards beside the map on desktop; map above cards on smaller screens |
-| Map-area filtering | Cards automatically narrow to stored coordinates inside the visible bounds after zooming or panning |
+| Map-area filtering | Cards narrow to stored coordinates inside visible bounds after zooming or panning |
 | Linked selection | A card opens its available pin; a pin highlights its card |
-| Hide/show list | Collapses the cards to give the map more space |
-| Search and categories | Apply alongside city/local-area filters and map bounds |
+| Hide/show list | Collapses cards to give the map more space |
+| Search and categories | Combine with city/local-area, subtype, availability and saved-only filters |
 | Near Me | Browser geolocation and distance sorting |
+| Compact menu | Feedback, saved-list sync, data-source selection, source capture status and build/changelog information |
 
-Switching back to Cards restores all merchants matching the non-map filters. Map-area results exclude merchants without coordinates. Approximate coordinates can place a merchant in the wrong visible area. The 1,500-pin cap has been removed; markers use clustered, chunked loading, so performance varies by dataset and device.
+Switching back to Cards restores merchants matching the non-map filters. Map-area results exclude merchants without coordinates. Approximate coordinates can place a merchant in the wrong visible area. Markers use clustered, chunked loading rather than the former 1,500-pin cap; performance varies by dataset and device.
 
-## Locations and reset controls
+## Locations and clear controls
 
 The first location tier contains a snapshot of the [major and large urban areas listed on Wikipedia](https://en.wikipedia.org/wiki/Cities_in_New_Zealand), plus Other towns / areas. Only top-tier places with in-store records are offered. Hibiscus Coast is separate from Auckland.
 
 The second tier lists suburbs/local areas for the selected city, or individual places in Other towns / areas. Unknown or ambiguous places are not automatically assigned to a city. These are rule-based mappings, not authoritative geographic boundaries.
 
-The shared normalizer removes postcode and punctuation-only labels, preserves macrons and uses address context where available. rawLocation preserves the supplied location label; canonicalCity and localArea support the hierarchy. Raw captures remain available separately.
+The shared normalizer removes postcode and punctuation-only labels, preserves macrons and uses address context where available. `rawLocation` preserves the supplied label; `canonicalCity` and `localArea` support the hierarchy. Raw captures remain available separately.
 
-- Search × clears search text.
-- City × clears both location tiers.
-- Local-area × clears only the second tier.
-- Reset filters clears search, location tiers, category and saved-only filtering, and restores default sorting. It does not erase saved merchants or votes, change the dataset or reset map bounds.
+The compact layout shows active-filter chips and a Clear control. Search and location clear actions remove the relevant selection; clearing a city also clears its local area. Clear resets search, both location tiers, category, subtype, availability, saved-only filtering and sorting. It does not erase saved merchants or votes, change the dataset or reset map bounds. Near Me location is not cleared by that reset.
 
-The clear buttons appear when their field is active. Desktop controls use a compact single-row layout; smaller screens use a stacked layout.
+Online-only filtering hides location selection and disables Near Me and distance sorting. Compact controls adapt to smaller screens.
 
-## Sources and refresh pipeline
+## Data sources and capture time
 
 | Selector | Repository file | Refresh behaviour |
 |---|---|---|
-| Amex | data/amex.json | Rebuilt from the official campaign JSON by the refresh workflow |
-| Cheapies legacy | data.json | Historical archive protected against changes by the refresh workflow |
+| Amex Shop Small | `data/amex.json` | Rebuilt from the official campaign JSON by the refresh workflow |
+| Legacy Curated | `data.json` | Historical archive protected against changes by the refresh workflow |
 
-The source selector does not distinguish JSON ingestion from Playwright capture: these are acquisition methods, not separate merchant datasets. The browser continues to load repository JSON, not the upstream URL directly.
+The browser loads repository JSON, not the upstream feed directly. Direct HTTP and historical Playwright capture are acquisition methods, not separate merchant datasets.
 
-Current main uses this pipeline:
+The menu displays `Source captured: <date and time>` for successfully loaded Amex data, formatted in `Pacific/Auckland` with a timezone indication. It uses the dataset's `meta.capturedAt`, which comes from the UTC timestamp recorded after the upstream download passes validation.
+
+This timestamp means the source was downloaded and validated. It is not the site's deployment time, Amex's own last-edit time, or an independent verification date for individual merchants. An old capture remains old even if the site is redeployed.
+
+Missing or invalid timestamps display `Source capture date unavailable.` Legacy data displays `Snapshot date unavailable.` If Amex loading falls back to legacy data, the menu explicitly identifies the fallback and does not display an Amex capture timestamp. Already-open tabs do not automatically reload the dataset.
+
+## Refresh pipeline and coordinates
 
 ```text
 Shared location regression checks
@@ -61,100 +67,131 @@ Shared location regression checks
   -> Geocode missing/changed addresses
   -> Rebuild and apply shared location hierarchy
   -> Validate output and protect legacy file
-  -> Commit dataset, cache, capture and history
+  -> Commit and safely publish dataset, cache, capture and history
   -> Pages deployment
 ```
 
-[Official campaign feed](https://www.americanexpress.com/content/dam/gcst/merchantmapslite/en-NZ/shop-small/campaigndata.json). scripts/fetch_amex.py downloads it with retries and atomically replaces data/imports/amex-online-raw.json only after validation. It rejects missing/empty lists, incompatible required fields and drops greater than 5% against previous in-store or online capture counts. Failure stops the workflow; it does not silently publish an old capture as new.
+[Official campaign feed](https://www.americanexpress.com/content/dam/gcst/merchantmapslite/en-NZ/shop-small/campaigndata.json). `scripts/fetch_amex.py` retries downloads and atomically replaces `data/imports/amex-online-raw.json` only after validation. It rejects missing/empty lists, incompatible required fields and drops greater than 5% against previous in-store or online capture counts. Failure stops the workflow rather than relabelling an old capture as new.
 
-Playwright installation and scripts/scrape-online.mjs execution have been removed from the active refresh workflow. Historical scraper files may remain in the repository but are not the current acquisition path.
+Playwright installation and `scripts/scrape-online.mjs` execution are not part of the active refresh workflow. Historical scraper files may remain in the repository.
 
-scripts/normalize_locations.mjs loads the exact browser modules as temporary ES modules, runs regression checks and writes rawLocation, canonicalCity and localArea to the final dataset. Browser loading reapplies the same rules. This avoids maintaining a second set of location mappings.
+`scripts/normalize_locations.mjs` uses the shared browser location modules for regression checks and final dataset normalization. Browser loading reapplies the same rules, avoiding a separate set of location mappings.
 
-The pipeline does not use upstream Amex coordinates. Coordinates come from the cache, legacy seeds and Nominatim lookups, with approximate postcode-derived fallback positions. Geocoded or cached does not mean independently verified address accuracy.
-
-Historical reference only: the 2 October 2026 build had 12,102 in-store records and 3,487 online-only records, totalling 15,589 combined records. The upstream online list had 4,462 entries, some matched to in-store records. These are not current totals or counts of distinct physical shops; consult dataset metadata.
+The pipeline does not use upstream Amex coordinates. Coordinates come from the cache, legacy seeds and Nominatim lookups, with approximate postcode-derived fallback positions. Geocoded or cached does not mean independently verified address accuracy. Consult dataset metadata for current record counts; combined records and online entries are not necessarily counts of distinct physical shops.
 
 ## Daily schedule and deployment
 
-Amex refresh is scheduled daily at 07:17 in Pacific/Auckland, with the timezone explicitly configured. Scheduled execution is best-effort, not a guaranteed start time. Manual execution remains available in [the refresh workflow](https://github.com/Lukestaz/data-dashboard/actions/workflows/refresh-amex.yml).
+The refresh workflow is named `Refresh Amex directory`. Keep that name aligned with Pages and monitoring `workflow_run` references.
 
-The historical display name remains Refresh Amex dataset (twice weekly) because Pages and monitoring reference it in workflow_run. Its actual schedule is daily. Rename all dependent references together if changing that name.
+Refresh is scheduled daily at 07:17 in `Pacific/Auckland`, with the timezone configured explicitly. Manual execution is available in [the refresh workflow](https://github.com/Lukestaz/data-dashboard/actions/workflows/refresh-amex.yml). A schedule is an intended trigger, not proof that a run started or succeeded.
 
-Scheduled runs allow up to 400 new/changed-address geocoding attempts. Manual runs default to 1,000 through geocode_max. The timeout is 120 minutes. Existing cached coordinates are retained.
+Scheduled runs allow up to 400 new/changed-address geocoding attempts. Manual runs default to 1,000 through `geocode_max`. The job timeout is 120 minutes. Existing cached coordinates are retained.
 
-Pages is configured for pushes to main and refresh-workflow completion. A fresh capture becomes public only after a successful publish/deployment. Already-open tabs do not automatically reload the dataset.
+Publication uses up to three fetch/rebase/push attempts to handle concurrent commits on `main`. A rebase conflict aborts publication with an explicit error; the workflow does not force-push. This reduces the earlier non-fast-forward publishing risk but does not eliminate all concurrency failures.
 
-## Monitoring and troubleshooting
+Pages is configured for pushes to `main`, refresh-workflow completion and manual dispatch. A capture becomes public only after successful publication and deployment. Completion of a refresh workflow alone is not proof of a successful refresh.
 
-monitor-actions.yml checks Pages and refresh workflows after completion, with a 15-minute scheduled fallback and manual trigger. It writes data/ops/action-runs.json and an Actions job summary.
+## Ideas and bug reports
 
-The snapshot includes up to 30 recent runs per watched workflow: status, conclusion, commit SHA, timestamps, run URL and unsuccessful job/step details where available. Failed job lookups are recorded explicitly. Runs without jobs direct readers to the run page for validation errors. Full logs and validation annotations are not copied into the snapshot.
+Open the compact menu (`⋯`) and choose Idea or bug. Visitors can submit without a GitHub account through a Cloudflare Worker, with Cloudflare Turnstile spam verification.
 
-1. Check checkedAt for freshness.
-2. Match the run SHA to the change being investigated.
-3. Distinguish Pages deployment failures from Amex refresh failures.
-4. Open the run URL for full logs or YAML annotations.
-5. Check data/amex.json metadata to confirm ingestionMethod is direct-http and locationNormalization is shared-browser-rules after the first successful new-pipeline refresh.
+- Choose Idea or Bug and enter a short title and details.
+- Titles require 3 to 120 characters; details require 10 to 4,000. Leading/trailing spaces do not count towards the validated length.
+- Length guidance, live counts and inline errors explain incomplete fields.
+- Explicit consent is required because feedback is posted publicly on GitHub. Do not include personal information, credentials or private merchant/customer details.
+- On confirmed success, the form links to the created issue.
+- If submission ends without confirmation, check existing issues before retrying to avoid duplicates.
 
-Status-file commits use [skip ci]. Monitoring records are separate from merchant turnover history in data/history.json. This is on-demand inspectable status, not proactive alert delivery. The monitor currently watches Pages and refresh, not its own health or the version-tag workflow.
+The form sends the feedback type, title, details, selected dataset and view, plus submission-control fields. Selecting a dataset does not prove that dataset loaded without fallback. The feedback endpoint is an external service, separate from the static Pages frontend; copying the frontend alone does not configure a new Worker or its Turnstile integration.
 
-## Saved lists and community votes
+## Saved lists, votes and analytics
 
-Saved merchants live in browser localStorage. Open Sync, copy the link and open it on another device to merge the snapshot, or use the import field. No account is needed. This is snapshot transfer, not continuous synchronization; clearing browser storage removes local saved data. Shared links disclose the identifiers they contain.
+Saved merchants live in browser `localStorage`. Open Sync saved merchants, copy the link and open it on another device to merge the snapshot, or use the import field. No account is needed. This is snapshot transfer, not continuous synchronization. Clearing browser storage removes local saved data; shared links disclose the identifiers they contain.
 
 Acceptance votes are community reports, not guarantees. Directory inclusion does not establish current Amex acceptance or offer eligibility. The app also includes an offer reminder and Umami analytics integration.
 
-## Review findings and limitations
+## Automated changelog
 
-The following were identified during the 7 October review and are not claimed fixed by this documentation change:
+`changelog.yml` runs on application pushes to `main` and manual dispatch, excluding pushes that only change `CHANGELOG.md`, `data/**` or `data.json`. It regenerates the marked automatic section of `CHANGELOG.md`, preserves handwritten content and publishes only when output changes.
 
-- Concurrent writes: the monitor commits to main regularly, while refresh ends with a plain git push. A newer monitor commit can cause a non-fast-forward refresh push to fail. Add controlled retry/rebase or separate operational-status storage.
-- Voting identifiers: cards use SENumber or id, while map popups also prefer seNumber. Standardize the key across views and validate that votes for the same merchant agree.
-- Saved identifiers: the current builder assigns sequential record IDs. Validate favourite/sync stability when upstream records are added, removed or reordered.
-- History precision: the builder runs before and after geocoding. Review whether the second build replaces the first build's turnover counts for the same capture.
+The generator reads first-parent commit history after a fixed baseline. It includes `feat`, `fix`, `perf`, `refactor` and `chore` subjects, including optional scopes. Entries are grouped by Auckland date and category; subjects with `!` appear first under Breaking changes for that day. Commit descriptions are escaped for Markdown.
+
+Meaningful conventional subjects on `main` are required. With ordinary merge commits, individual branch commits can be excluded by first-parent traversal and a non-conventional merge subject can leave a change undocumented. The generator currently reads subjects, not `BREAKING CHANGE:` trailers in commit bodies.
+
+Changelog entries are not release or deployment confirmations. The generator does not automatically assign release versions or create tags. The menu's commit-pinned changelog reflects the deployed source snapshot and may omit later entries generated on `main`.
+
+## Monitoring and troubleshooting
+
+`monitor-actions.yml` records Pages and refresh workflow status in `data/ops/action-runs.json` and an Actions job summary. The monitoring setup is intended to run after watched workflows complete, with a 15-minute scheduled fallback and manual trigger.
+
+The documented snapshot contains up to 30 recent runs per watched workflow, including status, conclusion, SHA, timestamps, run URL and unsuccessful job/step details where available. Failed job lookups are recorded; full logs and validation annotations remain on the run page.
+
+1. Check `checkedAt` before treating a snapshot as current.
+2. Match the run SHA to the change under investigation.
+3. Distinguish Pages deployment failures from data-refresh failures.
+4. Open the run URL for full logs or YAML annotations.
+5. Check `data/amex.json` metadata and `meta.capturedAt` against the source status displayed in the menu.
+
+A status file's existence proves only that a snapshot was written. Status-file commits use `[skip ci]`. Operational snapshots are separate from merchant turnover history in `data/history.json`. This is inspectable status, not proactive alert delivery. Monitoring does not establish its own health or browser correctness.
+
+## Remaining limitations and checks
+
+These concerns are not claimed resolved by this documentation update:
+
+- Voting identifiers: cards and map popups have used different preferences for `SENumber`, `seNumber` and `id`. Standardize keys and verify agreement across views.
+- Saved identifiers: the builder assigns sequential record IDs. Validate favourite/sync stability when upstream records are added, removed or reordered.
+- History precision: the builder runs before and after geocoding. Check whether the second build replaces the first build's turnover counts for the same capture.
 - Location coverage: suburb dictionaries and address parsing are incomplete. Other towns / areas is intentional; investigate incorrect mappings rather than forcing a guess.
-- Browser verification: automated location assertions do not cover voting, map interaction, mobile layout or all filter combinations.
+- Concurrent publication: controlled retry/rebase now exists, but conflicts still require intervention.
+- Browser verification: automated location/changelog assertions do not cover voting, map interaction, mobile layout, anonymous feedback or every filter/fallback combination. Recent UI commits need deployment and browser verification separately.
 
 ## Local development and checks
 
 Serve the repository over HTTP; there is no frontend bundling step:
 
 ```bash
-python -m http.server 8000
+python3 -m http.server 8000
 ```
 
-Open [localhost:8000](http://localhost:8000). External map tiles and community services need network access.
+Open [localhost:8000](http://localhost:8000). External map tiles, votes, analytics and feedback services require network access. Local serving does not run the Pages build-stamping step, so the menu displays Local build.
 
-Run shared location regression checks with Node.js 20:
+Run shared location checks with Node.js 20 and changelog checks with Python 3.12, matching the workflows:
 
 ```bash
 node scripts/normalize_locations.mjs --test-only
+python3 scripts/update_changelog.py --test-only
 ```
 
-The checks cover postcode-only and punctuation-only values, macrons, ambiguous Northcote addresses, Hibiscus Coast handling and raw-field preservation. Direct downloading/building/geocoding modifies local dataset files and may contact external services; use the workflow for controlled refreshes.
+Location checks cover postcode-only and punctuation-only values, macrons, ambiguous Northcote addresses, Hibiscus Coast handling and raw-field preservation. Changelog checks cover scoped/breaking subjects, NZ date boundaries, Markdown escaping, exclusions, manual preservation, repeatability and marker safety.
+
+Downloading, building and geocoding modify local dataset files and may contact external services. Use the workflow for controlled refreshes. A UI-only documentation or code change does not require a new source capture.
 
 ## Project structure
 
 | Path | Role |
 |---|---|
-| index.html | Dashboard markup and dependencies |
-| js/app.js, js/store.js | Initialization, shared filters, state and saved merchants |
-| js/normalizer.js, js/locations.js | Shared location rules, hierarchy and filter UI |
-| js/map.js, js/cards.js | Map/sidebar, visible-area filtering and merchant cards |
-| js/votes.js, js/sync.js | Community feedback and saved-list transfer |
-| scripts/fetch_amex.py | Direct campaign download and capture validation |
-| scripts/build_amex.py, scripts/geocode.py | Build/history and coordinate enrichment |
-| scripts/normalize_locations.mjs | Shared cleanup and regression checks |
-| .github/workflows/pages.yml | Pages deployment |
-| .github/workflows/refresh-amex.yml | Daily data refresh |
-| .github/workflows/monitor-actions.yml | Operational status snapshots |
-| .github/workflows/tag-v1.3.0.yml | Version-specific tag creation |
+| `index.html` | Dashboard markup and dependencies |
+| `js/app.js`, `js/store.js` | Initialization, filters, loaded-source metadata, state and saved merchants |
+| `js/compact-ui.js` | Compact controls, menu, source capture status and build/changelog footer |
+| `js/filter-controls.js`, `js/subtype-filters.js` | Availability and subtype filtering |
+| `js/normalizer.js`, `js/locations.js` | Shared location rules and hierarchy |
+| `js/map.js`, `js/cards.js` | Map/sidebar, visible-area filtering and merchant cards |
+| `js/votes.js`, `js/sync.js` | Community acceptance votes and saved-list transfer |
+| `js/feedback.js` | Anonymous idea/bug modal and external feedback submission |
+| `scripts/fetch_amex.py` | Direct campaign download and capture validation |
+| `scripts/build_amex.py`, `scripts/geocode.py` | Build/history and coordinate enrichment |
+| `scripts/normalize_locations.mjs` | Shared cleanup and regression checks |
+| `scripts/update_changelog.py` | Automated changelog generation and self-tests |
+| `.github/workflows/pages.yml` | Build stamping and Pages deployment |
+| `.github/workflows/refresh-amex.yml` | Daily data refresh and safe publication |
+| `.github/workflows/changelog.yml` | Changelog regeneration and publication |
+| `.github/workflows/monitor-actions.yml` | Operational status snapshots |
+| `.github/workflows/tag-v1.3.0.yml` | Historical version-specific tag creation |
 
 ## Attribution and license
 
 Campaign data: American Express public directory. Legacy data: Cheapies archive. Mapping/geocoding: OpenStreetMap contributors and Nominatim. These sources retain their respective terms.
 
-Project license: MIT; see LICENSE for details.
+Project license: MIT; see [LICENSE](LICENSE) for details.
 
-Last reviewed: 7 October 2026.
+Last documentation review: 8 October 2026. This date records a documentation review, not a successful deployment, data refresh or end-to-end browser test.
