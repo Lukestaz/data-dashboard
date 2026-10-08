@@ -93,7 +93,9 @@ export function mountCompactUI(state, changed) {
 `;
   document.head.append(style);
   const toolbar = element('div'); toolbar.id = 'compact-toolbar';
-  const title = element('h1', 'text-white', 'Shop Small NZ');
+  const title = element('div', 'flex items-center gap-2 min-w-0');
+  const badge = element('span', 'shrink-0 rounded bg-blue-600 px-2 py-0.5 text-[11px] font-bold tracking-wide text-white', 'AMEX');
+  title.append(badge, element('h1', 'text-white', 'Shop Small NZ'));
   const headerActions = element('div', 'flex items-center gap-2');
   const more = element('details', 'relative'); more.id = 'compact-more';
   const moreSummary = element('summary', 'compact-control text-sm', '⋯');
