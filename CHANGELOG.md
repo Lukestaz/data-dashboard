@@ -14,10 +14,12 @@ Features
 
 Fixes
 
+- highlight breaking changes and strengthen changelog tests ([`833b9f2`](https://github.com/Lukestaz/data-dashboard/commit/833b9f28ecaeeafd38d8df031f63024a52c65304)).
 - explain feedback length requirements with inline trimmed validation ([`0e0b43c`](https://github.com/Lukestaz/data-dashboard/commit/0e0b43c1f4787d85e6be6f742f60551525ca6d3a)).
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`71fa2a9`](https://github.com/Lukestaz/data-dashboard/commit/71fa2a95bcc87a033e487a3146af82694659bf0d)).
 - record Actions run status \[skip ci\] ([`d7781c3`](https://github.com/Lukestaz/data-dashboard/commit/d7781c3d94dfc9f09e86ccf8d5bca6cb14f5b12f)).
 - record Actions run status \[skip ci\] ([`f37993d`](https://github.com/Lukestaz/data-dashboard/commit/f37993dbdc11e1152c91d7fca3da4ed760d1b84a)).
 - record Actions run status \[skip ci\] ([`7a4e5d9`](https://github.com/Lukestaz/data-dashboard/commit/7a4e5d9d29a26b2d8cec1a10e5ac83594390d5d2)).
