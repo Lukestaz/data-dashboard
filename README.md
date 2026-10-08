@@ -8,8 +8,6 @@ Explore New Zealand merchants using searchable cards, an interactive map, saved 
 
 This README describes the implementation on `main`, not a guarantee that every change has deployed or passed a browser test. A committed workflow is not proof of successful execution; a successful deployment is not a browser test.
 
-The historical `v1.3.0` tag points to `cde105b0eee7da38e32f8029f6bf667647439ebe` and covers location-filter, map/sidebar, viewport-filtering and initial monitoring changes. Later ingestion, compact-UI, feedback and freshness changes are not part of that historical tag. Consult the changelog and commit history rather than treating the tag as the current site version.
-
 The compact menu shows `Build <short commit>` and a Changelog link. The Pages workflow stamps the checked-out commit into the deployment artifact's HTML, without committing generated build metadata. The link opens `CHANGELOG.md` at that same commit in a new tab. Without build metadata, the footer displays `Local build`.
 
 A build identifier describes the site's source snapshot. It is separate from the merchant-data capture time and does not certify that merchant details are current.
@@ -134,16 +132,28 @@ The documented snapshot contains up to 30 recent runs per watched workflow, incl
 
 A status file's existence proves only that a snapshot was written. Status-file commits use `[skip ci]`. Operational snapshots are separate from merchant turnover history in `data/history.json`. This is inspectable status, not proactive alert delivery. Monitoring does not establish its own health or browser correctness.
 
-## Remaining limitations and checks
+## Committed safeguards
 
-These concerns are not claimed resolved by this documentation update:
+The following fixes were committed on 7 October 2026 and should not be treated as untouched review findings:
 
-- Voting identifiers: cards and map popups have used different preferences for `SENumber`, `seNumber` and `id`. Standardize keys and verify agreement across views.
-- Saved identifiers: the builder assigns sequential record IDs. Validate favourite/sync stability when upstream records are added, removed or reordered.
-- History precision: the builder runs before and after geocoding. Check whether the second build replaces the first build's turnover counts for the same capture.
-- Location coverage: suburb dictionaries and address parsing are incomplete. Other towns / areas is intentional; investigate incorrect mappings rather than forcing a guess.
-- Concurrent publication: controlled retry/rebase now exists, but conflicts still require intervention.
-- Browser verification: automated location/changelog assertions do not cover voting, map interaction, mobile layout, anonymous feedback or every filter/fallback combination. Recent UI commits need deployment and browser verification separately.
+| Area | Committed change | Evidence |
+|---|---|---|
+| Voting identity | Unified voting identity across cards and map, with legacy compatibility | [e6b4fd8](https://github.com/Lukestaz/data-dashboard/commit/e6b4fd80271e3465e6b971987a311652156e04d6) |
+| Saved-merchant identity | Persistent registry to preserve published merchant IDs across refreshes | [1c15026](https://github.com/Lukestaz/data-dashboard/commit/1c1502698155164a2f9d89eca090fb053ddf22d2) |
+| Turnover history | Finalization against an immutable pre-refresh baseline | [b4eea7f](https://github.com/Lukestaz/data-dashboard/commit/b4eea7f9221a6f7855d0f02053a6d11b2eac1fdc) |
+| Concurrent publication | Controlled retry after concurrent updates to `main` | [833dd66](https://github.com/Lukestaz/data-dashboard/commit/833dd66d9d01eb45d56428411082f5ce6d2ec005) |
+| Coordinate quality | Overseas-address quarantine and invalid cached-pin rejection | [c1f6957](https://github.com/Lukestaz/data-dashboard/commit/c1f6957156f7c9743082360c3edabca93fd2e115) |
+| Location and pin recovery | Additional Rotorua/Chathams handling and conservative recovery of audited NZ pins | [5d69b50](https://github.com/Lukestaz/data-dashboard/commit/5d69b50b1531df26e08a26d8b6bd1272cec3a35e) |
+
+These links establish committed fixes, not a fresh certification of current deployment or end-to-end test results. Inspect the full pipeline, including post-build identity/history stages, rather than inferring the published dataset's behaviour from an intermediate builder alone.
+
+## Ongoing limitations and verification
+
+- Location coverage: suburb dictionaries and address parsing remain incomplete. Other towns / areas is intentional; investigate incorrect mappings rather than forcing a guess. Approximate coordinates remain approximate despite validation safeguards.
+- Concurrent publication: controlled retry/rebase exists, but conflicts still require intervention.
+- Regression checks: retain coverage for voting identity across views, saved/sync IDs through additions/removals/reordering, and turnover counts across multi-stage refreshes. These are checks of implemented safeguards, not claims that the original defects remain unfixed.
+- Browser verification: automated location/changelog assertions do not cover voting, map interaction, mobile layout, anonymous feedback or every filter/fallback combination. Deployment and browser verification are separate from code commits.
+- Source accuracy: directory inclusion and capture freshness do not guarantee current merchant acceptance, offer eligibility or address accuracy.
 
 ## Local development and checks
 
@@ -186,7 +196,6 @@ Downloading, building and geocoding modify local dataset files and may contact e
 | `.github/workflows/refresh-amex.yml` | Daily data refresh and safe publication |
 | `.github/workflows/changelog.yml` | Changelog regeneration and publication |
 | `.github/workflows/monitor-actions.yml` | Operational status snapshots |
-| `.github/workflows/tag-v1.3.0.yml` | Historical version-specific tag creation |
 
 ## Attribution and license
 
