@@ -41,6 +41,10 @@ function installFeedback(menu) {
 #feedback-dialog .feedback-status a{color:#93c5fd;text-decoration:underline}
 #feedback-dialog .feedback-honeypot{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
 #feedback-dialog :focus-visible{outline:2px solid #60a5fa;outline-offset:2px}
+#feedback-dialog .feedback-help{font-size:11px;line-height:1.4;color:#94a3b8}
+#feedback-dialog .feedback-error{font-size:12px;line-height:1.4;color:#fda4af}
+#feedback-dialog .feedback-error[hidden]{display:none}
+#feedback-dialog [aria-invalid="true"]{border-color:#fb7185!important}
 #feedback-turnstile{min-height:65px}
 `;document.head.append(style);
   const entry=node('button','Idea or bug');entry.type='button';entry.className='compact-control w-full text-xs font-semibold';
@@ -49,11 +53,34 @@ function installFeedback(menu) {
   const heading=node('div');heading.className='feedback-heading';
   const title=node('h2','Submit an idea or bug');title.id='feedback-heading';
   const close=node('button','✕');close.type='button';close.setAttribute('aria-label','Close feedback');heading.append(title,close);
-  const form=node('form');
+  const form=node('form');form.noValidate=true;
   function field(labelText,control){const label=node('label',labelText);label.append(control);form.append(label);return control;}
   const type=node('select');type.name='type';for(const[value,label]of[['idea','Idea'],['bug','Bug']]){const option=node('option',label);option.value=value;type.append(option);}field('Type',type);
-  const subject=field('Short title',node('input'));subject.name='title';subject.required=true;subject.minLength=3;subject.maxLength=120;
-  const details=field('Details',node('textarea'));details.name='details';details.required=true;details.minLength=10;details.maxLength=4000;details.placeholder='What would you like changed, or what went wrong?';
+  const subject=field('Short title',node('input'));subject.name='title';subject.id='feedback-title';subject.required=true;subject.minLength=3;subject.maxLength=120;
+  const details=field('Details',node('textarea'));details.name='details';details.id='feedback-details';details.required=true;details.minLength=10;details.maxLength=4000;details.placeholder='What would you like changed, or what went wrong?';
+  const touched=new Set();
+  const fields=[{control:subject,min:3,max:120},{control:details,min:10,max:4000}].map(config=>{
+    const help=node('span');help.id=config.control.id+'-help';help.className='feedback-help';
+    const error=node('span');error.id=config.control.id+'-error';error.className='feedback-error';error.hidden=true;error.setAttribute('aria-live','polite');
+    config.control.setAttribute('aria-describedby',help.id+' '+error.id);config.control.parentElement.append(help,error);
+    return {...config,help,error};
+  });
+  function validateFields(showAll=false) {
+    let valid=true,firstInvalid=null;
+    for(const {control,min,max,help,error} of fields){
+      const length=control.value.trim().length;
+      help.textContent='At least '+min+' characters · '+length.toLocaleString()+' / '+max.toLocaleString()+' (outer spaces excluded)';
+      const message=length<min?(control===details?'Please add a little more detail—at least 10 characters.':'Please enter a title of at least 3 characters.'):length>max?'Please shorten this to '+max.toLocaleString()+' characters.':'';
+      if(message){valid=false;firstInvalid??=control;}
+      if(showAll)touched.add(control);
+      const visible=touched.has(control)&&Boolean(message);
+      error.textContent=visible?message:'';error.hidden=!visible;control.setAttribute('aria-invalid',String(visible));
+    }
+    if(showAll&&firstInvalid)firstInvalid.focus();
+    return valid;
+  }
+  for(const {control} of fields){control.addEventListener('input',()=>validateFields());control.addEventListener('blur',()=>{touched.add(control);validateFields();});}
+  validateFields();
   const honeypot=node('label','Leave this empty');honeypot.className='feedback-honeypot';honeypot.setAttribute('aria-hidden','true');
   const website=node('input');website.name='website';website.tabIndex=-1;website.autocomplete='off';honeypot.append(website);form.append(honeypot);
   const consentLabel=node('label');consentLabel.className='feedback-consent';
@@ -71,8 +98,8 @@ function installFeedback(menu) {
   dialog.addEventListener('close',()=>{if(widget!==null&&window.turnstile)window.turnstile.remove(widget);widget=null;token='';updateButton();});
   entry.addEventListener('click',async()=>{
     for(const disclosure of document.querySelectorAll('#compact-more[open],#compact-location[open],#compact-map-info[open]'))disclosure.open=false;
-    if(finished){form.reset();finished=false;uncertain=false;requestId='';fingerprint='';context=null;status.replaceChildren();}
-    dialog.showModal();subject.focus();updateButton();
+    if(finished){form.reset();finished=false;uncertain=false;requestId='';fingerprint='';context=null;status.replaceChildren();touched.clear();}
+    validateFields();dialog.showModal();subject.focus();updateButton();
     try {
       const turnstile=await loadTurnstile();if(!dialog.open)return;
       widget=turnstile.render(challenge,{sitekey:SITE_KEY,action:'feedback',size:'flexible',callback:value=>{token=value;updateButton();},'expired-callback':()=>{token='';updateButton();},'error-callback':()=>{token='';status.textContent='Spam verification failed. Close and reopen to retry.';updateButton();}});
@@ -80,7 +107,10 @@ function installFeedback(menu) {
   });
   const uncertainMessage=message=>{uncertain=true;status.replaceChildren(node('span',message+' '));const link=node('a','Check existing issues');link.href=ISSUES;link.target='_blank';link.rel='noopener noreferrer';status.append(link);};
   form.addEventListener('submit',async event=>{
-    event.preventDefault();if(submitting||finished||uncertain||!token||!form.reportValidity())return;
+    event.preventDefault();if(submitting||finished||uncertain)return;
+    if(!validateFields(true)){status.textContent='Please check the highlighted fields.';return;}
+    if(!consent.checked){status.textContent='Please confirm that your feedback can be posted publicly.';consent.focus();return;}
+    if(!token){status.textContent='Please wait for spam verification to complete.';return;}
     const content=JSON.stringify([type.value,subject.value.trim(),details.value.trim()]);
     if(content!==fingerprint){fingerprint=content;requestId=crypto.randomUUID();context={dataset:state.activeDataset,view:state.viewMode};}
     const payload={type:type.value,title:subject.value.trim(),details:details.value.trim(),...context,requestId,turnstileToken:token,publicConsent:consent.checked,website:website.value};
