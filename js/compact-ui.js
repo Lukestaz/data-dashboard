@@ -6,6 +6,19 @@ function element(tag, className = '', text = '') {
   if (text) node.textContent = text;
   return node;
 }
+function sourceCaptureLabel(state) {
+  if (!state.loadedDataSource) return 'Loading source information…';
+  if (state.loadedDataSource === 'legacy') {
+    return state.activeDataset === 'amex' ? 'Legacy snapshot loaded (Amex unavailable). Snapshot date unavailable.' : 'Snapshot date unavailable.';
+  }
+  const captured = typeof state.dataCapturedAt === 'string' ? Date.parse(state.dataCapturedAt) : NaN;
+  if (!Number.isFinite(captured)) return 'Source capture date unavailable.';
+  const formatted = new Intl.DateTimeFormat('en-NZ', {
+    timeZone: 'Pacific/Auckland', day: 'numeric', month: 'short', year: 'numeric',
+    hour: 'numeric', minute: '2-digit', timeZoneName: 'short'
+  }).format(new Date(captured));
+  return 'Source captured: ' + formatted;
+}
 function buildFooter() {
   const raw = document.querySelector('meta[name="application-build"]')?.content || '';
   const sha = /^[0-9a-f]{40}$/.test(raw) ? raw : '';
@@ -90,8 +103,14 @@ export function mountCompactUI(state, changed) {
   sync.className = 'compact-control w-full text-xs font-semibold';
   dataset.className = 'compact-control w-full text-sm';
   const sourceLabel = element('label', 'block text-xs text-slate-400', 'Data source'); sourceLabel.htmlFor = dataset.id;
+  const sourceStatus = element('p', 'text-xs text-slate-400', sourceCaptureLabel(state));
+  sourceStatus.id = 'compact-source-status';
+  sourceStatus.setAttribute('role', 'status');
+  sourceStatus.setAttribute('aria-live', 'polite');
+  sourceStatus.setAttribute('aria-atomic', 'true');
+  sourceStatus.title = 'Capture time records when the directory was downloaded and validated, not when individual merchant details were verified.';
   const sourceNote = element('p', 'text-xs text-slate-400', 'Amex is the current directory. The legacy snapshot remains available with its separate saved list.');
-  morePanel.append(sync, sourceLabel, dataset, sourceNote, buildFooter()); more.append(moreSummary, morePanel);
+  morePanel.append(sync, sourceLabel, dataset, sourceStatus, sourceNote, buildFooter()); more.append(moreSummary, morePanel);
   headerActions.append(view, more); toolbar.append(title, headerActions);
   const searchBox = search.parentElement; searchBox.className = 'relative min-w-0';
   search.placeholder = 'Search merchants, places or categories…';
@@ -169,6 +188,8 @@ export function mountCompactUI(state, changed) {
     control.setAttribute('aria-label', 'Clear ' + text); control.addEventListener('click', callback); active.append(control);
   }
   function refresh() {
+    const captureLabel = sourceCaptureLabel(state);
+    if (sourceStatus.textContent !== captureLabel) sourceStatus.textContent = captureLabel;
     const online = state.activeAvailability === 'online';
     location.hidden = online; near.disabled = online; near.classList.toggle('opacity-50', online);
     if (online) location.open = false;
