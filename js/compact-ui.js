@@ -6,6 +6,20 @@ function element(tag, className = '', text = '') {
   if (text) node.textContent = text;
   return node;
 }
+function buildFooter() {
+  const raw = document.querySelector('meta[name="application-build"]')?.content || '';
+  const sha = /^[0-9a-f]{40}$/.test(raw) ? raw : '';
+  const footer = element('div', 'compact-build-footer');
+  const build = element('span', '', sha ? 'Build ' + sha.slice(0, 7) : 'Local build');
+  if (sha) build.title = 'Source commit: ' + sha;
+  const link = element('a', '', 'Changelog ↗');
+  link.href = 'https://github.com/Lukestaz/data-dashboard/blob/' + (sha || 'main') + '/CHANGELOG.md';
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.setAttribute('aria-label', 'Changelog (opens in a new tab)');
+  footer.append(build, link);
+  return footer;
+}
 export function clearFilterCount(state, query = '') {
   return Number(state.activeAvailability !== 'all') + Number(state.activeTown !== 'All') + Number(state.activeArea !== 'All') + Number(state.activeCategory !== 'All') + Number(state.activeSubtype !== 'All') + Number(state.showSavedOnly) + Number(Boolean(query.trim())) + Number(state.currentSort !== 'default');
 }
@@ -51,6 +65,9 @@ export function mountCompactUI(state, changed) {
 .compact-popup{position:absolute;z-index:1050;top:calc(100% + 6px);background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;box-shadow:0 12px 30px #0008}
 #compact-location .compact-popup{left:0;width:min(340px,calc(100vw - 32px))}
 #compact-more .compact-popup{right:0;width:min(270px,calc(100vw - 32px))}
+.compact-build-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid #334155;padding-top:4px;font-size:11px;color:#94a3b8}
+.compact-build-footer a{display:inline-flex;align-items:center;min-height:44px;color:#93c5fd;text-decoration:underline}
+.compact-build-footer a:focus-visible{outline:2px solid #60a5fa;outline-offset:2px;border-radius:4px}
 .compact-location-grid{display:grid;grid-template-columns:1fr;gap:8px}
 .compact-control{background:#0f172a;border:1px solid #334155;border-radius:8px;color:#cbd5e1;padding:8px 10px}
 #compact-filter-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -67,14 +84,14 @@ export function mountCompactUI(state, changed) {
   const headerActions = element('div', 'flex items-center gap-2');
   const more = element('details', 'relative'); more.id = 'compact-more';
   const moreSummary = element('summary', 'compact-control text-sm', '⋯');
-  moreSummary.setAttribute('aria-label', 'Saved-list sync and data sources');
+  moreSummary.setAttribute('aria-label', 'More options, saved-list sync, data sources and changelog');
   const morePanel = element('div', 'compact-popup space-y-3');
   sync.textContent = 'Sync saved merchants';
   sync.className = 'compact-control w-full text-xs font-semibold';
   dataset.className = 'compact-control w-full text-sm';
   const sourceLabel = element('label', 'block text-xs text-slate-400', 'Data source'); sourceLabel.htmlFor = dataset.id;
   const sourceNote = element('p', 'text-xs text-slate-400', 'Amex is the current directory. The legacy snapshot remains available with its separate saved list.');
-  morePanel.append(sync, sourceLabel, dataset, sourceNote); more.append(moreSummary, morePanel);
+  morePanel.append(sync, sourceLabel, dataset, sourceNote, buildFooter()); more.append(moreSummary, morePanel);
   headerActions.append(view, more); toolbar.append(title, headerActions);
   const searchBox = search.parentElement; searchBox.className = 'relative min-w-0';
   search.placeholder = 'Search merchants, places or categories…';

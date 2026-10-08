@@ -26,6 +26,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Stamp deployed build
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib, re, subprocess
+          sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          if not re.fullmatch(r'[0-9a-f]{40}', sha):
+              raise SystemExit('Invalid checked-out commit identifier')
+          path = pathlib.Path('index.html')
+          html = path.read_text(encoding='utf-8')
+          if html.count('</head>') != 1:
+              raise SystemExit('Expected exactly one closing head tag')
+          if 'name="application-build"' in html:
+              raise SystemExit('Build metadata already exists in source HTML')
+          stamp = f'  <meta name="application-build" content="{sha}" />\n'
+          path.write_text(html.replace('</head>', stamp + '</head>'), encoding='utf-8')
+          PY
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
