@@ -1,0 +1,61 @@
+/* Compact header and filter layout (static; previously injected by compact-ui.js and filter-controls.js). */
+#compact-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+#compact-toolbar h1{font-size:18px;line-height:1.25;font-weight:800;white-space:nowrap}
+#compact-toolbar button{min-height:40px}
+#compact-root{margin-top:12px;display:grid;gap:8px;min-width:0}
+#compact-root [hidden]{display:none!important}
+#compact-root input,#compact-root select{min-width:0;width:100%;font-size:16px;min-height:42px}
+#compact-root button{min-height:40px}
+#compact-root #category-pills,#compact-root #subtype-filter-row{min-width:0;width:100%;margin:0;scrollbar-width:thin}
+#compact-root #availability-filter-row{margin:0;min-width:0}
+#compact-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+#compact-actions>button,#compact-actions summary{font-size:12px;padding:8px 10px;min-height:40px}
+#compact-location summary,#compact-more summary{cursor:pointer;list-style:none}
+#compact-location summary::-webkit-details-marker,#compact-more summary::-webkit-details-marker{display:none}
+#compact-result-row{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#94a3b8;font-size:12px;flex-wrap:wrap;border-top:1px solid #1e293b;padding-top:6px}
+#compact-result-row select{width:auto;max-width:130px;font-size:12px;min-height:40px;padding:6px 8px}
+#compact-result-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+#compact-result-tools button{font-size:12px;min-height:40px;padding:6px 8px}
+.compact-popup{position:absolute;z-index:1050;top:calc(100% + 6px);background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;box-shadow:0 12px 30px #0008}
+#compact-location .compact-popup{left:0;width:min(340px,calc(100vw - 32px))}
+#compact-more .compact-popup{right:0;width:min(270px,calc(100vw - 32px))}
+.compact-build-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid #334155;padding-top:4px;font-size:11px;color:#94a3b8}
+.compact-build-footer a{display:inline-flex;align-items:center;min-height:44px;color:#93c5fd;text-decoration:underline}
+.compact-build-footer a:focus-visible{outline:2px solid #60a5fa;outline-offset:2px;border-radius:4px}
+.compact-location-grid{display:grid;grid-template-columns:1fr;gap:8px}
+.compact-control{background:#0f172a;border:1px solid #334155;border-radius:8px;color:#cbd5e1;padding:8px 10px}
+#compact-filter-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#compact-active-filters{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+#compact-active-filters button{min-height:32px;font-size:11px;padding:4px 9px;border-radius:16px;border:1px solid #334155;background:#0f172a;color:#cbd5e1}
+#compact-clear{flex-shrink:0;font-size:12px;padding:6px 8px;color:#cbd5e1}
+#merchant-split>.map-list-toolbar{display:none!important}
+#compact-root .compact-map-note{font-size:11px;color:#94a3b8;margin:0}
+@media(min-width:640px){#compact-toolbar h1{font-size:22px}.compact-location-grid{grid-template-columns:1fr 1fr}#compact-root input{font-size:14px}}
+
+/* Refinements */
+#compact-toolbar{align-items:center;gap:8px;padding:0 0 8px;min-height:44px}
+#compact-toolbar h1{font-size:18px;line-height:1.25;margin:0}
+#compact-toolbar>div{align-items:center;gap:6px}
+#compact-view-toggle{height:40px;padding:2px;border:1px solid #263244;border-radius:9px;background:#0f172a;box-sizing:border-box}
+#compact-view-toggle button{height:34px;min-height:34px;padding:0 10px;font-size:12px;line-height:1;border-radius:6px}
+#compact-more>summary{height:40px;min-height:40px;width:36px;display:flex;align-items:center;justify-content:center;padding:0;border-color:#263244;box-sizing:border-box}
+#compact-root{gap:8px;margin-top:10px}
+#compact-actions>button,#compact-actions summary{border-color:#263244;border-radius:8px;box-shadow:none;font-weight:500}
+#compact-root #availability-filter-row{border:0;background:transparent;border-radius:0;padding:0;gap:6px}
+#compact-root #availability-filter-row button{height:40px;min-height:40px;padding:0 10px;font-size:12px;line-height:1.25;font-weight:500;border:1px solid #263244;border-radius:8px;box-shadow:none;box-sizing:border-box}
+#compact-root #availability-filter-row button[aria-pressed="false"]{background:#0f172a;color:#cbd5e1}
+#compact-root #availability-filter-row button[aria-pressed="true"]{background:#2563eb;border-color:#2563eb;color:#fff}
+#map-wrapper{position:relative;isolation:isolate;z-index:0}
+#sync-modal,#offer-notice{position:fixed;z-index:2000!important;isolation:isolate}
+#compact-root #category-pills button{font-size:12px;font-weight:500;padding:6px 11px}
+#compact-result-row{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding-top:8px}
+#compact-result-row>span{font-size:12px;line-height:1.5}
+#compact-result-tools{gap:6px}
+#compact-result-tools>select,#compact-result-tools button,#compact-map-info summary{font-size:12px;min-height:40px;padding:6px 8px;border-color:#263244;border-radius:7px;background:#0f172a;color:#cbd5e1;box-sizing:border-box}
+#compact-map-info{position:relative;margin-left:auto}
+#compact-map-info[hidden]{display:none!important}
+#compact-map-info summary{cursor:pointer;list-style:none;display:flex;align-items:center;border:1px solid #263244}
+#compact-map-info summary::-webkit-details-marker{display:none}
+#compact-map-info p{position:absolute;right:0;top:calc(100% + 6px);z-index:1050;width:220px;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;box-shadow:0 8px 20px #0006;font-size:12px;line-height:1.5}
+@media(min-width:640px){#compact-toolbar h1{font-size:22px}#compact-result-row{display:flex}}
+@media(max-width:359px){#compact-toolbar h1{font-size:16px}#compact-view-toggle button{padding:0 7px}}

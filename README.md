@@ -180,9 +180,10 @@ Downloading, building and geocoding modify local dataset files and may contact e
 
 | Path | Role |
 |---|---|
-| `index.html` | Dashboard markup and dependencies |
+| `index.html` | Dashboard markup, including the compact header and filter layout, and dependencies |
+| `css/compact.css` | Compact header, filter and menu styling |
 | `js/app.js`, `js/store.js` | Initialization, filters, loaded-source metadata, state and saved merchants |
-| `js/compact-ui.js` | Compact controls, menu, source capture status and build/changelog footer |
+| `js/compact-ui.js` | Compact control behaviour, active-filter chips, source capture status and build/changelog footer |
 | `js/filter-controls.js`, `js/subtype-filters.js` | Availability and subtype filtering |
 | `js/normalizer.js`, `js/locations.js` | Shared location rules and hierarchy |
 | `js/map.js`, `js/cards.js` | Map/sidebar, visible-area filtering and merchant cards |
