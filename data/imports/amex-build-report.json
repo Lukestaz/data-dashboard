@@ -1,12 +1,12 @@
 {
   "meta": {
     "source": "Amex Shop Small NZ campaigndata.json",
-    "capturedAt": "2026-10-08T23:18:17.971Z",
+    "capturedAt": "2026-10-09T22:35:22.749Z",
     "inStoreCount": 12102,
     "onlineCount": 4462,
     "records": 15589,
-    "exactCount": 9072,
-    "approxCount": 2892,
+    "exactCount": 9439,
+    "approxCount": 2572,
     "idStrategy": "persistent-registry-v1",
     "locationNormalization": "shared-browser-rules",
     "ingestionMethod": "direct-http",
@@ -14,10 +14,10 @@
     "categoryNormalization": "explicit-subtype-rules-v1"
   },
   "stats": {
-    "loc_exact": 9072,
-    "loc_approx": 2892,
+    "loc_exact": 9439,
+    "loc_approx": 2572,
     "instore_also_online": 1782,
-    "loc_none": 138,
+    "loc_none": 91,
     "online_only": 3487
   },
   "diff": {
@@ -25,7 +25,7 @@
     "removed": 0,
     "addedRecords": 0,
     "removedRecords": 0,
-    "baselineCommit": "6222e0189dce12eb434805197aeb7ac5e74fad91",
+    "baselineCommit": "a341d568d3daa4835bfec76de62e47159ff79d02",
     "method": "committed-baseline-v1"
   },
   "coordinateRejections": [
@@ -61,14 +61,6 @@
   "coordinateRecovery": {
     "baselineCommit": "f5a9d9928bb9902a218d2700d802b777fc97f5c9",
     "restored": [
-      {
-        "id": 4165,
-        "title": "Speedy Signs Rotorua",
-        "lat": -38.1446,
-        "lng": 176.2571,
-        "previousStatus": "exact",
-        "status": "approx"
-      },
       {
         "id": 4575,
         "title": "Hotel Chathams",
