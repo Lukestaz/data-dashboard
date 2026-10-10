@@ -1,12 +1,12 @@
 {
   "meta": {
     "source": "Amex Shop Small NZ campaigndata.json",
-    "capturedAt": "2026-10-09T22:35:22.749Z",
+    "capturedAt": "2026-10-10T21:38:32.478Z",
     "inStoreCount": 12102,
     "onlineCount": 4462,
     "records": 15589,
-    "exactCount": 9439,
-    "approxCount": 2572,
+    "exactCount": 9789,
+    "approxCount": 2233,
     "idStrategy": "persistent-registry-v1",
     "locationNormalization": "shared-browser-rules",
     "ingestionMethod": "direct-http",
@@ -14,10 +14,10 @@
     "categoryNormalization": "explicit-subtype-rules-v1"
   },
   "stats": {
-    "loc_exact": 9439,
-    "loc_approx": 2572,
+    "loc_exact": 9789,
+    "loc_approx": 2233,
     "instore_also_online": 1782,
-    "loc_none": 91,
+    "loc_none": 80,
     "online_only": 3487
   },
   "diff": {
@@ -25,7 +25,7 @@
     "removed": 0,
     "addedRecords": 0,
     "removedRecords": 0,
-    "baselineCommit": "a341d568d3daa4835bfec76de62e47159ff79d02",
+    "baselineCommit": "b6c3c9329a9d207fc06b8bc53bc4218dd64a35f1",
     "method": "committed-baseline-v1"
   },
   "coordinateRejections": [
@@ -66,14 +66,6 @@
         "title": "Hotel Chathams",
         "lat": -43.951,
         "lng": -176.5606,
-        "previousStatus": "exact",
-        "status": "approx"
-      },
-      {
-        "id": 4921,
-        "title": "Six On Union",
-        "lat": -38.143,
-        "lng": 176.2506,
         "previousStatus": "exact",
         "status": "approx"
       },
