@@ -5,6 +5,41 @@
 
 Generated from commit messages; these are not release or deployment confirmations.
 
+### 2026-10-12 (NZ time)
+
+Features
+
+- add dataset refresh history page ([`67e3794`](https://github.com/Lukestaz/data-dashboard/commit/67e3794f24c06e3e34c46eb2b7c3a59e23f3f5cd)).
+
+Maintenance
+
+- record Actions run status \[skip ci\] ([`9c00578`](https://github.com/Lukestaz/data-dashboard/commit/9c00578cf8a47914f7ed2a73c0e22654a8e9e737)).
+- record Actions run status \[skip ci\] ([`3fd2b49`](https://github.com/Lukestaz/data-dashboard/commit/3fd2b494172a661df080c1f1b847520d88c61cf8)).
+
+### 2026-10-11 (NZ time)
+
+Maintenance
+
+- record Actions run status \[skip ci\] ([`240a983`](https://github.com/Lukestaz/data-dashboard/commit/240a9834b830b8a6c71218a1bd0e558ea85f5ad7)).
+- record Actions run status \[skip ci\] ([`44ef66e`](https://github.com/Lukestaz/data-dashboard/commit/44ef66e5cbbe883e9175d500a8dcae1eaf03329a)).
+- record Actions run status \[skip ci\] ([`f3c4377`](https://github.com/Lukestaz/data-dashboard/commit/f3c437709a98ea3640a12c64acf0f88f82b1652d)).
+- record Actions run status \[skip ci\] ([`56b15bb`](https://github.com/Lukestaz/data-dashboard/commit/56b15bbd79cb22cce7d8ebb5515cb465ee20e794)).
+- record Actions run status \[skip ci\] ([`e86b4b6`](https://github.com/Lukestaz/data-dashboard/commit/e86b4b61cfccf7e40ef9f88f1c80b6090721d5e4)).
+- record Actions run status \[skip ci\] ([`b6c3c93`](https://github.com/Lukestaz/data-dashboard/commit/b6c3c9329a9d207fc06b8bc53bc4218dd64a35f1)).
+- record Actions run status \[skip ci\] ([`be86356`](https://github.com/Lukestaz/data-dashboard/commit/be86356216d045213daaf3a16647a1519323eb5c)).
+
+### 2026-10-10 (NZ time)
+
+Maintenance
+
+- record Actions run status \[skip ci\] ([`efdd469`](https://github.com/Lukestaz/data-dashboard/commit/efdd469f53dd2524c4f0fa92a8af4bbae9a290eb)).
+- record Actions run status \[skip ci\] ([`55628ca`](https://github.com/Lukestaz/data-dashboard/commit/55628ca97ae246104d0b80a260dbf5c73156497d)).
+- record Actions run status \[skip ci\] ([`7e89eaa`](https://github.com/Lukestaz/data-dashboard/commit/7e89eaa19b6719900c576a587184cc39a3f55484)).
+- record Actions run status \[skip ci\] ([`83d4789`](https://github.com/Lukestaz/data-dashboard/commit/83d4789dd1ffc2633fb71b485599d2bf5650f7c2)).
+- record Actions run status \[skip ci\] ([`4237af8`](https://github.com/Lukestaz/data-dashboard/commit/4237af81158eaa4f53d045713f042cb401632852)).
+- record Actions run status \[skip ci\] ([`a341d56`](https://github.com/Lukestaz/data-dashboard/commit/a341d568d3daa4835bfec76de62e47159ff79d02)).
+- record Actions run status \[skip ci\] ([`cad58a1`](https://github.com/Lukestaz/data-dashboard/commit/cad58a10c014144e33b592aa1d6f773fb0b137bd)).
+
 ### 2026-10-09 (NZ time)
 
 Fixes
@@ -17,6 +52,13 @@ Performance
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`d3b69d1`](https://github.com/Lukestaz/data-dashboard/commit/d3b69d184940aa10a43c1a35d2f507e624a84b34)).
+- record Actions run status \[skip ci\] ([`0bd5931`](https://github.com/Lukestaz/data-dashboard/commit/0bd593141083d9587668f6c2a991779a548d8cc2)).
+- record Actions run status \[skip ci\] ([`bc7d936`](https://github.com/Lukestaz/data-dashboard/commit/bc7d936c1d5ab5f87884a35215afe35aedeaf550)).
+- record Actions run status \[skip ci\] ([`9e9dd5e`](https://github.com/Lukestaz/data-dashboard/commit/9e9dd5e47d13919f1e6e531ee65d9cb763422ccb)).
+- record Actions run status \[skip ci\] ([`6222e01`](https://github.com/Lukestaz/data-dashboard/commit/6222e0189dce12eb434805197aeb7ac5e74fad91)).
+- record Actions run status \[skip ci\] ([`0156442`](https://github.com/Lukestaz/data-dashboard/commit/01564428f29719134648803d57e00afddeea49dc)).
+- record Actions run status \[skip ci\] ([`d74f7d5`](https://github.com/Lukestaz/data-dashboard/commit/d74f7d53953ff5d0d84889f6f9036228b8b6c490)).
 - record Actions run status \[skip ci\] ([`1c951d0`](https://github.com/Lukestaz/data-dashboard/commit/1c951d07ace7cc7a28ad2c76597d54c5ed84d0ea)).
 - render compact header and filters statically in index.html ([`8c4c532`](https://github.com/Lukestaz/data-dashboard/commit/8c4c5320a8b3f813356b0e5b64a4cffae01c61bd)).
 - record Actions run status \[skip ci\] ([`8f47159`](https://github.com/Lukestaz/data-dashboard/commit/8f47159aa17467566c62b8c15fe5c73984bea1ba)).
