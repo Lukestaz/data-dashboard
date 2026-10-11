@@ -9,6 +9,7 @@ Generated from commit messages; these are not release or deployment confirmation
 
 Features
 
+- display detailed merchant and raw-input changes ([`d98cb8b`](https://github.com/Lukestaz/data-dashboard/commit/d98cb8bfcd93d7959dfa197b82454f45dfc2d0eb)).
 - link dataset changelog from dashboard menu ([`04def55`](https://github.com/Lukestaz/data-dashboard/commit/04def55d120c53a3e901df5e79cbf9c288958632)).
 - generate and publish detailed diffs on refresh ([`30a2bc5`](https://github.com/Lukestaz/data-dashboard/commit/30a2bc5cd3870b76b324149c88b22568aa605fd1)).
 - add detailed dataset diff report generator ([`2b7d45a`](https://github.com/Lukestaz/data-dashboard/commit/2b7d45ac80dab76613fddb3c003fe352fd14e483)).
@@ -16,6 +17,7 @@ Features
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`d8deddd`](https://github.com/Lukestaz/data-dashboard/commit/d8deddd6b7f5275e936ec52c05da91ad0f6559fa)).
 - record Actions run status \[skip ci\] ([`57a694d`](https://github.com/Lukestaz/data-dashboard/commit/57a694d6935664edee2360e4d4e9af6ec740d215)).
 - record Actions run status \[skip ci\] ([`c96d731`](https://github.com/Lukestaz/data-dashboard/commit/c96d7316cff1468e1b8648e8f2b262f22e5ffa3c)).
 - record Actions run status \[skip ci\] ([`bcac9ba`](https://github.com/Lukestaz/data-dashboard/commit/bcac9ba80fd350557ac14f7dfd673debb7abcf40)).
