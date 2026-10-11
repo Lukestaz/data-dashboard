@@ -1,5 +1,26 @@
 [
   {
+    "capturedAt": "2026-10-11T21:54:21.398Z",
+    "date": "2026-10-11",
+    "records": 15589,
+    "inStore": 12102,
+    "online": 4462,
+    "exactLocations": 10125,
+    "approxLocations": 1910,
+    "noLocation": 67,
+    "added": 0,
+    "removed": 0,
+    "addedRecords": 0,
+    "removedRecords": 0,
+    "baselineCommit": "bcac9ba80fd350557ac14f7dfd673debb7abcf40",
+    "baselineCapturedAt": "2026-10-10T21:38:32.478Z",
+    "turnoverMethod": "committed-baseline-v1",
+    "countDefinitions": {
+      "addedRemoved": "distinct SENumber",
+      "addedRemovedRecords": "channel + SENumber + normalized address (in-store), channel + SENumber (online)"
+    }
+  },
+  {
     "capturedAt": "2026-10-10T21:38:32.478Z",
     "date": "2026-10-10",
     "records": 15589,
