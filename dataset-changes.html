@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dataset changes · AMEX Small Shops</title>
+<style>
+:root{color-scheme:light dark;font-family:system-ui,sans-serif;background:#f3f6fa;color:#172536}body{max-width:850px;margin:auto;padding:24px}a{color:#0068a8}header{border-bottom:3px solid #0075b5;padding-bottom:20px}h1{margin-bottom:8px}p{line-height:1.6}article{background:white;border:1px solid #ccd6df;border-radius:12px;margin:20px 0;padding:20px}h2{font-size:1.2rem;margin-top:0}.stats{display:flex;gap:10px;flex-wrap:wrap}.stats span{background:#eaf2f8;padding:8px 12px;border-radius:8px}summary{cursor:pointer;padding:14px 0}dl{display:grid;grid-template-columns:1fr 1fr;gap:10px}dd{margin:0}small{line-height:1.5}select{font:inherit;padding:8px;margin-left:8px}@media(prefers-color-scheme:dark){:root{background:#101a25;color:#e5edf5}article{background:#182636;border-color:#425364}.stats span{background:#24394d}a{color:#8cd2ff}}@media(max-width:480px){body{padding:16px}article{padding:16px}dl{grid-template-columns:1fr}dd{margin-bottom:8px}}
+</style>
+</head>
+<body>
+<header><a href="./">← Dashboard</a><h1>Dataset changes</h1><p>Published AMEX dataset refreshes, newest first. Directory changes are not proof of AMEX acceptance, offer eligibility or business closure.</p></header>
+<p>Counts below distinguish unique merchant numbers from listing identities. Address changes can count as one listing removed and another added. Location coverage is reported separately; zero additions/removals does not mean every field stayed unchanged.</p>
+<label>Show<select id="filter"><option value="all">All refreshes</option><option value="turnover">Recorded additions/removals</option></select></label>
+<p id="status" role="status">Loading history…</p>
+<main id="history"></main>
+<footer><small>Merchant-level names and before/after changes were not retained in these reports. This page does not reconstruct them. Capture times use Pacific/Auckland.</small></footer>
+<script type="module">
+const root=document.querySelector('#history'),status=document.querySelector('#status'),filter=document.querySelector('#filter');
+const validCount=v=>Number.isSafeInteger(v)&&v>=0;
+const count=v=>validCount(v)?v.toLocaleString('en-NZ'):'Not recorded';
+const time=v=>{const d=new Date(v);return typeof v==='string'&&Number.isFinite(d.getTime())?new Intl.DateTimeFormat('en-NZ',{timeZone:'Pacific/Auckland',dateStyle:'medium',timeStyle:'short'}).format(d):'Not recorded'};
+const add=(parent,tag,text)=>{const e=document.createElement(tag);e.textContent=text;parent.append(e);return e};
+let rows=[];
+function render(){
+root.replaceChildren();
+const shown=rows.filter(r=>filter.value==='all'||[r.added,r.removed,r.addedRecords,r.removedRecords].some(v=>validCount(v)&&v>0));
+for(const r of shown){
+const article=document.createElement('article');root.append(article);add(article,'h2',time(r.capturedAt));
+const audited=r.turnoverMethod==='committed-baseline-v1'&&typeof r.baselineCapturedAt==='string';
+add(article,'p',audited?'Compared with capture '+time(r.baselineCapturedAt):'Historical entry: comparable baseline and count definitions not recorded.');
+const stats=add(article,'div','');stats.className='stats';add(stats,'span','Listings: '+count(r.records));
+if(audited){add(stats,'span','Merchant numbers added: '+count(r.added));add(stats,'span','Merchant numbers removed: '+count(r.removed));}
+const details=add(article,'details','');add(details,'summary','Refresh details');const dl=add(details,'dl','');
+for(const [label,value] of [['In-store count',r.inStore],['Online count',r.online],['Exact locations',r.exactLocations],['Approximate locations',r.approxLocations],['No location',r.noLocation],...(audited?[['Listing identities added',r.addedRecords],['Listing identities removed',r.removedRecords]]:[])]){add(dl,'dt',label);add(dl,'dd',count(value));}
+if(audited){const previous=rows.find(x=>x.capturedAt===r.baselineCapturedAt);if(previous){for(const [label,key] of [['Exact locations','exactLocations'],['Approximate locations','approxLocations'],['No location','noLocation']]){if(validCount(r[key])&&validCount(previous[key])){const delta=r[key]-previous[key];add(details,'p',label+' net change: '+(delta>0?'+':'')+delta.toLocaleString('en-NZ'));}}}}
+if(typeof r.baselineCommit==='string'&&/^[0-9a-f]{40}$/.test(r.baselineCommit)){const link=add(details,'a','View comparison baseline '+r.baselineCommit.slice(0,7));link.href='https://github.com/Lukestaz/data-dashboard/commit/'+r.baselineCommit;}
+}
+status.textContent=shown.length?shown.length+' refresh entries shown.':'No matching refresh entries.';
+}
+filter.addEventListener('change',render);
+try{const response=await fetch('./data/history.json',{cache:'no-cache'});if(!response.ok)throw new Error('HTTP '+response.status);const data=await response.json();if(!Array.isArray(data)||data.some(r=>!r||typeof r!=='object'||Array.isArray(r)))throw new Error('Invalid history');rows=data.slice().sort((a,b)=>(Date.parse(b.capturedAt)||0)-(Date.parse(a.capturedAt)||0));render();}catch(error){status.textContent='History could not be loaded. Please reload later.';console.error('Dataset history:',error);}
+</script>
+</body>
+</html>
