@@ -59,3 +59,13 @@
 #compact-map-info p{position:absolute;right:0;top:calc(100% + 6px);z-index:1050;width:220px;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a;box-shadow:0 8px 20px #0006;font-size:12px;line-height:1.5}
 @media(min-width:640px){#compact-toolbar h1{font-size:22px}#compact-result-row{display:flex}}
 @media(max-width:359px){#compact-toolbar h1{font-size:16px}#compact-view-toggle button{padding:0 7px}}
+
+/* Mobile location popup is anchored to the whole action row, including wrapped rows. */
+@media(max-width:639px){
+  #compact-actions{position:relative}
+  #compact-location{position:static;min-width:0;max-width:100%}
+  #compact-location>summary{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+  #compact-location .compact-popup{left:0;right:auto;top:calc(100% + 6px);width:min(340px,100%);max-width:100%;box-sizing:border-box}
+  #compact-location .compact-location-grid,#compact-location .compact-location-grid>div{min-width:0}
+  #compact-location select{max-width:100%;box-sizing:border-box}
+}
