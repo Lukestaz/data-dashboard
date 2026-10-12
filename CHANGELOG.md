@@ -9,6 +9,7 @@ Generated from commit messages; these are not release or deployment confirmation
 
 Features
 
+- track location and map discovery with Umami ([`e53c510`](https://github.com/Lukestaz/data-dashboard/commit/e53c51033b7d51907b24841b054770ff675413a6)).
 - display detailed merchant and raw-input changes ([`d98cb8b`](https://github.com/Lukestaz/data-dashboard/commit/d98cb8bfcd93d7959dfa197b82454f45dfc2d0eb)).
 - link dataset changelog from dashboard menu ([`04def55`](https://github.com/Lukestaz/data-dashboard/commit/04def55d120c53a3e901df5e79cbf9c288958632)).
 - generate and publish detailed diffs on refresh ([`30a2bc5`](https://github.com/Lukestaz/data-dashboard/commit/30a2bc5cd3870b76b324149c88b22568aa605fd1)).
@@ -21,6 +22,7 @@ Fixes
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`8d7022a`](https://github.com/Lukestaz/data-dashboard/commit/8d7022a56a8fffa025f845270f1434e6f26abca8)).
 - record Actions run status \[skip ci\] ([`e3cbd81`](https://github.com/Lukestaz/data-dashboard/commit/e3cbd8144a7b68b2fc72c33ad5ea406aa7955803)).
 - record Actions run status \[skip ci\] ([`74ef820`](https://github.com/Lukestaz/data-dashboard/commit/74ef820976038bcd5c10245ccc83d09323aaa639)).
 - record Actions run status \[skip ci\] ([`7f0a5c5`](https://github.com/Lukestaz/data-dashboard/commit/7f0a5c5f6003d568a2996e1d996660293457d16f)).
