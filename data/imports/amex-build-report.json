@@ -1,12 +1,12 @@
 {
   "meta": {
     "source": "Amex Shop Small NZ campaigndata.json",
-    "capturedAt": "2026-10-13T00:35:59.245Z",
+    "capturedAt": "2026-10-13T22:41:13.108Z",
     "inStoreCount": 12102,
     "onlineCount": 4462,
     "records": 15589,
-    "exactCount": 10481,
-    "approxCount": 1566,
+    "exactCount": 10838,
+    "approxCount": 1219,
     "idStrategy": "persistent-registry-v1",
     "locationNormalization": "shared-browser-rules",
     "ingestionMethod": "direct-http",
@@ -14,10 +14,10 @@
     "categoryNormalization": "explicit-subtype-rules-v1"
   },
   "stats": {
-    "loc_exact": 10481,
-    "loc_approx": 1566,
+    "loc_exact": 10838,
+    "loc_approx": 1219,
     "instore_also_online": 1782,
-    "loc_none": 55,
+    "loc_none": 45,
     "online_only": 3487
   },
   "diff": {
@@ -25,7 +25,7 @@
     "removed": 0,
     "addedRecords": 0,
     "removedRecords": 0,
-    "baselineCommit": "8eb26b28380a9e4e8b788227ea68219085711116",
+    "baselineCommit": "a2fe700f9236b36011b68c6cb5b3b2c65baf1cb8",
     "method": "committed-baseline-v1"
   },
   "coordinateRejections": [
