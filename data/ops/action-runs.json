@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "repository": "Lukestaz/data-dashboard",
-  "checkedAt": "2026-10-14T21:54:37.535Z",
+  "checkedAt": "2026-10-14T21:55:10.372Z",
   "latest": {
     "pages.yml": {
       "id": 38643802326,
@@ -9,11 +9,11 @@
       "workflow": "pages.yml",
       "name": "Deploy GitHub Pages",
       "event": "workflow_run",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "sha": "a76af7066e587be2cb30b3649d244945181fdb46",
       "createdAt": "2026-10-14T21:54:25Z",
-      "updatedAt": "2026-10-14T21:54:31Z",
+      "updatedAt": "2026-10-14T21:54:57Z",
       "startedAt": "2026-10-14T21:54:25Z",
       "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/38643802326",
       "failedJobs": []
@@ -41,11 +41,11 @@
       "workflow": "pages.yml",
       "name": "Deploy GitHub Pages",
       "event": "workflow_run",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "sha": "a76af7066e587be2cb30b3649d244945181fdb46",
       "createdAt": "2026-10-14T21:54:25Z",
-      "updatedAt": "2026-10-14T21:54:31Z",
+      "updatedAt": "2026-10-14T21:54:57Z",
       "startedAt": "2026-10-14T21:54:25Z",
       "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/38643802326",
       "failedJobs": []
