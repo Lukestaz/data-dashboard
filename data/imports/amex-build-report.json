@@ -25,7 +25,7 @@
     "removed": 0,
     "addedRecords": 0,
     "removedRecords": 0,
-    "baselineCommit": "18b6f07fa7cb631a48b3310f739398e8a7004503",
+    "baselineCommit": "5fc578487325da80e892a51a1ca5b032b62f9eb6",
     "method": "committed-baseline-v1"
   },
   "coordinateRejections": [
@@ -59,7 +59,7 @@
     }
   ],
   "coordinateRecovery": {
-    "baselineCommit": "f5a9d9928bb9902a218d2700d802b777fc97f5c9",
+    "baselineCommit": "bdf4a558b9dbe23b4828dfb6aea4f97c571ec083",
     "restored": [
       {
         "id": 4575,

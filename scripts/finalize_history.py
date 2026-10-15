@@ -3,7 +3,7 @@ import collections, json, math, pathlib, re, subprocess, sys
 from stable_ids import identity
 from build_amex import cache_key
 
-RECOVERY_COMMIT = 'f5a9d9928bb9902a218d2700d802b777fc97f5c9'
+RECOVERY_COMMIT = 'bdf4a558b9dbe23b4828dfb6aea4f97c571ec083'
 RECOVERY_IDS = {1617, 4165, 4575, 4921, 6910, 7314, 10448, 11518}
 
 def numeric_pin(lat, lng):

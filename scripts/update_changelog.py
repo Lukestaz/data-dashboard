@@ -2,7 +2,7 @@
 import collections, datetime, pathlib, re, subprocess, sys
 from zoneinfo import ZoneInfo
 
-BASELINE = '0998d2da81bef22459348309274927c095626148'
+BASELINE = '05938ad943f61bdd0c0ab488ff1d57effe3e1395'
 START = '<!-- AUTO-CHANGELOG:START -->'
 END = '<!-- AUTO-CHANGELOG:END -->'
 REPO = 'https://github.com/Lukestaz/data-dashboard'
