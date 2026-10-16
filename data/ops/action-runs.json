@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "repository": "Lukestaz/data-dashboard",
-  "checkedAt": "2026-10-16T18:04:15.805Z",
+  "checkedAt": "2026-10-16T21:09:54.586Z",
   "latest": {
     "pages.yml": {
       "id": 38811474409,
@@ -19,22 +19,37 @@
       "failedJobs": []
     },
     "refresh-amex.yml": {
-      "id": 38809344060,
+      "id": 38967119699,
       "attempt": 1,
       "workflow": "refresh-amex.yml",
       "name": "Refresh Amex directory",
       "event": "schedule",
-      "status": "completed",
-      "conclusion": "success",
-      "sha": "cafe03aca8c13506de4fb83cbb3b798b6adec688",
-      "createdAt": "2026-10-15T21:22:20Z",
-      "updatedAt": "2026-10-15T21:39:01Z",
-      "startedAt": "2026-10-15T21:22:20Z",
-      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/38809344060",
+      "status": "in_progress",
+      "conclusion": null,
+      "sha": "c0a27ba60885694bd13a812b556e53122e3ba7ab",
+      "createdAt": "2026-10-16T21:07:12Z",
+      "updatedAt": "2026-10-16T21:07:16Z",
+      "startedAt": "2026-10-16T21:07:12Z",
+      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/38967119699",
       "failedJobs": []
     }
   },
   "runs": [
+    {
+      "id": 38967119699,
+      "attempt": 1,
+      "workflow": "refresh-amex.yml",
+      "name": "Refresh Amex directory",
+      "event": "schedule",
+      "status": "in_progress",
+      "conclusion": null,
+      "sha": "c0a27ba60885694bd13a812b556e53122e3ba7ab",
+      "createdAt": "2026-10-16T21:07:12Z",
+      "updatedAt": "2026-10-16T21:07:16Z",
+      "startedAt": "2026-10-16T21:07:12Z",
+      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/38967119699",
+      "failedJobs": []
+    },
     {
       "id": 38811474409,
       "attempt": 1,
@@ -933,22 +948,6 @@
       "updatedAt": "2026-10-06T21:22:24Z",
       "startedAt": "2026-10-06T21:22:24Z",
       "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/37533414501",
-      "failedJobs": [],
-      "note": "No jobs returned. Inspect the run link for workflow validation errors."
-    },
-    {
-      "id": 37533326213,
-      "attempt": 1,
-      "workflow": "refresh-amex.yml",
-      "name": ".github/workflows/refresh-amex.yml",
-      "event": "push",
-      "status": "completed",
-      "conclusion": "failure",
-      "sha": "f409f9543a14202d1c96316b5832d2d933faaf21",
-      "createdAt": "2026-10-06T21:21:41Z",
-      "updatedAt": "2026-10-06T21:21:41Z",
-      "startedAt": "2026-10-06T21:21:41Z",
-      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/37533326213",
       "failedJobs": [],
       "note": "No jobs returned. Inspect the run link for workflow validation errors."
     }
