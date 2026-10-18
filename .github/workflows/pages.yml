@@ -29,6 +29,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Check frontend source
+        run: |
+          python3 scripts/check_frontend.py --self-test
+          python3 scripts/check_frontend.py
       - name: Build Tailwind CSS
         run: npx --yes tailwindcss@3.4.17 -c tailwind.config.js -i css/tailwind.src.css -o css/tailwind.css --minify
       - name: Stamp deployed build
@@ -49,6 +53,8 @@ jobs:
           stamp = f'  <meta name="application-build" content="{sha}" />\n'
           path.write_text(html.replace('</head>', stamp + '</head>'), encoding='utf-8')
           PY
+      - name: Check deployment artifact
+        run: python3 scripts/check_frontend.py
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
