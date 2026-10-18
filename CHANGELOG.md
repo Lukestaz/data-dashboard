@@ -13,10 +13,12 @@ Features
 
 Fixes
 
+- validate frontend source and artifact before Pages deployment ([`5cf98e5`](https://github.com/Lukestaz/data-dashboard/commit/5cf98e5f129638e3711397c45ab4165aa75848f3)).
 - restore pre-filter runtime files after escaped-source deployment ([`5152794`](https://github.com/Lukestaz/data-dashboard/commit/51527940bb5b9775ac7b1c47668cbd572bfcbbf7)).
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`6d9d01b`](https://github.com/Lukestaz/data-dashboard/commit/6d9d01bb998f1c6adcd4c3cab6706d153e678d5e)).
 - record Actions run status \[skip ci\] ([`611160d`](https://github.com/Lukestaz/data-dashboard/commit/611160d50712b183490f585b28660dd7ee33b883)).
 - record Actions run status \[skip ci\] ([`07edec4`](https://github.com/Lukestaz/data-dashboard/commit/07edec46aa515219b660d3b8aabaf698309b6995)).
 - record Actions run status \[skip ci\] ([`6926d5e`](https://github.com/Lukestaz/data-dashboard/commit/6926d5e8c3e7de66dbddf0e45c0c5a0145d81d61)).
