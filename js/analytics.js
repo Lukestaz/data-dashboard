@@ -1,1 +1,68 @@
-const allowed = {\n  'community-report-filter-changed': {filter:['all','accepted','declined','mixed','none']},\n  'location-opened': {},\n  'location-filter-changed': {level:['city','area'],action:['select','clear']},\n  'near-me-requested': {source:['button','sort']},\n  'near-me-cleared': {},\n  'near-me-result': {outcome:['success','denied','unavailable','timeout'],source:['button','sort']},\n  'view-changed': {mode:['cards','map'],source:['control','availability']},\n  'map-navigated': {action:['pan','zoom']},\n  'merchant-selected': {surface:['map-marker','map-card']},\n  'map-fit-requested': {}\n};\nexport function trackEvent(name, properties = {}) {\n  if (!Object.hasOwn(allowed, name)) return;\n  const data = {};\n  for (const [key, values] of Object.entries(allowed[name])) {\n    if (values.includes(properties[key])) data[key] = properties[key];\n  }\n  try {\n    const result = globalThis.umami?.track?.(name, data);\n    if (result && typeof result.catch === 'function') result.catch(() => {});\n  } catch {}\n}\nconst boundMaps = new WeakSet();\nexport function bindMapAnalytics(map) {\n  if (boundMaps.has(map)) return;\n  boundMaps.add(map);\n  const container = map.getContainer();\n  let zoomIntent = 0, navigationTimer;\n  const navigation = action => {\n    clearTimeout(navigationTimer);\n    navigationTimer = setTimeout(() => trackEvent('map-navigated', {action}), 400);\n  };\n  const armZoom = event => {\n    if (!event.isTrusted) return;\n    if (event.type === 'touchstart' && event.touches.length < 2) return;\n    if (event.type === 'keydown' && !['+','=','-','_'].includes(event.key)) return;\n    if (event.type === 'click' && !event.target.closest('.leaflet-control-zoom-in,.leaflet-control-zoom-out')) return;\n    if (event.type === 'dblclick' && event.target.closest('.leaflet-marker-icon,.leaflet-popup,.leaflet-control')) return;\n    zoomIntent = performance.now() + 1500;\n  };\n  for (const type of ['wheel','dblclick','touchstart','keydown','click']) container.addEventListener(type, armZoom, {capture:true,passive:true});\n  map.on('dragend', () => navigation('pan'));\n  map.on('zoomend', () => {\n    if (zoomIntent > performance.now()) navigation('zoom');\n    zoomIntent = 0;\n  });\n  map.eachLayer(layer => {\n    if (typeof layer.zoomToShowLayer !== 'function' || typeof layer.getLayers !== 'function') return;\n    layer.on('click', event => {\n      if (event.layer?.merchantItem && event.originalEvent?.isTrusted) trackEvent('merchant-selected', {surface:'map-marker'});\n    });\n  });\n}\nlet controlsBound = false;\nexport function bindControlAnalytics(state) {\n  if (controlsBound) return;\n  controlsBound = true;\n  document.getElementById('compact-location')?.addEventListener('toggle', event => {\n    if (event.currentTarget.open && !event.currentTarget.hidden) trackEvent('location-opened');\n  });\n  document.getElementById('compact-fit')?.addEventListener('click', event => {\n    if (event.isTrusted) trackEvent('map-fit-requested');\n  });\n  document.getElementById('card-grid')?.addEventListener('click', event => {\n    if (!event.isTrusted || state.viewMode !== 'map' || event.target.closest('button,a,input,select')) return;\n    if (event.target.closest('[data-merchant-id]')) trackEvent('merchant-selected', {surface:'map-card'});\n  });\n}\n
+const allowed = {
+  'location-opened': {},
+  'location-filter-changed': {level:['city','area'],action:['select','clear']},
+  'near-me-requested': {source:['button','sort']},
+  'near-me-cleared': {},
+  'near-me-result': {outcome:['success','denied','unavailable','timeout'],source:['button','sort']},
+  'view-changed': {mode:['cards','map'],source:['control','availability']},
+  'map-navigated': {action:['pan','zoom']},
+  'merchant-selected': {surface:['map-marker','map-card']},
+  'map-fit-requested': {}
+};
+export function trackEvent(name, properties = {}) {
+  if (!Object.hasOwn(allowed, name)) return;
+  const data = {};
+  for (const [key, values] of Object.entries(allowed[name])) {
+    if (values.includes(properties[key])) data[key] = properties[key];
+  }
+  try {
+    const result = globalThis.umami?.track?.(name, data);
+    if (result && typeof result.catch === 'function') result.catch(() => {});
+  } catch {}
+}
+const boundMaps = new WeakSet();
+export function bindMapAnalytics(map) {
+  if (boundMaps.has(map)) return;
+  boundMaps.add(map);
+  const container = map.getContainer();
+  let zoomIntent = 0, navigationTimer;
+  const navigation = action => {
+    clearTimeout(navigationTimer);
+    navigationTimer = setTimeout(() => trackEvent('map-navigated', {action}), 400);
+  };
+  const armZoom = event => {
+    if (!event.isTrusted) return;
+    if (event.type === 'touchstart' && event.touches.length < 2) return;
+    if (event.type === 'keydown' && !['+','=','-','_'].includes(event.key)) return;
+    if (event.type === 'click' && !event.target.closest('.leaflet-control-zoom-in,.leaflet-control-zoom-out')) return;
+    if (event.type === 'dblclick' && event.target.closest('.leaflet-marker-icon,.leaflet-popup,.leaflet-control')) return;
+    zoomIntent = performance.now() + 1500;
+  };
+  for (const type of ['wheel','dblclick','touchstart','keydown','click']) container.addEventListener(type, armZoom, {capture:true,passive:true});
+  map.on('dragend', () => navigation('pan'));
+  map.on('zoomend', () => {
+    if (zoomIntent > performance.now()) navigation('zoom');
+    zoomIntent = 0;
+  });
+  map.eachLayer(layer => {
+    if (typeof layer.zoomToShowLayer !== 'function' || typeof layer.getLayers !== 'function') return;
+    layer.on('click', event => {
+      if (event.layer?.merchantItem && event.originalEvent?.isTrusted) trackEvent('merchant-selected', {surface:'map-marker'});
+    });
+  });
+}
+let controlsBound = false;
+export function bindControlAnalytics(state) {
+  if (controlsBound) return;
+  controlsBound = true;
+  document.getElementById('compact-location')?.addEventListener('toggle', event => {
+    if (event.currentTarget.open && !event.currentTarget.hidden) trackEvent('location-opened');
+  });
+  document.getElementById('compact-fit')?.addEventListener('click', event => {
+    if (event.isTrusted) trackEvent('map-fit-requested');
+  });
+  document.getElementById('card-grid')?.addEventListener('click', event => {
+    if (!event.isTrusted || state.viewMode !== 'map' || event.target.closest('button,a,input,select')) return;
+    if (event.target.closest('[data-merchant-id]')) trackEvent('merchant-selected', {surface:'map-card'});
+  });
+}
