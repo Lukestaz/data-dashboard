@@ -7,12 +7,21 @@ Generated from commit messages; these are not release or deployment confirmation
 
 ### 2026-10-19 (NZ time)
 
+Features
+
+- connect strict community vote reader (#10) ([`b6b9e14`](https://github.com/Lukestaz/data-dashboard/commit/b6b9e142cc15ac167d02f5853bdab7e1f34f6243)).
+
 Fixes
 
 - repair documentation and report fixtures; restore Near Me clear event ([`49a19e8`](https://github.com/Lukestaz/data-dashboard/commit/49a19e82a4ce543f56df2776600dec7a71e0b0de)).
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`e2426e6`](https://github.com/Lukestaz/data-dashboard/commit/e2426e63d1f59053672aedcee4b09ad84108eb7b)).
+- record Actions run status \[skip ci\] ([`34f2dc4`](https://github.com/Lukestaz/data-dashboard/commit/34f2dc496c157d07cfc95ad3a04cc96a27a868d2)).
+- record Actions run status \[skip ci\] ([`dd65224`](https://github.com/Lukestaz/data-dashboard/commit/dd652248135145f1b15640a73c755c7708f9df89)).
+- record Actions run status \[skip ci\] ([`2743dcb`](https://github.com/Lukestaz/data-dashboard/commit/2743dcbf81a241d4268d9bd5eaa8ae959836584c)).
+- record Actions run status \[skip ci\] ([`b516652`](https://github.com/Lukestaz/data-dashboard/commit/b516652296d59e882672b1acc62787a1702e4251)).
 - record Actions run status \[skip ci\] ([`0e90bd5`](https://github.com/Lukestaz/data-dashboard/commit/0e90bd5fc79acf3fc4d2716c2901546fcb77e38b)).
 - record Actions run status \[skip ci\] ([`389994f`](https://github.com/Lukestaz/data-dashboard/commit/389994f767c2271113559a4aa6eab9b0e1350283)).
 - record Actions run status \[skip ci\] ([`92a2dd6`](https://github.com/Lukestaz/data-dashboard/commit/92a2dd641cdce17aeeaa6837ba4d65f9004fd462)).
