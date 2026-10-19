@@ -22,27 +22,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Verify and apply candidate to this checkout
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import base64, gzip, hashlib, json, pathlib, subprocess
-          data = json.loads(pathlib.Path('candidate/amex-community-reports.json').read_text())
-          for name, expected in data['expectedBlobs'].items():
-              actual = subprocess.check_output(['git', 'hash-object', name], text=True).strip()
-              if actual != expected:
-                  raise SystemExit('Candidate needs reconciliation: ' + name)
-          patch = gzip.decompress(base64.b64decode(data['patchGzipBase64'], validate=True))
-          if hashlib.sha256(patch).hexdigest() != data['patchSha256']:
-              raise SystemExit('Candidate checksum mismatch')
-          target = pathlib.Path('/tmp/amex-community-reports.patch')
-          target.write_bytes(patch)
-          subprocess.run(['git', 'apply', '--check', str(target)], check=True)
-          subprocess.run(['git', 'apply', str(target)], check=True)
-          print('Applied exact candidate SHA256:', data['patchSha256'])
-          PY
-          git diff --check
+      - name: Test strict candidate regeneration
+        run: python3 scripts/prepare_amex_report_candidate.py --self-test
+      - name: Regenerate, check and apply full-context candidate
+        run: python3 scripts/prepare_amex_report_candidate.py --output "$RUNNER_TEMP/amex-report-candidate"
       - name: Check actual patched source
         run: |
           python3 scripts/check_frontend.py --self-test
@@ -67,3 +50,10 @@ jobs:
         env:
           AMEX_BROWSER_DEPS: ${{ runner.temp }}/amex-browser/node_modules
         run: node tests/community-reports.browser.mjs
+      - name: Preserve regenerated patch and target hashes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: amex-report-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/amex-report-candidate/
+          if-no-files-found: warn
