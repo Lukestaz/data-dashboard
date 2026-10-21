@@ -7,10 +7,18 @@ export function renderCardsChunk() {
   const empty = document.getElementById('empty-state');
   const sentinelText = document.getElementById('sentinel-text');
   if (!grid) return;
+  const sentinel = document.getElementById('sentinel');
+  if (sentinel) sentinel.hidden = state.filteredList.length === 0;
 
   if (state.filteredList.length === 0) {
     grid.innerHTML = '';
-    if (empty) empty.classList.toggle('hidden', Boolean(state.communityReportMessage));
+    if (empty) {
+      const message = empty.querySelector('p');
+      if (message) message.textContent = state.showSavedOnly
+        ? (state.savedIds.size === 0 ? 'No saved merchants yet. Save a merchant using its star.' : 'No saved merchants match these filters.')
+        : 'No merchants found matching your query or filters.';
+      empty.classList.toggle('hidden', Boolean(state.communityReportMessage));
+    }
     if (sentinelText) sentinelText.textContent = '';
     return;
   }

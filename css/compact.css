@@ -84,3 +84,11 @@
   #near-me-btn>span:first-child,#saved-filter-btn>span:first-child{display:none}
   #near-me-label,#saved-filter-btn>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
 }
+
+/* Shared action-control finish, preserving state-driven highlights. */
+#compact-actions>button,#compact-actions #compact-location-summary,#compact-root #community-reports-select{height:40px;min-height:40px;padding:0 6px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:inherit;font-size:12px;font-weight:500;line-height:20px;border:1px solid #263244;border-radius:8px;background-color:#0f172a;color:#cbd5e1;box-sizing:border-box;box-shadow:none}
+#compact-root #community-reports-select{display:block;-webkit-appearance:none;appearance:none;padding:0 12px;text-align-last:center;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='m1 1 4 4 4-4' fill='none' stroke='%23cbd5e1' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 4px center;background-size:8px 5px;cursor:pointer}
+#compact-actions #saved-filter-btn[class~="bg-amber-500/20"],#compact-actions #near-me-btn[class~="bg-rose-500/20"],#compact-actions #compact-location[open]>summary{background-color:#2563eb;border-color:#3b82f6;color:#fff}
+#compact-actions>button:focus-visible,#compact-actions #compact-location-summary:focus-visible,#compact-root #community-reports-select:focus-visible{outline:2px solid #60a5fa;outline-offset:2px}
+#empty-state{padding:24px 12px}
+#empty-state p{margin:0;font-size:14px;line-height:1.5}
