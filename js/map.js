@@ -1,4 +1,5 @@
 import { state } from './store.js';
+import { recordMerchantAction } from './analytics.js';
 import { getVoteBadge } from './votes.js';
 import { renderCardsChunk } from './cards.js';
 let mapInstance=null,clusterGroup=null,split=null,selectedId=null;
@@ -38,7 +39,7 @@ function popupFor(item){
  const save=document.createElement('button');save.type='button';save.className='px-2 py-1 rounded bg-slate-800';save.textContent=state.savedIds.has(item.id)?'★ Saved':'☆ Save';save.addEventListener('click',()=>{window.toggleSaveFromMap(item.id,save);renderCardsChunk();});
  const prompt=document.createElement('span');prompt.textContent='Takes Amex?';controls.append(save,prompt);
  for(const[text,direction]of[['👍','up'],['👎','down']]){const button=document.createElement('button');button.type='button';button.textContent=text;button.className='px-2 py-1 rounded bg-slate-800';button.setAttribute('aria-label',direction==='up'?'Confirmed Amex accepted':'Amex declined / not accepted');button.addEventListener('click',()=>window.submitVote(String(voteKey),title,direction));controls.append(button);}
- const directions=document.createElement('a');directions.textContent='Directions →';directions.className='text-blue-400';directions.target='_blank';directions.rel='noopener noreferrer';directions.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(item.loc==='approx'?title+' '+address:item.lat+','+item.lng);controls.append(directions);
+ const directions=document.createElement('a');directions.textContent='Directions →';directions.className='text-blue-400';directions.target='_blank';directions.rel='noopener noreferrer';directions.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(item.loc==='approx'?title+' '+address:item.lat+','+item.lng);directions.dataset.merchantAction='directions';directions.addEventListener('click',event=>recordMerchantAction(event,'map-popup'));controls.append(directions);
  popup.append(categoryLabel,heading,badge,addressLabel);
  if(item.loc==='approx'){const approximate=document.createElement('p');approximate.className='text-xs text-amber-300';approximate.textContent='Approximate location';popup.append(approximate);}
  popup.append(controls);return popup;

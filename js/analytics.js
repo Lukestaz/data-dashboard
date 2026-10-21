@@ -1,4 +1,5 @@
 const allowed = {
+  'merchant-action': {action:['directions'],surface:['cards','map-card','map-popup']},
   'location-opened': {},
   'location-filter-changed': {level:['city','area'],action:['select','clear']},
   'near-me-requested': {source:['button','sort']},
@@ -19,6 +20,12 @@ export function trackEvent(name, properties = {}) {
     const result = globalThis.umami?.track?.(name, data);
     if (result && typeof result.catch === 'function') result.catch(() => {});
   } catch {}
+}
+// Record intent only; never inspect or send the link URL or merchant identity.
+export function recordMerchantAction(event, surface) {
+  if (!event?.isTrusted || !['cards', 'map-card', 'map-popup'].includes(surface)) return;
+  const action = event.target?.closest?.('[data-merchant-action]')?.dataset?.merchantAction;
+  if (action === 'directions') trackEvent('merchant-action', {action, surface});
 }
 const boundMaps = new WeakSet();
 export function bindMapAnalytics(map) {
@@ -62,6 +69,7 @@ export function bindControlAnalytics(state) {
     if (event.isTrusted) trackEvent('map-fit-requested');
   });
   document.getElementById('card-grid')?.addEventListener('click', event => {
+    recordMerchantAction(event, state.viewMode === 'map' ? 'map-card' : 'cards');
     if (!event.isTrusted || state.viewMode !== 'map' || event.target.closest('button,a,input,select')) return;
     if (event.target.closest('[data-merchant-id]')) trackEvent('merchant-selected', {surface:'map-card'});
   });

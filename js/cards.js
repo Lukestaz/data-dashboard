@@ -74,7 +74,7 @@ export function renderCardsChunk() {
             <button onclick="window.submitVote('${item.SENumber || item.id}', '${title}', 'up')" class="hover:text-emerald-400 px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 transition" title="Confirmed working">👍</button>
             <button onclick="window.submitVote('${item.SENumber || item.id}', '${title}', 'down')" class="hover:text-rose-400 px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 transition" title="Amex declined / not accepted">👎</button>
           </div>
-          <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 font-semibold inline-flex items-center gap-1">
+          <a data-merchant-action="directions" href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 font-semibold inline-flex items-center gap-1">
             Directions &rarr;
           </a>
         </div>
