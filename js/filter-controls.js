@@ -110,7 +110,7 @@ export function createFilterControls(state, changed, onlineSelected) {
             state.userLng = null;
             for (const merchant of state.merchants) delete merchant._dist;
             if (state.currentSort === 'distance') {state.currentSort = 'default';const sort=document.getElementById('sort-select');if(sort)sort.value='default';}
-            const label=document.getElementById('near-me-label');if(label)label.textContent='Near Me';
+            const label=document.getElementById('near-me-label');if(label)label.textContent='Near';
             document.getElementById('near-me-btn')?.classList.remove('bg-rose-500/20','border-rose-500/50','text-rose-300');
             onlineSelected();
           }
