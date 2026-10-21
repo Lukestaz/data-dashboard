@@ -5,6 +5,17 @@
 
 Generated from commit messages; these are not release or deployment confirmations.
 
+### 2026-10-22 (NZ time)
+
+Features
+
+- simplify sorting and compact mobile actions ([`6206695`](https://github.com/Lukestaz/data-dashboard/commit/62066953ae500eee68ddb4dca62c42ab12bc70ec)).
+
+Maintenance
+
+- record Actions run status \[skip ci\] ([`68f0729`](https://github.com/Lukestaz/data-dashboard/commit/68f0729d73eec277c6afcbc70717f5102fa878ba)).
+- record Actions run status \[skip ci\] ([`bfa9e40`](https://github.com/Lukestaz/data-dashboard/commit/bfa9e4084f864c21e80b9342ff0b9c9465b2f2ad)).
+
 ### 2026-10-21 (NZ time)
 
 Features
@@ -18,6 +29,7 @@ Fixes
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`b1f5476`](https://github.com/Lukestaz/data-dashboard/commit/b1f54762bc3f7cae8409e8bee936c36b57b002b1)).
 - record Actions run status \[skip ci\] ([`8ee5f1a`](https://github.com/Lukestaz/data-dashboard/commit/8ee5f1a5accacf9b39f05f4a87430f2b18a5a02a)).
 - record Actions run status \[skip ci\] ([`69bf484`](https://github.com/Lukestaz/data-dashboard/commit/69bf4844964474bd268ac09e4ffee7359ecc3301)).
 - record Actions run status \[skip ci\] ([`56aacc9`](https://github.com/Lukestaz/data-dashboard/commit/56aacc920bdc69801e11ca9b3bca0dcfddf6fb5e)).
