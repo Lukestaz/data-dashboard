@@ -11,8 +11,13 @@ Features
 
 - enable AMEX community reports filter (#11) ([`58217fc`](https://github.com/Lukestaz/data-dashboard/commit/58217fcbb8b80c7c88ec25089dee16041958e48c)).
 
+Fixes
+
+- preserve selector choice before toolbar refresh ([`225fd89`](https://github.com/Lukestaz/data-dashboard/commit/225fd8989b32a59f72ccf9e352a94d8a74822856)).
+
 Maintenance
 
+- record Actions run status \[skip ci\] ([`c103c44`](https://github.com/Lukestaz/data-dashboard/commit/c103c4451dab86af9c290b1129393c637b03aa3a)).
 - record Actions run status \[skip ci\] ([`674fd1f`](https://github.com/Lukestaz/data-dashboard/commit/674fd1ff4e12ff9b7e8e78326554e99b2badbc53)).
 - record Actions run status \[skip ci\] ([`b6a00a8`](https://github.com/Lukestaz/data-dashboard/commit/b6a00a8fc2ff4de61dbff064544ea758ef8bbea2)).
 - record Actions run status \[skip ci\] ([`f8ee6fd`](https://github.com/Lukestaz/data-dashboard/commit/f8ee6fd181e5446c00a8c62f161c60df8963c1df)).
