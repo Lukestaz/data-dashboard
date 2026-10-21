@@ -119,7 +119,7 @@ export function mountCompactUI(state, changed) {
     location.hidden = online; near.disabled = online; near.classList.toggle('opacity-50', online);
     if (online) location.open = false;
     areaBlock.hidden = state.activeTown === 'All';
-    locationSummary.textContent = (state.activeTown === 'All' ? 'Location' : state.activeTown) + ' ▾';
+    locationSummary.textContent = state.activeTown === 'All' ? 'Location' : state.activeTown;
     sourceHint.textContent = state.availabilitySupported ? '' : ' · legacy';
     for (const option of sort.options) if (option.value === 'distance') option.disabled = online;
     const query = search.value.trim(), total = clearFilterCount(state, query);
