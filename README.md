@@ -33,9 +33,13 @@ Use ⋯ → Idea or bug to submit public feedback without a GitHub account. The 
 
 A confirmed submission links to its GitHub issue. If no confirmation arrives, check existing issues before retrying. Community acceptance votes are reports, not guarantees. The dashboard also includes an offer reminder and Umami analytics.
 
-### Community reports filter status
+### Community reports
 
-The Community reports filter is currently disabled following the 18 October 2026 recovery. The standalone classifier and its fixture are development-only; their presence does not enable filtering or change live card/map badges. Do not describe the proposed Accepted / Declined / Mixed / No reports filter as deployed.
+On the AMEX dataset choose All (default), Accepted, Declined, Mixed or No reports. Accepted/Declined mean reports only in that direction; any reports in both directions mean Mixed, regardless of majority. Cards, filters and map popups share classifications and counts. Reports do not guarantee acceptance or offer eligibility.
+
+The filter combines with search, location, category, availability and saved-only. Its chip clears only reports; Clear resets reports to All. Loading/failure never means No reports: an active report filter waits for a successful read, with Retry and Show all available. Confirmed votes re-filter results and refresh surviving open map popups.
+
+Legacy switching/fallback hides the control/chip and resets reports to All. Returning to AMEX starts at All. Existing legacy voting, saved storage and snapshot sharing/import are unchanged.
 
 ## Understanding the data
 
@@ -111,6 +115,9 @@ python3 scripts/check_frontend.py --self-test
 python3 scripts/check_frontend.py
 node tests/analytics.test.mjs js/analytics.js js/app.js
 node tests/community-reports.test.mjs
+node tests/community-vote-reader.test.mjs
+node tests/votes-reader-integration.test.mjs
+node tests/community-report-filter.test.mjs
 node scripts/normalize_locations.mjs --test-only
 python3 scripts/dataset_diff.py --test-only
 python3 scripts/update_changelog.py --test-only

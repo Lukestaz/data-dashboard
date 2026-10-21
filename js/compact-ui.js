@@ -1,4 +1,6 @@
 import { initMap } from './map.js';
+import { COMMUNITY_FILTERS, communityReportsEnabled } from './community-reports.js';
+import { mountCommunityReportControls } from './community-report-controls.js';
 
 function element(tag, className = '', text = '') {
   const node = document.createElement(tag);
@@ -32,7 +34,7 @@ function fillFooter(footer) {
   footer.replaceChildren(build, link);
 }
 export function clearFilterCount(state, query = '') {
-  return Number(state.activeAvailability !== 'all') + Number(state.activeTown !== 'All') + Number(state.activeArea !== 'All') + Number(state.activeCategory !== 'All') + Number(state.activeSubtype !== 'All') + Number(state.showSavedOnly) + Number(Boolean(query.trim())) + Number(state.currentSort !== 'default');
+  return Number(communityReportsEnabled(state) && Boolean(state.activeCommunityReport) && state.activeCommunityReport !== 'all') + Number(state.activeAvailability !== 'all') + Number(state.activeTown !== 'All') + Number(state.activeArea !== 'All') + Number(state.activeCategory !== 'All') + Number(state.activeSubtype !== 'All') + Number(state.showSavedOnly) + Number(Boolean(query.trim())) + Number(state.currentSort !== 'default');
 }
 function nzPosition(item) {
   const lat = Number(item.lat), rawLng = Number(item.lng);
@@ -58,6 +60,7 @@ export function mountCompactUI(state, changed) {
   const filterRow = nodes['compact-filter-row'], cardCount = nodes['compact-card-count'], mapCount = nodes['compact-map-count'];
   const sourceHint = nodes['compact-source-hint'], fit = nodes['compact-fit'], listSlot = nodes['compact-list-slot'];
   const mapInfo = nodes['compact-map-info'];
+  const reportControls = mountCommunityReportControls(state, changed);
   fillFooter(nodes['compact-build-footer']);
   sourceStatus.textContent = sourceCaptureLabel(state);
   clear.addEventListener('click', () => {window.resetAllFilters();refresh();});
@@ -73,7 +76,7 @@ export function mountCompactUI(state, changed) {
   });
   function syncMapControls() {
     const inMap = state.viewMode === 'map';
-    cardCount.hidden = inMap; mapCount.hidden = !inMap; fit.hidden = !inMap; listSlot.hidden = !inMap; mapInfo.hidden = !inMap;
+    cardCount.hidden = inMap || Boolean(state.communityReportMessage); mapCount.hidden = !inMap; fit.hidden = !inMap; listSlot.hidden = !inMap; mapInfo.hidden = !inMap;
     if (!inMap) mapInfo.open = false;
     const status = get('map-list-status');
     if (status) {
@@ -90,6 +93,8 @@ export function mountCompactUI(state, changed) {
         toggle.addEventListener('click', label); label();
       }
     } else if (inMap) mapCount.textContent = 'Loading map…';
+    if (state.communityReportMessage) mapCount.textContent = state.communityReportMessage;
+    fit.disabled = Boolean(state.communityReportMessage);
     if (inMap && !framed && get('merchant-split') && state.merchants.length) {
       framed = true;
       requestAnimationFrame(() => {
@@ -107,6 +112,7 @@ export function mountCompactUI(state, changed) {
     control.setAttribute('aria-label', 'Clear ' + text); control.addEventListener('click', callback); active.append(control);
   }
   function refresh() {
+    reportControls.refresh();
     const captureLabel = sourceCaptureLabel(state);
     if (sourceStatus.textContent !== captureLabel) sourceStatus.textContent = captureLabel;
     const online = state.activeAvailability === 'online';
@@ -121,6 +127,7 @@ export function mountCompactUI(state, changed) {
     active.replaceChildren();
     if (state.activeTown !== 'All') chip(state.activeTown, () => window.clearTown());
     if (state.activeArea !== 'All') chip(state.activeArea, () => {state.activeArea = 'All';area.value = 'All';changed();});
+    if (communityReportsEnabled(state) && state.activeCommunityReport !== 'all') chip(COMMUNITY_FILTERS.find(([value]) => value === state.activeCommunityReport)?.[1] || 'Community reports', () => {state.activeCommunityReport = 'all';changed();});
     if (state.showSavedOnly) chip('Saved only', () => window.toggleSavedFilter());
     if (query) chip('Search: ' + query.slice(0,30), () => window.clearSearch());
     active.hidden = !active.children.length; filterRow.hidden = total === 0; syncMapControls();

@@ -5,7 +5,7 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 
 const root = path.resolve(process.argv[2] || '.');
-const sources = await Promise.all(['votes.js','community-vote-reader.js','vote-identity.js'].map(name => fs.readFile(path.join(root,'js',name),'utf8')));
+const sources = await Promise.all(['votes.js','community-vote-reader.js','vote-identity.js','community-reports.js'].map(name => fs.readFile(path.join(root,'js',name),'utf8')));
 const scratch = await fs.mkdtemp(path.join(os.tmpdir(),'amex-vote-integration-'));
 const originals = Object.fromEntries(['window','document','CustomEvent','localStorage','fetch','alert','__amexVoteState'].map(key => [key,Object.getOwnPropertyDescriptor(globalThis,key)]));
 const originalWarn = console.warn;
@@ -17,7 +17,7 @@ async function fixture({stored={},storageFails=false} = {}) {
  const directory = path.join(scratch,String(++fixtureNumber));
  await fs.mkdir(directory);
  await fs.writeFile(path.join(directory,'package.json'),'{"type":"module"}');
- for (let i=0;i<sources.length;i++) await fs.writeFile(path.join(directory,['votes.js','community-vote-reader.js','vote-identity.js'][i]),sources[i]);
+ for (let i=0;i<sources.length;i++) await fs.writeFile(path.join(directory,['votes.js','community-vote-reader.js','vote-identity.js','community-reports.js'][i]),sources[i]);
  await fs.writeFile(path.join(directory,'store.js'),'export const state = globalThis.__amexVoteState;');
  const state = {merchants:[{id:'card-a',SENumber:'merchant:1',title:'Shop'},{id:'map-b',SENumber:'merchant:1',title:'Shop'}]};
  globalThis.__amexVoteState=state;
