@@ -118,17 +118,6 @@
         <input id="search-input" type="text" placeholder="Search merchants, places or categories…" class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-4 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
       <div id="availability-filter-row"></div>
-      <div id="community-reports-control" hidden>
-        <label for="community-reports-select" class="text-xs text-slate-400">Community reports</label>
-        <select id="community-reports-select" class="compact-control" aria-describedby="community-reports-note">
-          <option value="all">All</option>
-          <option value="accepted">Accepted</option>
-          <option value="declined">Declined</option>
-          <option value="mixed">Mixed</option>
-          <option value="none">No reports</option>
-        </select>
-        <p id="community-reports-note" class="text-xs text-slate-400">Community reports are not a guarantee of AMEX acceptance or offer eligibility.</p>
-      </div>
       <div id="community-reports-status" hidden>
         <p id="community-reports-message" class="text-xs text-slate-400" role="status" aria-live="polite" aria-atomic="true"></p>
         <button id="community-reports-retry" type="button" class="compact-control" hidden>Retry reports</button>
@@ -154,11 +143,21 @@
             </div>
           </div>
         </details>
+        <div id="community-reports-control" hidden>
+          <select id="community-reports-select" class="compact-control" aria-label="Community reports" aria-describedby="community-reports-note">
+            <option value="all">Reports: All</option>
+            <option value="accepted">Reports: Accepted</option>
+            <option value="declined">Reports: Declined</option>
+            <option value="mixed">Reports: Mixed</option>
+            <option value="none">Reports: No reports</option>
+          </select>
+        </div>
         <button id="saved-filter-btn" onclick="window.toggleSavedFilter()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg border border-slate-800 text-xs font-semibold transition flex items-center gap-1.5">
           <span class="text-amber-400">★</span>
           <span>Saved (<span id="saved-count">0</span>)</span>
         </button>
       </div>
+      <p id="community-reports-note" class="text-xs text-slate-400">Reports don’t guarantee acceptance or offer eligibility.</p>
       <div class="flex items-center gap-2 overflow-x-auto pb-1" id="category-pills"></div>
       <div id="subtype-filter-row"></div>
       <div id="compact-filter-row" hidden>

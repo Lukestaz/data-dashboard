@@ -69,3 +69,8 @@
   #compact-location .compact-location-grid,#compact-location .compact-location-grid>div{min-width:0}
   #compact-location select{max-width:100%;box-sizing:border-box}
 }
+
+/* Reports shares the wrapping action row; keep the native selector compact. */
+#compact-actions #community-reports-control{min-width:0;max-width:100%}
+#compact-root #community-reports-select{width:auto;max-width:100%;min-height:40px;font-size:12px;padding:8px 10px;border-color:#263244;border-radius:8px;font-weight:500;box-sizing:border-box}
+#compact-root #community-reports-note{margin:0}
