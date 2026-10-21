@@ -7,11 +7,15 @@ export function mountCommunityReportControls(state, changed) {
   const status = get('community-reports-status'), message = get('community-reports-message');
   const retry = get('community-reports-retry'), showAll = get('community-reports-show-all');
   if (![control,select,status,message,retry,showAll].every(Boolean)) throw new Error('Missing community report controls');
-  select.addEventListener('change', () => {
+  const updateSelection = () => {
     if (!communityReportsEnabled(state)) return;
-    state.activeCommunityReport = COMMUNITY_FILTERS.some(([value]) => value === select.value) ? select.value : 'all';
+    const value = COMMUNITY_FILTERS.some(([value]) => value === select.value) ? select.value : 'all';
+    if (state.activeCommunityReport === value) return;
+    state.activeCommunityReport = value;
     changed();
-  });
+  };
+  select.addEventListener('input', updateSelection);
+  select.addEventListener('change', updateSelection);
   retry.addEventListener('click', () => {fetchCommunityVotes().catch(console.warn);});
   showAll.addEventListener('click', () => {state.activeCommunityReport = 'all';changed();});
   return {refresh() {
