@@ -13,10 +13,12 @@ Features
 
 Fixes
 
+- align action controls and clarify empty results ([`2f84993`](https://github.com/Lukestaz/data-dashboard/commit/2f8499318cc46172f3e329dc0576ec2a6845ab15)).
 - preserve selector choice before toolbar refresh ([`225fd89`](https://github.com/Lukestaz/data-dashboard/commit/225fd8989b32a59f72ccf9e352a94d8a74822856)).
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`d2e873f`](https://github.com/Lukestaz/data-dashboard/commit/d2e873f11c510f80881bccfed1bb43f6fde4d104)).
 - record Actions run status \[skip ci\] ([`ec2c27c`](https://github.com/Lukestaz/data-dashboard/commit/ec2c27c3c1af8c1056ac77a242747eabf8cf6861)).
 - record Actions run status \[skip ci\] ([`0813e3a`](https://github.com/Lukestaz/data-dashboard/commit/0813e3aeb5f46fe5e981fbc8ed85b4b8ea6783c4)).
 - record Actions run status \[skip ci\] ([`20c2626`](https://github.com/Lukestaz/data-dashboard/commit/20c2626ef4762e022fc3527f797e3c265d4b0225)).
