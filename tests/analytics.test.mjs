@@ -60,6 +60,15 @@ await test('Fit results requires a trusted click',()=>{
 let success, failure;
 const appState={viewMode:'cards',userLat:null,userLng:null,activeTown:'All',merchants:[],savedIds:new Set(),filteredList:[],currentSort:'default'};
 const context={state:appState,trackEvent,bindMapAnalytics:()=>{},bindControlAnalytics:()=>{},document:{getElementById:()=>null},navigator:{geolocation:{getCurrentPosition:(ok,bad)=>{success=ok;failure=bad;}}},alert:()=>{},setTimeout:()=>{},submitVote:()=>{},initMap:()=>map,updateMapMarkers:()=>{},renderCardsChunk:()=>{},availabilityMatches:()=>true,subtypeMatches:()=>true,locationMatches:()=>true,subtypeLabel:()=>'',window:{addEventListener:()=>{}}};
+const reportSource = fs.readFileSync(new URL('../js/community-reports.js', import.meta.url), 'utf8');
+const reportPolicy = await import('data:text/javascript;base64,'+Buffer.from(reportSource).toString('base64'));
+Object.assign(context, {
+ communityVoteStatus:'ready',
+ communityReportsEnabled:reportPolicy.communityReportsEnabled,
+ communityReportFilterMessage:reportPolicy.communityReportFilterMessage,
+ communityReportMatches:reportPolicy.communityReportMatches,
+ getCommunityReport:()=>{throw Error('Unexpected vote lookup in analytics-only fixture');}
+});
 const runnable=appSource.replace(/^import .*;\n/gm,'').replace(/^export /gm,'');
 vm.runInNewContext(runnable,context);
 await test('Near Me success and button origin',()=>{

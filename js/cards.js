@@ -10,7 +10,7 @@ export function renderCardsChunk() {
 
   if (state.filteredList.length === 0) {
     grid.innerHTML = '';
-    if (empty) empty.classList.remove('hidden');
+    if (empty) empty.classList.toggle('hidden', Boolean(state.communityReportMessage));
     if (sentinelText) sentinelText.textContent = '';
     return;
   }

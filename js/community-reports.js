@@ -2,7 +2,7 @@ const text = value => value == null ? '' : String(value).trim();
 const canonicalOf = merchant => text(merchant.seNumber) || text(merchant.SENumber) || text(merchant.id) || text(merchant.title || merchant.name || merchant.Name);
 const count = value => {const number = Number(value);return Number.isFinite(number) && number > 0 ? Math.floor(number) : 0;};
 export const COMMUNITY_FILTERS = [
-  ['all','All reports'], ['accepted','Accepted reports'], ['declined','Declined reports'],
+  ['all','All'], ['accepted','Accepted reports'], ['declined','Declined reports'],
   ['mixed','Mixed reports'], ['none','No reports']
 ];
 export function summarizeCommunityReports(aliases, votes, status = 'ready') {
@@ -13,6 +13,13 @@ export function summarizeCommunityReports(aliases, votes, status = 'ready') {
 }
 export function communityReportMatches(report, filter = 'all') {
   return filter === 'all' || (report.status === 'ready' && report.kind === filter);
+}
+export function communityReportsEnabled(state) {
+  return state.activeDataset === 'amex' && state.loadedDataSource === 'amex';
+}
+export function communityReportFilterMessage(state, status) {
+  if (!communityReportsEnabled(state) || !state.activeCommunityReport || state.activeCommunityReport === 'all' || status === 'ready') return '';
+  return status === 'loading' ? 'Loading community reports…' : 'Community reports unavailable. Retry or show all merchants.';
 }
 export function createCommunityReportLookup(merchants) {
   const candidates = new Map(), owners = new Map();
