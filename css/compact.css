@@ -74,3 +74,13 @@
 #compact-actions #community-reports-control{min-width:0;max-width:100%}
 #compact-root #community-reports-select{width:auto;max-width:100%;min-height:40px;font-size:12px;padding:8px 10px;border-color:#263244;border-radius:8px;font-weight:500;box-sizing:border-box}
 #compact-root #community-reports-note{margin:0}
+
+/* One mobile action row; hidden report controls leave three equal columns. */
+@media(max-width:639px){
+  #compact-actions{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px}
+  #compact-actions>button,#compact-actions #compact-location-summary,#compact-actions #community-reports-select{width:100%;min-width:0;max-width:100%;min-height:40px;padding:8px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box}
+  #compact-actions>button{justify-content:center}
+  #compact-actions #compact-location-summary{text-align:center;overflow-wrap:normal}
+  #near-me-btn>span:first-child,#saved-filter-btn>span:first-child{display:none}
+  #near-me-label,#saved-filter-btn>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+}
