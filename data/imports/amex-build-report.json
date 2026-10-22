@@ -1,12 +1,12 @@
 {
   "meta": {
     "source": "Amex Shop Small NZ campaigndata.json",
-    "capturedAt": "2026-10-21T21:42:28.227Z",
-    "inStoreCount": 12102,
+    "capturedAt": "2026-10-22T21:35:29.006Z",
+    "inStoreCount": 12042,
     "onlineCount": 4462,
-    "records": 15589,
-    "exactCount": 11721,
-    "approxCount": 351,
+    "records": 15530,
+    "exactCount": 11662,
+    "approxCount": 350,
     "idStrategy": "persistent-registry-v1",
     "locationNormalization": "shared-browser-rules",
     "ingestionMethod": "direct-http",
@@ -14,18 +14,18 @@
     "categoryNormalization": "explicit-subtype-rules-v1"
   },
   "stats": {
-    "loc_exact": 11721,
-    "loc_approx": 351,
-    "instore_also_online": 1782,
+    "loc_exact": 11662,
+    "loc_approx": 350,
+    "instore_also_online": 1722,
     "loc_none": 30,
-    "online_only": 3487
+    "online_only": 3488
   },
   "diff": {
-    "added": 0,
-    "removed": 0,
-    "addedRecords": 0,
-    "removedRecords": 0,
-    "baselineCommit": "923776c47903cca958de16b34df2def871b30c6f",
+    "added": 1,
+    "removed": 60,
+    "addedRecords": 1,
+    "removedRecords": 60,
+    "baselineCommit": "4b3c900cac14d9680b1ac3d0310e68a5d4f55ce4",
     "method": "committed-baseline-v1"
   },
   "coordinateRejections": [
@@ -74,14 +74,14 @@
   },
   "categoryCleanup": {
     "rulesVersion": 1,
-    "records": 15589,
-    "changedCategories": 14704,
-    "explicitSubtypeMatches": 8670,
+    "records": 15530,
+    "changedCategories": 14645,
+    "explicitSubtypeMatches": 8610,
     "categoryCounts": {
       "Automotive & transport": 677,
       "Beauty & personal care": 589,
       "Education": 18,
-      "Food & drink": 5519,
+      "Food & drink": 5460,
       "General": 866,
       "Health & wellbeing": 1060,
       "Home & trades": 335,
