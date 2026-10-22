@@ -9,10 +9,17 @@ Generated from commit messages; these are not release or deployment confirmation
 
 Features
 
+- track Directions intent across merchant surfaces (#12) ([`4931db8`](https://github.com/Lukestaz/data-dashboard/commit/4931db82bd8c1aab0ccb8a955f71c9c210c21da1)).
 - simplify sorting and compact mobile actions ([`6206695`](https://github.com/Lukestaz/data-dashboard/commit/62066953ae500eee68ddb4dca62c42ab12bc70ec)).
 
 Maintenance
 
+- record Actions run status \[skip ci\] ([`d78b019`](https://github.com/Lukestaz/data-dashboard/commit/d78b0195c62728a2d7b6ba3c9311f6da709ac2f4)).
+- record Actions run status \[skip ci\] ([`5258542`](https://github.com/Lukestaz/data-dashboard/commit/52585420fc3a1874b9cf24137cd917fd5e48b428)).
+- record Actions run status \[skip ci\] ([`d50db5f`](https://github.com/Lukestaz/data-dashboard/commit/d50db5f5b79589bd18221dfb7023428b8d591611)).
+- record Actions run status \[skip ci\] ([`40aa979`](https://github.com/Lukestaz/data-dashboard/commit/40aa979fcd03aff0ae21aa93deefb97f9726ce0c)).
+- record Actions run status \[skip ci\] ([`923776c`](https://github.com/Lukestaz/data-dashboard/commit/923776c47903cca958de16b34df2def871b30c6f)).
+- record Actions run status \[skip ci\] ([`a666516`](https://github.com/Lukestaz/data-dashboard/commit/a66651697e337b0d1fa697c7ab793ca7d86bf682)).
 - record Actions run status \[skip ci\] ([`68f0729`](https://github.com/Lukestaz/data-dashboard/commit/68f0729d73eec277c6afcbc70717f5102fa878ba)).
 - record Actions run status \[skip ci\] ([`bfa9e40`](https://github.com/Lukestaz/data-dashboard/commit/bfa9e4084f864c21e80b9342ff0b9c9465b2f2ad)).
 
