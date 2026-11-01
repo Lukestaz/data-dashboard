@@ -1,40 +1,70 @@
 {
   "schemaVersion": 1,
   "repository": "Lukestaz/data-dashboard",
-  "checkedAt": "2026-11-01T19:42:41.054Z",
+  "checkedAt": "2026-11-01T22:02:28.395Z",
   "latest": {
     "pages.yml": {
-      "id": 41244180184,
+      "id": 41355052428,
       "attempt": 1,
       "workflow": "pages.yml",
       "name": "Deploy GitHub Pages",
       "event": "workflow_run",
-      "status": "completed",
-      "conclusion": "success",
-      "sha": "324c4a60622e0542919062f3da44f98547b194b1",
-      "createdAt": "2026-10-31T21:33:53Z",
-      "updatedAt": "2026-10-31T21:34:43Z",
-      "startedAt": "2026-10-31T21:33:53Z",
-      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/41244180184",
+      "status": "queued",
+      "conclusion": null,
+      "sha": "a9b713152c3960aeaa58efaafa56500200cdecc3",
+      "createdAt": "2026-11-01T22:02:22Z",
+      "updatedAt": "2026-11-01T22:02:25Z",
+      "startedAt": "2026-11-01T22:02:22Z",
+      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/41355052428",
       "failedJobs": []
     },
     "refresh-amex.yml": {
-      "id": 41244117926,
+      "id": 41354975764,
       "attempt": 1,
       "workflow": "refresh-amex.yml",
       "name": "Refresh Amex directory",
       "event": "schedule",
       "status": "completed",
       "conclusion": "success",
-      "sha": "f606044b290c345c9dc071694bdf7264d41c4db0",
-      "createdAt": "2026-10-31T21:33:06Z",
-      "updatedAt": "2026-10-31T21:33:51Z",
-      "startedAt": "2026-10-31T21:33:06Z",
-      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/41244117926",
+      "sha": "03532952130e4ae1a6adcc5447ab88a5948e168c",
+      "createdAt": "2026-11-01T22:01:29Z",
+      "updatedAt": "2026-11-01T22:02:20Z",
+      "startedAt": "2026-11-01T22:01:29Z",
+      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/41354975764",
       "failedJobs": []
     }
   },
   "runs": [
+    {
+      "id": 41355052428,
+      "attempt": 1,
+      "workflow": "pages.yml",
+      "name": "Deploy GitHub Pages",
+      "event": "workflow_run",
+      "status": "queued",
+      "conclusion": null,
+      "sha": "a9b713152c3960aeaa58efaafa56500200cdecc3",
+      "createdAt": "2026-11-01T22:02:22Z",
+      "updatedAt": "2026-11-01T22:02:25Z",
+      "startedAt": "2026-11-01T22:02:22Z",
+      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/41355052428",
+      "failedJobs": []
+    },
+    {
+      "id": 41354975764,
+      "attempt": 1,
+      "workflow": "refresh-amex.yml",
+      "name": "Refresh Amex directory",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "sha": "03532952130e4ae1a6adcc5447ab88a5948e168c",
+      "createdAt": "2026-11-01T22:01:29Z",
+      "updatedAt": "2026-11-01T22:02:20Z",
+      "startedAt": "2026-11-01T22:01:29Z",
+      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/41354975764",
+      "failedJobs": []
+    },
     {
       "id": 41244180184,
       "attempt": 1,
@@ -681,21 +711,6 @@
       "failedJobs": []
     },
     {
-      "id": 39114674002,
-      "attempt": 1,
-      "workflow": "pages.yml",
-      "name": "Deploy GitHub Pages",
-      "event": "push",
-      "status": "completed",
-      "conclusion": "success",
-      "sha": "d7dd666b9bbd8e37d0f0511d156fad35e7de461d",
-      "createdAt": "2026-10-18T09:16:17Z",
-      "updatedAt": "2026-10-18T09:16:49Z",
-      "startedAt": "2026-10-18T09:16:17Z",
-      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/39114674002",
-      "failedJobs": []
-    },
-    {
       "id": 39067411756,
       "attempt": 1,
       "workflow": "refresh-amex.yml",
@@ -919,22 +934,6 @@
       "startedAt": "2026-10-07T00:53:09Z",
       "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/37554282071",
       "failedJobs": []
-    },
-    {
-      "id": 37540716468,
-      "attempt": 1,
-      "workflow": "refresh-amex.yml",
-      "name": ".github/workflows/refresh-amex.yml",
-      "event": "push",
-      "status": "completed",
-      "conclusion": "failure",
-      "sha": "fbeb81c7070cf33e25ab0e548c3bd62d13e0e157",
-      "createdAt": "2026-10-06T22:27:41Z",
-      "updatedAt": "2026-10-06T22:27:41Z",
-      "startedAt": "2026-10-06T22:27:41Z",
-      "url": "https://github.com/Lukestaz/data-dashboard/actions/runs/37540716468",
-      "failedJobs": [],
-      "note": "No jobs returned. Inspect the run link for workflow validation errors."
     }
   ]
 }
