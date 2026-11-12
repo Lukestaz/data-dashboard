@@ -1,7 +1,7 @@
 {
   "meta": {
     "source": "Amex Shop Small NZ campaigndata.json",
-    "capturedAt": "2026-11-10T23:21:06.929Z",
+    "capturedAt": "2026-11-12T00:43:16.097Z",
     "inStoreCount": 12042,
     "onlineCount": 4462,
     "records": 15530,
@@ -25,7 +25,7 @@
     "removed": 0,
     "addedRecords": 0,
     "removedRecords": 0,
-    "baselineCommit": "2187681f5629f8997f2dc2c8d49e1be635e0ebb4",
+    "baselineCommit": "3bef5acb698ab60c3613b8f42671d1e2e9905807",
     "method": "committed-baseline-v1"
   },
   "coordinateRejections": [
