@@ -4,8 +4,9 @@ on:
   workflow_run:
     workflows: ['Deploy GitHub Pages', 'Refresh Amex directory']
     types: [completed]
-  schedule:
-    - cron: '*/15 * * * *'
+  # Paused between promos; workflow_run still records Pages and Refresh completions.
+  # schedule:
+  #   - cron: '*/15 * * * *'
   workflow_dispatch:
 
 permissions:

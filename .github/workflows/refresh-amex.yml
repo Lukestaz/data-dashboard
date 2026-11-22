@@ -2,9 +2,10 @@
 name: Refresh Amex directory
 
 on:
-  schedule:
-    - cron: '17 7 * * *'
-      timezone: 'Pacific/Auckland'
+  # Paused between promos; uncomment schedule to resume daily refreshes.
+  # schedule:
+  #   - cron: '17 7 * * *'
+  #     timezone: 'Pacific/Auckland'
   workflow_dispatch:
     inputs:
       geocode_max:
@@ -66,7 +67,7 @@ jobs:
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/amex.json data/geocache.json data/imports data/history.json data/changes
           if git diff --cached --quiet; then echo "No changes"; exit 0; fi
           git commit -m "Refresh Amex dataset $(date -u +%Y-%m-%d)"
